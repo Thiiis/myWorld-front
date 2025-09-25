@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'DungGeunMo'; /* 픽셀 느낌 나는 한국어 전용 폰트 */
+  src: url('https://files.catbox.moe/pephe1.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Upheaval'; /* 레트로 게임 느낌의 영어 픽셀 폰트 */
+  src: url('https://files.catbox.moe/6w2ji8.ttf') format('truetype');
+}
+
+/* 메인 컬러 및 폰트 변수 */
+:root {
+  --maintheme: #3B82F6;       /* 메인 테마 블루 */
+  --titlecolor: #1E40AF;      /* 진한 블루 */
+  --soft-gray: #F8FAFC;       /* 배경용 라이트 그레이 */
+  --pure-white: #FFFFFF;
+
+  /* 폰트 */
+  --text: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --titlefont: 'DungGeunMo';
+  --link: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  --font-size: 16px;
+}
+
+/* 다크 모드용 간단 변수 */
+.dark {
+  --background: #1E1E1E;
+  --foreground: #F5F5F5;
+  --card: #2C2C2C;
+  --card-foreground: #FFFFFF;
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
+}
+
+/* 기본 스타일 */
+body {
+  margin: 0;
+  font-family: var(--text);
+  background-color: var(--soft-gray);
+  color: #111827; /* 기본 텍스트 */
+}
+
+h1, h2, h3 {
+  font-family: var(--titlefont), var(--text);
+  color: var(--titlecolor);
+}
