@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'DungGeunMo'; /* 픽셀 느낌 나는 한국어 전용 폰트 */
+  src: url('../fonts/DungGeunMo.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Upheaval'; /* 레트로 게임 느낌의 영어 픽셀 폰트 */
+  src: url('../fonts/Upheaval.ttf') format('truetype');
+}

@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import MyPageSideBar from '@/components/MyPageSideBar.vue'
+import MyPageSideBar from '@/components/Minihome/MyPageSideBar.vue'
 </script>
 
 <style scoped>
