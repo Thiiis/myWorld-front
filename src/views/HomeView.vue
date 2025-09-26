@@ -1,16 +1,6 @@
 <template>
   <div>
-    <!-- 헤더 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
-      <div class="container">
-        <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="#">
-          <i class="bi bi-star-fill me-2"></i>
-          마이월드
-        </a>
-        <button class="btn btn-primary" @click="handleGetStarted">시작하기</button>
-      </div>
-    </nav>
-
+    
     <!-- Hero Section -->
     <section class="py-5 mt-5 text-center bg-light">
       <div class="container">
@@ -129,15 +119,4 @@ const handleGetStarted = () => {
 </script>
 
 <style scoped>
-/* 참고용 폰트 적용 */
-body {
-  font-family: var(--text);
-}
-
-h1,
-h2,
-h3,
-.navbar-brand {
-  font-family: var(--titlefont);
-}
 </style>

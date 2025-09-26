@@ -1,27 +1,19 @@
 <template>
   <div class="d-flex flex-column vh-100">
     <AppHeader />
-
-    <div class="flex-grow-1 container-fluid"> <!--fluid는 꽉차게, 그냥넣으면 사이드에 빈 공간 생성-->
-      <div class="row">
-        <div>
-          <AppMenu />
-        </div>
-        <div>
-          <RouterView />
-        </div>
-      </div>
-    </div>
+    <RouterView />
   </div>
 </template>
 
 <script setup>
+import { RouterView } from 'vue-router';
+import AppHeader from './components/AppHeader.vue';
+import AppMenu from './components/MyPageSideBar.vue';
 </script>
 
 <style>
+/* 헤더 높이만큼 본문을 아래로 밀기 */
 body {
-  margin: 0;
-  font-family: var(--text);
-  background-color: #f9fafb;
+  padding-top: 70px;
 }
 </style>
