@@ -26,12 +26,12 @@
           나만의 디지털 공간을 마이월드에서 만들어보세요
         </p>
         <div class="d-flex justify-content-center gap-3">
-          <button class="btn btn-primary btn-lg" @click="handleGetStarted">
+          <RouterLink to="/signup" class="btn btn-primary btn-lg">
             ▶ 미니홈피 시작하기
-          </button>
-          <button class="btn btn-outline-primary btn-lg" @click="$emit('startTest')">
+          </RouterLink>
+          <RouterLink to="/themetest" class="btn btn-outline-primary btn-lg">
             💻 테마 테스트
-          </button>
+          </RouterLink>
         </div>
       </div>
     </section>
@@ -133,7 +133,11 @@ const handleGetStarted = () => {
 body {
   font-family: var(--text);
 }
-h1, h2, h3, .navbar-brand {
+
+h1,
+h2,
+h3,
+.navbar-brand {
   font-family: var(--titlefont);
 }
 </style>
