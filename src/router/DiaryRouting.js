@@ -1,15 +1,15 @@
 const routes = [
   {
     path: '/diary',
-    component: () => import(/* webpackChunkName: "DiaryLayout" */ '@/views/Diary/Diary.vue'),
+    component: () => import(/* webpackChunkName: "DiaryLayout" */ '@/views/diary/Diary.vue'),
     children: [
       {
         path: '',
-        component: () => import(/* webpackChunkName: "Diary" */ '@/views/Diary/DiaryListView.vue'),
+        component: () => import(/* webpackChunkName: "Diary" */ '@/views/diary/DiaryListView.vue'),
       },
       {
         path: '/create', 
-        component: () => import(/* webpackChunkName: "DiaryCreate" */ '@/views/Diary/DiaryCreateView.vue'),
+        component: () => import(/* webpackChunkName: "DiaryCreate" */ '@/views/diary/DiaryCreateView.vue'),
       }
     ]
   }

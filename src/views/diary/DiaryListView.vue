@@ -75,9 +75,9 @@
 </template>
 
 <script setup>
-import DiaryPage from "@/views/Diary/components/DiaryPage.vue";
-import DiaryCardList from "@/views/Diary/components/DiaryCardList.vue"; 
-import DiaryModal from "@/views/Diary/modal/DiaryModal.vue";
+import DiaryPage from "@/views/diary/components/DiaryPage.vue";
+import DiaryCardList from "@/views/diary/components/DiaryCardList.vue"; 
+import DiaryModal from "@/views/diary/modal/DiaryModal.vue";
 import { useRouter } from "vue-router";
 import { computed, onMounted } from "vue";
 import { useStore } from "vuex";

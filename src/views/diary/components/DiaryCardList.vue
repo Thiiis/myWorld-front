@@ -16,7 +16,7 @@
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import DiaryCard from "@/views/Diary/components/DiaryCard.vue";
+import DiaryCard from "@/views/diary/components/DiaryCard.vue";
 
 const store = useStore();
 

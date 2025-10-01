@@ -1,4 +1,6 @@
 import { createStore } from 'vuex'
+import axiosConfig from '@/apis/axiosConfig'
+import diary from '@/store/diary'
 
 const store = createStore({
   state: {
