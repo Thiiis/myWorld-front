@@ -5,9 +5,6 @@
         <i class="bi bi-star-fill me-2"></i>
         마이월드
       </RouterLink>
-      <RouterLink to="/myworld" class="btn btn-primary">
-        시작하기
-      </RouterLink>
     </div>
   </nav>
 </template>
