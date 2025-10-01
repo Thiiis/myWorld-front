@@ -1,5 +1,6 @@
-import { createStore } from 'vuex';
-import axiosConfig from '@/apis/axiosConfig';
+import { createStore } from 'vuex'
+import axiosConfig from '@/apis/axiosConfig'
+import diary from '@/store/diary'
 
 const store = createStore({
   state: {
@@ -97,6 +98,7 @@ const store = createStore({
   },
   //하위 상태
   modules: {
+    diary
   }
 })
 

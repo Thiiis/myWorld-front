@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ThemeTestRouting from "./ThemeTestRouting"
+import DiaryRouting from "./DiaryRouting"
 import AuthRouting from "./AuthRouting"
 import MyWorldRouting from "./MyWorldRouting"
 import FriendRouting from "./FriendRouting"
@@ -16,9 +17,9 @@ const routes = [
   ...AuthRouting,
   ...MyWorldRouting,
   ...FriendRouting,
-  ...ProfileRouting
+  ...ProfileRouting,
+  ...DiaryRouting
 ]
-
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
