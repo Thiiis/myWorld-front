@@ -4,6 +4,9 @@ import ThemeTestRouting from "./ThemeTestRouting"
 import LoginRouting from "./LoginRouting"
 import DiaryRouting from "./DiaryRouting"
 import MyPageRouting from "./MyPageRouting"
+import AuthRouting from "./AuthRouting"
+import MyWorldRouting from "./MyWorldRouting"
+import FriendRouting from "./FriendRouting"
 
 const routes = [
   {
@@ -12,8 +15,9 @@ const routes = [
     component: HomeView
   },
   ...ThemeTestRouting,
-  ...LoginRouting,
-  ...MyPageRouting,
+  ...AuthRouting,
+  ...MyWorldRouting,
+  ...FriendRouting,
   ...DiaryRouting
 ]
 

@@ -3,7 +3,7 @@
     <div class="row">
       <!-- 왼쪽 사이드바 -->
       <div class="col-md-3">
-        <MyPageSideBar />
+        <MyWorldSideBar />
       </div>
 
       <!-- 오른쪽 컨텐츠 -->
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import MyPageSideBar from '@/components/Minihome/MyPageSideBar.vue'
+import MyWorldSideBar from '@/components/MyWorldSideBar.vue'
 </script>
 
 <style scoped>

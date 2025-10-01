@@ -1,9 +1,8 @@
 import axios from "axios";
-
 axios.defaults.baseURL = "http://localhost:8080"
 
 // 여기에 속성을 하나 추가했다.
-function addAuthheader(jwt) {
+function addAuthHeader(jwt) {
   axios.defaults.headers.common["Authorization"] = "Bearer " + jwt;
 }
 
@@ -12,4 +11,4 @@ function removeAuthHeader() {
   delete axios.defaults.headers.common["Authorization"];
 }
 
-export default {addAuthheader, removeAuthHeader};
+export default {addAuthHeader, removeAuthHeader};

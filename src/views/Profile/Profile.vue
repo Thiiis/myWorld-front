@@ -1,6 +1,6 @@
 <template>
   <div>
-    주크박스 페이지
+    프로필 페이지
   </div>
 </template>
 
