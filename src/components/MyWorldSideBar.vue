@@ -4,8 +4,8 @@
     <div>
       <div v-if="profileInfo" class="card shadow-sm mb-4 text-center">
         <div class="card-body">
-          <img v-if="profileInfo.imgUrl" :src="`${backendUrl}${profileInfo.imgUrl}`" alt="Profile Image">
-          <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+          <img v-if="profileInfo.imgUrl" :src="`${backendUrl}${profileInfo.imgUrl}`" alt="Profile Image" class="profile-image-square">
+          <i class="bi bi-person-circle profile-image-square" style="font-size: 3rem;"></i>
           <h5 class="mt-2">{{profileInfo.nickname}}님의 미니홈피</h5>
           <p class="text-muted small">{{miniHomeUrl}}</p>
           <ul class="list-unstyled text-start small">
@@ -62,3 +62,17 @@ onMounted(async () => {
 });
 
 </script>
+
+
+<style scoped>
+.profile-image-square {
+  width: 150px; /* 원하는 너비 */
+  height: 150px; /* 원하는 높이 (너비와 동일하게) */
+  object-fit: cover; /* 핵심 속성: 이미지를 잘라서 꽉 채움 */
+  border-radius: 10%; /* 살짝 둥근 모서리 (선택 사항) */
+  display: flex; /* 아이콘 중앙 정렬을 위해 추가 */
+  align-items: center; /* 아이콘 중앙 정렬을 위해 추가 */
+  justify-content: center; /* 아이콘 중앙 정렬을 위해 추가 */
+  font-size: 150px; /* 아이콘 크기 */
+}
+</style>

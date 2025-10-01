@@ -1,7 +1,7 @@
 const routes = [
   {
     path: '/myworld/:account',
-    component: () => import('@/views/MyWorld/index.vue'),
+    component: () => import('@/views/index.vue'),
     children: [
       {
         path: '',
