@@ -6,7 +6,7 @@ function createGuestBoard(hostaccount, guestboard) {
 }
 
 function getGuestBoard(hostaccount, offset = 0, limit = 10) {
-  return axios.get(`/guestboards/list/${hostaccount}`, {params: { offset, limit }});
+  return axios.get(`/guestboards/list/${hostaccount}`, { params: { offset, limit } });
 }
 
 function updateGuestBoard(guestboard) {
@@ -14,7 +14,7 @@ function updateGuestBoard(guestboard) {
 }
 
 function deleteGuestBoard(gbid) {
-  return axios.delete("/guestboards/delete", {params: { gbid }});
+  return axios.delete(`/guestboards/delete/${gbid}`);
 }
 
 
