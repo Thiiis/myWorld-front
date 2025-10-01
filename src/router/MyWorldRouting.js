@@ -14,6 +14,10 @@ const routes = [
       {
         path: 'profile',
         component: () => import('@/views/Profile/Profile.vue')
+      },
+      {
+        path: 'friend',
+        component: () => import('@/views/Friend/FriendHome.vue')
       }
     ]
   }
