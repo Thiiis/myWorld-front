@@ -1,14 +1,14 @@
 import axios from "axios";
 
-function memberCreate(member) {
-  return axios.post("/members/signup", member);
+function memberSignup(signupForm) {
+  return axios.post("/members/signup", signupForm);
 }
 
 function memberLogin(loginForm) {
   return axios.post("/members/login", loginForm);
 }
 
-function memberInfo(account, jwt) {
+function memberDetail(account, jwt) {
   return axios.get("/members/detail", {
      params: {account},
      headers: {
@@ -19,9 +19,9 @@ function memberInfo(account, jwt) {
 }
 
 const memberApi = {
-  memberCreate,
+  memberSignup,
   memberLogin,
-  memberInfo
+  memberDetail
 };
 
 export default memberApi;

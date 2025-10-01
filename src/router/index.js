@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ThemeTestRouting from "./ThemeTestRouting"
 import AuthRouting from "./AuthRouting"
-import MyPageRouting from "./MyPageRouting"
+import MyWorldRouting from "./MyWorldRouting"
 
 const routes = [
   {
@@ -12,7 +12,7 @@ const routes = [
   },
   ...ThemeTestRouting,
   ...AuthRouting,
-  ...MyPageRouting
+  ...MyWorldRouting,
 ]
 
 const router = createRouter({
