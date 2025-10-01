@@ -9,7 +9,7 @@ const routes = [
       },
       {
         path: 'diary',
-        component: () => import('@/views/MyPage/Diary.vue')
+        component: () => import('@/views/diary/DiaryListView.vue')
       },
       {
         path: 'guestboard',
