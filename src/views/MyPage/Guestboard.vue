@@ -83,13 +83,16 @@ function cancelWrite() {
 async function submitBoard() {
   if (!newContent.value.trim()) return;
   try {
-    await guestboardApi.createGuestBoard({
-      gid: 104, // 임시 gid
-      content: newContent.value,
-    });
-    newContent.value = "";
-    isWriting.value = false;
-    loadBoards();
+    const response = await guestboardApi.createGuestBoard(91, "content", "PUBLIC");
+    // await guestboardApi.createGuestBoard({
+    //   // gid: 104, // 임시 gid
+    //   content: newContent.value,
+    // });
+    // newContent.value = "";
+    // isWriting.value = false;
+    // loadBoards();
+    alert(response.data);
+    console.log(response.data);
   } catch (err) {
     console.error(err);
   }

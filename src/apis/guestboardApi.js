@@ -1,8 +1,11 @@
 import axios from "axios";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 // 방명록 작성
 function createGuestBoard(guestboard) {
-  return axios.post("/guestboards/create", guestboard);
+  return axios.post(`/guestboards/create/${store.state.hostid}`, guestboard);
 }
 
 // 방명록 조회
