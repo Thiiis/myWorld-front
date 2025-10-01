@@ -1,23 +1,15 @@
 const routes = [
   {
     path: '/myworld/:account',
-    component: () => import('@/views/MyWorld/index.vue'),
+    component: () => import('@/views/index.vue'),
     children: [
-      {
-        path: '',
-        component: () => import('@/views/MyWorld/Home.vue')
-      },
-      {
-        path: 'diary',
-        component: () => import('@/views/MyWorld/Diary.vue')
-      },
       {
         path: 'guestboard',
         component: () => import('@/views/Guestboard/Guestboard.vue')
       },
       {
-        path: 'friend',
-        component: () => import('@/views/MyWorld/Friend.vue')
+        path: 'jukebox',
+        component: () => import('@/views/Jukebox/Jukebox.vue')
       },
       {
         path: 'profile',
