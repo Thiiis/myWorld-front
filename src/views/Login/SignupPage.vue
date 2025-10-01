@@ -27,9 +27,6 @@
         <input type="text" id="birthdate" class="form-control" v-model="member.birthdate" placeholder="1998-12-26" />
       </div>
         <button type="submit" class="btn btn-primary w-100">가입하기</button>
-    <hr>
-    <h3>[디버깅] 현재 member 객체 상태:</h3>
-    <pre>{{ member }}</pre>
     </form>
     <button type="button" class="btn btn-link w-100 mt-2" @click="$router.push('/login')">
       로그인 페이지로 이동
