@@ -45,12 +45,15 @@ async function handleLogin() {
     const result = response.data;
 
     if (response.status === 200) {
+      //로그 나중에 삭제
+      console.log("mid:", result.mid);
       console.log("account:", result.account);
       console.log("jwt:", result.jwt);
 
       store.dispatch("saveAuth", {
+        mid: result.mid,
         account: result.account,
-        accessToken: result.jwt
+        jwt: result.jwt
       });
 
       await router.push("/mypage");
