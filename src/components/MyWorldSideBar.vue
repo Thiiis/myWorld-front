@@ -3,14 +3,19 @@
     <!-- 프로필 카드 -->
     <div>
       <div v-if="profileInfo" class="card shadow-sm mb-4 text-center">
-        <div class="card-body">
-          <img v-if="profileInfo.imgUrl" :src="`${backendUrl}${profileInfo.imgUrl}`" alt="Profile Image" class="profile-image-square">
-          <i class="bi bi-person-circle profile-image-square" style="font-size: 3rem;"></i>
-          <h5 class="mt-2">{{profileInfo.nickname}}님의 미니홈피</h5>
-          <p class="text-muted small">{{miniHomeUrl}}</p>
-          <ul class="list-unstyled text-start small">
-            <li>🏠 상태메세지: {{profileInfo.statusMessage}}</li>
-          </ul>
+        <div class="card-body" width="300" height="500">
+          <div class="profile-image-container">
+            <img v-if="profileInfo.imgUrl" :src="`${backendUrl}${profileInfo.imgUrl}`" alt="Profile Image" class="profile-image-square">
+            <i v-else class="bi bi-person-circle profile-image-square"></i>
+          </div>
+          <div>
+            <h5 class="mt-2">{{ profileInfo.nickname }}님의 미니홈피</h5>
+            <p class="text-muted small">{{ miniHomeUrl }}</p>
+            <ul class="list-unstyled text-start small">
+              <li>🏠 상태메세지: {{ profileInfo.statusMessage }}</li>
+            </ul>
+
+          </div>
         </div>
       </div>
       <div v-else>
@@ -33,7 +38,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import profileApi from '@/apis/profileApi'; // API 모듈 import
-const backendUrl = 'http://192.168.4.42:8080'; 
+const backendUrl = 'http://192.168.4.42:8080';
 // 1. 현재 URL 정보를 얻기 위해 useRoute() 사용
 const route = useRoute();
 
@@ -65,14 +70,22 @@ onMounted(async () => {
 
 
 <style scoped>
+.profile-image-container {
+  /* flex 컨테이너의 자식 요소로서 공간을 차지하게 함 */
+  display: flex;
+  justify-content: center; /* 내부 아이템(이미지 또는 아이콘)을 가로 중앙 정렬 */
+  align-items: center; /* 내부 아이템을 세로 중앙 정렬 */
+  margin-bottom: 1rem; /* 이미지와 닉네임 사이의 간격 */
+}
+
 .profile-image-square {
-  width: 150px; /* 원하는 너비 */
-  height: 150px; /* 원하는 높이 (너비와 동일하게) */
-  object-fit: cover; /* 핵심 속성: 이미지를 잘라서 꽉 채움 */
-  border-radius: 10%; /* 살짝 둥근 모서리 (선택 사항) */
-  display: flex; /* 아이콘 중앙 정렬을 위해 추가 */
-  align-items: center; /* 아이콘 중앙 정렬을 위해 추가 */
-  justify-content: center; /* 아이콘 중앙 정렬을 위해 추가 */
-  font-size: 150px; /* 아이콘 크기 */
+  width: 120px;   /* 원하는 크기로 조절 */
+  height: 120px;  /* 너비와 높이를 동일하게 설정 */
+  object-fit: cover;
+  border-radius: 15%; /* 둥근 모서리 */
+  
+  /* 아이콘 스타일 */
+  font-size: 120px;
+  line-height: 1; /* 아이콘이 컨테이너 밖으로 나가지 않도록 줄 높이 조절 */
 }
 </style>
