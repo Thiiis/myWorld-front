@@ -16,18 +16,6 @@ const routes = [
         component: () => import('@/views/MyWorld/Guestboard.vue')
       },
       {
-        path: 'jukebox',
-        component: () => import('@/views/MyWorld/Jukebox.vue')
-      },
-      {
-        path: 'jukebox/create',   // 새 주크박스 만들기
-        component: () => import('@/views/Jukebox/CreateJukebox.vue')
-      },
-      {
-        path: 'jukebox/mysongs',  // 나의 음악
-        component: () => import('@/views/Jukebox/MySongs.vue')
-      },
-      {
         path: 'friend',
         component: () => import('@/views/MyWorld/Friend.vue')
       },
