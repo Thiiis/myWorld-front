@@ -13,7 +13,7 @@ const routes = [
       },
       {
         path: 'guestboard',
-        component: () => import('@/views/MyWorld/Guestboard.vue')
+        component: () => import('@/views/Guestboard/Guestboard.vue')
       },
       {
         path: 'friend',

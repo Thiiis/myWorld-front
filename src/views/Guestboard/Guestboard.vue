@@ -73,10 +73,7 @@ async function submitBoard() {
   try {
     const guestboard = { content: newContent.value };
 
-    console.log("👉 보내는 hostaccount:", route.params.account);
-    console.log("👉 현재 JWT:", store.state.jwt);
-
-    await guestboardApi.createGuestBoard(route.params.account, guestboard);
+    await guestboardApi.createGuestBoard(account, guestboard);
     alert("방명록이 작성되었습니다");
     isWriting.value = false;
     newContent.value = "";
