@@ -12,15 +12,13 @@ const routes = [
         path: 'guestboard',
         component: () => import('@/views/Guestboard/Guestboard.vue')
       },
-
+      {
+        path: 'profile',
+        component: () => import('@/views/Profile/ProfileView.vue')
+      },
       {
         path: 'jukebox',
         component: () => import('@/views/Jukebox/Jukebox.vue')
-      },
-
-      {
-        path: 'profile',
-        component: () => import('@/views/Profile/Profile.vue')
       },
       {
         path: 'friend',

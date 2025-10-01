@@ -56,7 +56,7 @@ onMounted(async () => {
   if (account) { // account가 URL에 존재할 때만 API 호출
     try {
       // account를 인자로 넘겨 특정 사용자의 프로필 정보를 요청
-      const response = await profileApi.profileInfo(account);
+      const response = await profileApi.getprofileInfo(account);
       // 성공적으로 데이터를 받아오면 profileInfo 변수에 저장
       profileInfo.value = response.data;
     } catch (error) {

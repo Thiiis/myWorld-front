@@ -4,6 +4,7 @@ import ThemeTestRouting from "./ThemeTestRouting"
 import AuthRouting from "./AuthRouting"
 import MyWorldRouting from "./MyWorldRouting"
 import FriendRouting from "./FriendRouting"
+import ProfileRouting from "./ProfileRouting"
 
 const routes = [
   {
@@ -14,7 +15,8 @@ const routes = [
   ...ThemeTestRouting,
   ...AuthRouting,
   ...MyWorldRouting,
-  ...FriendRouting
+  ...FriendRouting,
+  ...ProfileRouting
 ]
 
 const router = createRouter({
