@@ -54,48 +54,39 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
 import guestboardApi from "@/apis/guestboardApi";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-// 상태
+const router = useRouter();
+const route = useRoute();
+
 const isWriting = ref(false);
-const newContent = ref("");
 const guestboards = ref([]);
-const username = "aaa"; // 추후 로그인 사용자명 연동
+const newContent = ref("");
 
-// 방명록 불러오기
-async function loadBoards() {
-  try {
-    const res = await guestboardApi.getGuestBoard(104); // mid 고정 테스트
-    guestboards.value = res.data;
-  } catch (err) {
-    console.error(err);
-  }
-}
 
-// 작성 취소
+const username = "member";
+
+
 function cancelWrite() {
-  isWriting.value = false;
-  newContent.value = "";
+  router.back();
 }
 
-// 작성 완료
+// 방명록 작성
 async function submitBoard() {
-  if (!newContent.value.trim()) return;
   try {
-    await guestboardApi.createGuestBoard({
-      gid: 104, // 임시 gid
-      content: newContent.value,
-    });
-    newContent.value = "";
-    isWriting.value = false;
-    loadBoards();
+    const guestboard = {
+      content: newContent.value
+    };
+    await guestboardApi.createGuestBoard(route.params.hostid, guestboard);
+    alert("방명록이 작성되었습니다");
+    router.back()
   } catch (err) {
     console.error(err);
   }
 }
 
-onMounted(loadBoards);
 </script>
 
 <style scoped>
