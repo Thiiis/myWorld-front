@@ -12,7 +12,7 @@ import '@/assets/css/base.css'
 import '@/assets/css/typography.css'
 import '@/assets/css/theme.css'
 
-// Local 스토리지에 저장된 user와 jwt를 읽고, 전역 상태에 저장
+//Local 스토리지에 저장된 유저와 jwt를 읽고 전역 상태에 저장 
 store.dispatch("loadAuth");
 
 const app = createApp(App);

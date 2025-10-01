@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ThemeTestRouting from "./ThemeTestRouting"
 import AuthRouting from "./AuthRouting"
 import MyWorldRouting from "./MyWorldRouting"
+import FriendRouting from "./FriendRouting"
 
 const routes = [
   {
@@ -13,6 +14,7 @@ const routes = [
   ...ThemeTestRouting,
   ...AuthRouting,
   ...MyWorldRouting,
+  ...FriendRouting
 ]
 
 const router = createRouter({
