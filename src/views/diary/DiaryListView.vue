@@ -50,10 +50,10 @@
 
     <!-- 검색 및 정렬 (나중에 기능 추가 예정)
     <div class="d-flex gap-2 mb-3">
-      <input v-model="store.searchQuery" type="text" class="form-control" placeholder="검색어를 입력하세요..." />
+      <input v-model="store.state.diary.searchQuery" type="text" class="form-control" placeholder="검색어를 입력하세요..." />
       <button class="btn btn-outline-primary" @click="toggleSort">
-        <i class="bi me-1" :class="store.sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
-        {{ store.sortOrder === 'asc' ? '오름차순' : '내림차순' }}
+        <i class="bi me-1" :class="store.state.diary.sortOrder === 'asc' ? 'bi-sort-up' : 'bi-sort-down'"></i>
+        {{ store.state.diary.sortOrder === 'asc' ? '오름차순' : '내림차순' }}
       </button>
     </div>
     -->
@@ -62,7 +62,7 @@
     <DiaryCardList :diary-entries="filteredEntries" @open-modal="openModal" />
 
     <!-- 모달: selectedEntry가 있을 때만 렌더링 -->
-    <DiaryModal v-if="store.selectedEntry" />
+    <DiaryModal v-if="store.state.diary.selectedEntry" />
 
     <!-- 페이지네이션 -->
     <DiaryPage
@@ -75,8 +75,8 @@
 </template>
 
 <script setup>
-import DiaryPage from "@/views/Diary/components/DiaryPage.vue";
-import DiaryCardList from "@/views/Diary/components/DiaryCardList.vue"; 
+import DiaryPage from "@/views/Diary/list_components/DiaryPage.vue";
+import DiaryCardList from "@/views/Diary/list_components/DiaryCardList.vue"; 
 import DiaryModal from "@/views/Diary/modal/DiaryModal.vue";
 import { useRouter } from "vue-router";
 import { computed, onMounted } from "vue";
@@ -125,15 +125,15 @@ const toggleSort = () => {
 // 필터 + 정렬 적용된 일기 목록 computed
 // -----------------------------
 const filteredEntries = computed(() => {
-  let list = store.state.diaryEntries || [];
+  let list = store.state.diary.diaryEntries || [];
 
   // 검색 필터
-  if (store.state.diary?.searchQuery) { 
+  if (store.state.diary.searchQuery) { 
     list = list.filter(e => e.title?.includes(store.state.diary.searchQuery)); 
   }
 
   // 정렬
-   return store.state.diary?.sortOrder === "asc" ? list : [...list].reverse();
+  return store.state.diary.sortOrder === "asc" ? list : [...list].reverse();
 });
 
 // -----------------------------
@@ -151,10 +151,14 @@ const openModal = (entry) => {
 };
 
 // -----------------------------
-// 초기 더미 데이터 로딩
+// 초기 데이터 로딩
 // -----------------------------
 onMounted(() => {
-  if (!store.state.diary?.diaryEntries || store.state.diary.diaryEntries.length === 0) {
+  // 서버에서 불러오기
+  store.dispatch("diary/fetchDiaries", 1);
+
+  // 서버 응답 없으면 더미 데이터 채워넣기 (개발용)
+  if (!store.state.diary.diaryEntries || store.state.diary.diaryEntries.length === 0) {
     store.commit('diary/setDiaryEntries', [
       {
         id: 1,
@@ -163,32 +167,10 @@ onMounted(() => {
         date: "2025.10.01",
         folder: "all",
         images: [],
-        tags: ["일상", "공부"], // 💡 태그 더미 데이터 추가
+        tags: ["일상", "공부"],
         likes: 12,
         comments: [],
-      },
-      {
-        id: 2,
-        title: "두 번째 일기: 제주도 여행 기록",
-        content: "맑은 하늘 아래에서 한라산 백록담을 보았다. 정말 아름다운 경험이었다.",
-        date: "2025.10.02",
-        folder: "trip",
-        images: ["https://picsum.photos/400/300"], // 💡 이미지 더미 데이터 추가
-        tags: ["여행", "행복"],
-        likes: 5,
-        comments: [],
-      },
-      {
-        id: 3,
-        title: "세 번째 일기: 맛집 탐방",
-        content: "점심으로 신선한 재료로 만든 샌드위치를 먹었다. 다음엔 친구와 함께 와야겠다.",
-        date: "2025.10.03",
-        folder: "all",
-        images: [],
-        tags: ["맛집"],
-        likes: 20,
-        comments: [],
-      },
+      }
     ]);
   }
 });

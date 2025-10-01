@@ -18,7 +18,6 @@ store.dispatch("loadAuth");
 
 const app = createApp(App);
 app.use(router);
-app.use(store);
 app.use(BootstrapVue3);
 app.use(store);
 app.mount('#app');

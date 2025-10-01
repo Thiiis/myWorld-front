@@ -1,15 +1,22 @@
 const routes = [
   {
-    path: '/diary',
-    component: () => import(/* webpackChunkName: "DiaryLayout" */ '@/views/Diary/Diary.vue'),
+    path: '/myworld/:memberId/diary', // ✅ memberId 동적 파라미터
+    component: () => import('@/views/Diary/Diary.vue'),
     children: [
       {
-        path: '',
-        component: () => import(/* webpackChunkName: "Diary" */ '@/views/Diary/DiaryListView.vue'),
+        path: '', // /myworld/:memberId/diary
+        name: 'DiaryList',
+        component: () => import('@/views/Diary/DiaryListView.vue'),
       },
       {
-        path: '/create', 
-        component: () => import(/* webpackChunkName: "DiaryCreate" */ '@/views/Diary/DiaryCreateView.vue'),
+        path: 'create', // /myworld/:memberId/diary/create
+        name: 'DiaryCreate',
+        component: () => import('@/views/Diary/DiaryCreateView.vue'),
+      },
+      {
+        path: "updatet",
+        name: "DiaryEdit",
+        component: () => import("@/views/Diary/DiaryUpdateView.vue"),
       }
     ]
   }
