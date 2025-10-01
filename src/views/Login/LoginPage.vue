@@ -53,7 +53,7 @@ async function handleLogin() {
         accessToken: result.jwt
       });
 
-      await router.push("/mypage");
+      await router.push(`/mypage/${result.account}`);
     } else {
       console.log(result.message);
     }
