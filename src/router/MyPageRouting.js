@@ -1,5 +1,9 @@
 const routes = [
   {
+    path: '/mypage',
+    redirect: '/mypage/default'
+  },
+  {
     path: '/mypage/:account',
     component: () => import('@/views/MyPage/index.vue'),
     children: [
@@ -13,11 +17,19 @@ const routes = [
       },
       {
         path: 'guestboard',
-        component: () => import('@/views/MyPage/Guestboard.vue')
+        component: () => import('@/views/Guestboard/Guestboard.vue')
       },
       {
         path: 'jukebox',
-        component: () => import('@/views/MyPage/Jukebox.vue')
+        component: () => import('@/views/Jukebox/Jukebox.vue')
+      },
+      {
+        path: 'jukebox/create',   // 새 주크박스 만들기
+        component: () => import('@/views/Jukebox/CreateJukebox.vue')
+      },
+      {
+        path: 'jukebox/mysongs',  // 나의 음악
+        component: () => import('@/views/Jukebox/MySongs.vue')
       },
       {
         path: 'friend',
