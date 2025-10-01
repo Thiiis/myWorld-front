@@ -1,7 +1,12 @@
 import axios from "axios";
+import store from "@/store"
 
-function createGuestBoard(hostid, guestboard) {
-  return axios.post("/guestboards/create/{hostid}", guestboard);
+function createGuestBoard(hostaccount, guestboard) {
+  return axios.post(`/guestboards/create/${hostaccount}`, guestboard, {
+    headers: {
+      Authorization: `Bearer ${store.state.jwt}`
+    }
+  });
 }
 
 function getGuestBoard(offset = 0, limit = 10) {
