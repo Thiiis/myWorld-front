@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ThemeTestRouting from "./ThemeTestRouting"
+import LoginRouting from "./LoginRouting"
+import DiaryRouting from "./DiaryRouting"
+import MyPageRouting from "./MyPageRouting"
 import AuthRouting from "./AuthRouting"
 import MyWorldRouting from "./MyWorldRouting"
 import FriendRouting from "./FriendRouting"
@@ -14,7 +17,8 @@ const routes = [
   ...ThemeTestRouting,
   ...AuthRouting,
   ...MyWorldRouting,
-  ...FriendRouting
+  ...FriendRouting,
+  ...DiaryRouting
 ]
 
 const router = createRouter({
