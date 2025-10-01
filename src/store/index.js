@@ -97,7 +97,6 @@ const store = createStore({
   },
   //하위 상태
   modules: {
-
   }
 })
 

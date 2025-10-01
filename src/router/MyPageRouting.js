@@ -1,6 +1,6 @@
 const routes = [
   {
-    path: '/mypage',
+    path: '/mypage/:account',
     component: () => import('@/views/MyPage/index.vue'),
     children: [
       {

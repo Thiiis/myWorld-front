@@ -17,16 +17,19 @@
 
     <!-- 메뉴 -->
     <div class="list-group shadow-sm">
-      <RouterLink to="/mypage" class="list-group-item list-group-item-action">홈</RouterLink>
-      <RouterLink to="/mypage/diary" class="list-group-item list-group-item-action">일기장</RouterLink>
-      <RouterLink to="/mypage/guestboard" class="list-group-item list-group-item-action">방명록</RouterLink>
-      <RouterLink to="/mypage/jukebox" class="list-group-item list-group-item-action">주크박스</RouterLink>
-      <RouterLink to="/mypage/friend" class="list-group-item list-group-item-action">친구</RouterLink>
-      <RouterLink to="/mypage/profile" class="list-group-item list-group-item-action">프로필</RouterLink>
+      <RouterLink :to="`/mypage/${account}`" class="list-group-item list-group-item-action">홈</RouterLink>
+      <RouterLink :to="`/mypage/${account}/diary`" class="list-group-item list-group-item-action">일기장</RouterLink>
+      <RouterLink :to="`/mypage/${account}/guestboard`" class="list-group-item list-group-item-action">방명록</RouterLink>
+      <RouterLink :to="`/mypage/${account}/jukebox`" class="list-group-item list-group-item-action">주크박스</RouterLink>
+      <RouterLink :to="`/mypage/${account}/friend`" class="list-group-item list-group-item-action">친구</RouterLink>
+      <RouterLink :to="`/mypage/${account}/profile`" class="list-group-item list-group-item-action">프로필</RouterLink>
     </div>
   </div>
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
+
+const route = useRoute();
+const account = route.params.account
 </script>
