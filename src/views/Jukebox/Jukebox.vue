@@ -3,10 +3,10 @@
     <div class="d-flex justify-content-between mb-3 align-items-center">
       <h3>🎵 주크박스</h3>
       <div>
-        <router-link :to="`/mypage/${$route.params.account}/jukebox/mysongs`" class="btn btn-outline-primary me-2">
+        <router-link :to="`/myworld/${$route.params.account}/jukebox/mysongs`" class="btn btn-outline-primary me-2">
           나의 음악
         </router-link>
-        <router-link :to="`/mypage/${$route.params.account}/jukebox/create`" class="btn btn-primary">
+        <router-link :to="`/myworld/${$route.params.account}/jukebox/create`" class="btn btn-primary">
           + 새 주크박스
         </router-link>
       </div>
