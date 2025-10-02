@@ -2,7 +2,10 @@
 import axios from 'axios';
 
 // 하드코딩된 주소 대신, .env.development 객체에서 환경 변수를 불러옵니다.
-const BASE_URL = process.env.VUE_APP_API_URL;
+// const BASE_URL = process.env.VUE_APP_API_URL;
+// const BASE_URL = "http://localhost:8080";
+const BASE_URL = "http://192.168.4.20:8080";
+
 
 // --- 인스턴스 생성 ---
 
