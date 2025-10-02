@@ -17,22 +17,22 @@
               style="width: 150px; height: 150px; object-fit: cover;">
             <h4 class="dunggeunmo-font" style="margin-top: 15px;">{{ profile.nickname }}</h4>
             <p v-if="profile.statusMessage" class="dunggeunmo-font text-muted">"{{ profile.statusMessage }}"</p>
-            
-            <div v-if="isMyProfile">
+            <div>
+              
+            </div>
+            <div v-if="isMyProfile" style="margin-top: 10px;">
               <router-link 
                 :to="{ name: 'ProfileEdit', params: { account: profile.account } }"
-                class="btn btn-primary btn-sm dunggeunmo-font" 
-                style="margin-top: 10px; display: block; width: 100%;"
+                class="btn btn-primary btn-sm dunggeunmo-font"
               >
                 프로필 수정
               </router-link>
               <router-link 
                 to="/change-password" 
                 class="btn btn-default btn-sm dunggeunmo-font" 
-                style="margin-top: 5px; display: block; width: 100%;"
+                style="margin-left: 5px;"
               >
                 비밀번호 변경
-                <!-- 아직 구현 안함 -->
               </router-link>
             </div>
           </div>

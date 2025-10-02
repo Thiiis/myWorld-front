@@ -1,3 +1,4 @@
+import FriendRouting from './FriendRouting'
 import DiaryRouting from './DiaryRouting'
 import JukeboxRouting from './JukeboxRouting'
 
@@ -28,7 +29,8 @@ const routes = [
         component: () => import('@/views/Friend/FriendHome.vue')
       },
     ...DiaryRouting,
-    ...JukeboxRouting
+    ...JukeboxRouting,
+    ...FriendRouting
 
     ]
   }
