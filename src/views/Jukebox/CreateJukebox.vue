@@ -71,33 +71,5 @@ export default {
       searchResults: [],
     };
   },
-  methods: {
-    searchSongs() {
-      const dummy = [
-        { id: 1, title: "봄날", artist: "BTS" },
-        { id: 2, title: "Celebrity", artist: "아이유" },
-        { id: 3, title: "WANNABE", artist: "ITZY" },
-        { id: 4, title: "Stay", artist: "Justin Bieber" },
-        { id: 5, title: "Levitating", artist: "Dua Lipa" },
-      ];
-      this.searchResults = dummy.filter(
-        (s) =>
-          s.title.includes(this.searchQuery) ||
-          s.artist.includes(this.searchQuery)
-      );
-    },
-    addSong(song) {
-      this.newJukebox.songs.push(song);
-    },
-    removeSong(idx) {
-      this.newJukebox.songs.splice(idx, 1);
-    },
-    createJukebox() {
-      if (!this.newJukebox.title) return alert("제목을 입력하세요!");
-      console.log("새 주크박스 생성:", this.newJukebox);
-      alert("주크박스가 생성되었습니다!");
-      this.$router.push("/jukebox");
-    },
-  },
 };
 </script>

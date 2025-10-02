@@ -53,6 +53,7 @@ async function loadMySongs() {
 async function deleteSong(sid) {
   try {
     await jukeboxApi.deleteSong(sid);
+    await loadMySongs();
   } catch (e) {
     console.error(e);
   }

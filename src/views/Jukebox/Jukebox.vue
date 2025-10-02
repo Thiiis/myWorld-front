@@ -6,9 +6,9 @@
         <router-link :to="`/myworld/${$route.params.account}/jukebox/mysongs`" class="btn btn-outline-primary me-2">
           나의 음악
         </router-link>
-        <!-- <router-link :to="`/myworld/${$route.params.account}/jukebox/create`" class="btn btn-primary">
+        <router-link :to="`/myworld/${$route.params.account}/jukebox/create`" class="btn btn-primary">
           + 새 주크박스
-        </router-link> -->
+        </router-link>
       </div>
     </div>
 
