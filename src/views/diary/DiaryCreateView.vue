@@ -148,37 +148,6 @@ const handlePhotoUpload = (event) => {
 const goBack = () => { console.log('Navigating back to the diary list...'); };    
 const cancelCreation = () => { if (confirm('작성을 취소하고 돌아가시겠어요?')) { goBack(); } };
 
-/* 태그 관련
-const predefinedTags = ref([
-  '일상', '행복', '여행', '맛집', '친구', '가족', '연인', '데이트',
-  '취미', '운동', '독서', '영화', '음악', '공부', '시험', '경제',
-  '카페', '산책', '사진', '요리'
-]);
-
-// --- State for Tag Search/Addition ---
-const tagSearchTerm = ref('');
-const MAX_TAGS = 5;
-
-const toggleTag = (tag) => {
-  const index = diaryData.tags.indexOf(tag);
-  if (index > -1) { diaryData.tags.splice(index, 1);
-  } else if (diaryData.tags.length < MAX_TAGS) {
-    diaryData.tags.push(tag);
-  } else { alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`); }
-};
-
-const addCustomTag = () => {
-  const newTag = tagSearchTerm.value.trim();
-  if (newTag && !diaryData.tags.includes(newTag)) {
-    if (diaryData.tags.length < MAX_TAGS) {
-      diaryData.tags.push(newTag);
-      if (!predefinedTags.value.includes(newTag)) { predefinedTags.value.unshift(newTag);}
-    } else { alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`);}
-
-    tagSearchTerm.value = ''; // Clear search input
-  }
-};
-*/
 </script>
 
 <style scoped>
@@ -438,10 +407,41 @@ const addCustomTag = () => {
   .content-grid {
     grid-template-columns: 1fr; /* Single column layout */
   }
-
+  
   .action-bar {
     justify-content: center;
     padding: 15px 20px;
   }
 }
 </style>
+  <!-- 태그 관련
+  const predefinedTags = ref([
+    '일상', '행복', '여행', '맛집', '친구', '가족', '연인', '데이트',
+    '취미', '운동', '독서', '영화', '음악', '공부', '시험', '경제',
+    '카페', '산책', '사진', '요리'
+  ]);
+  
+  // --- State for Tag Search/Addition ---
+  const tagSearchTerm = ref('');
+  const MAX_TAGS = 5;
+  
+  const toggleTag = (tag) => {
+    const index = diaryData.tags.indexOf(tag);
+    if (index > -1) { diaryData.tags.splice(index, 1);
+    } else if (diaryData.tags.length < MAX_TAGS) {
+      diaryData.tags.push(tag);
+    } else { alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`); }
+  };
+  
+  const addCustomTag = () => {
+    const newTag = tagSearchTerm.value.trim();
+    if (newTag && !diaryData.tags.includes(newTag)) {
+      if (diaryData.tags.length < MAX_TAGS) {
+        diaryData.tags.push(newTag);
+        if (!predefinedTags.value.includes(newTag)) { predefinedTags.value.unshift(newTag);}
+      } else { alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`);}
+  
+      tagSearchTerm.value = ''; // Clear search input
+    }
+  };
+  -->

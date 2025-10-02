@@ -1,3 +1,5 @@
+import DiaryRouting from './DiaryRouting'
+
 const routes = [
   {
     path: '/myworld/:account',
@@ -23,7 +25,9 @@ const routes = [
       {
         path: 'friend',
         component: () => import('@/views/Friend/FriendHome.vue')
-      }
+      },
+    ...DiaryRouting
+
     ]
   }
 ]
