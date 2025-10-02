@@ -1,7 +1,7 @@
 const routes = [
   {
     // '/profiles' 라는 공통 경로를 사용합니다.
-    path: '/profiles',
+    path: '/profile',
     // 위에서 생성한 ProfileLayout 컴포넌트를 부모로 지정합니다.
     component: () => import('@/views/Profile/Profile.vue'),
     // '/profiles'로 직접 접근 시, 기본으로 보여줄 페이지를 설정할 수 있습니다.
