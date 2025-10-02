@@ -2,7 +2,9 @@
   <div class="container my-4">
     <div class="d-flex justify-content-between mb-3 align-items-center">
       <h3>➕ 새 주크박스 만들기</h3>
-      <router-link to="/jukebox" class="btn btn-secondary">← 뒤로</router-link>
+      <router-link :to="`/myworld/${$route.params.account}/jukebox`" class="btn btn-secondary me-2">
+        뒤로
+      </router-link>
     </div>
 
     <div class="card shadow-sm p-3">

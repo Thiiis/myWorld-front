@@ -1,5 +1,4 @@
 import axios from "axios";
-import store from "@/store"
 
 function createGuestBoard(hostaccount, guestboard) {
   return axios.post(`/guestboards/create/${hostaccount}`, guestboard);
