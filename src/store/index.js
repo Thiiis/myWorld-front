@@ -1,4 +1,4 @@
-import axiosConfig from '@/apis/axiosConfig';
+import { addAuthHeader, removeAuthHeader } from '@/apis/axiosApi';
 import { createStore } from 'vuex'
 import diary from '@/store/diary';
 
@@ -61,7 +61,7 @@ const store = createStore({
       localStorage.setItem("jwt", payload.jwt);
 
       //Axios의 공통 헤더로 Authorization을 추가
-      axiosConfig.addAuthHeader(payload.jwt);
+      addAuthHeader(payload.jwt);
     },
 
     removeAuth(context, payload) {
@@ -75,7 +75,7 @@ const store = createStore({
       localStorage.removeItem("account");
       localStorage.removeItem("jwt");
 
-      axiosConfig.removeAuthHeader();
+      removeAuthHeader();
     },
 
     loadAuth(context, payload) {
@@ -91,7 +91,7 @@ const store = createStore({
 
       //Axios의 공통 헤더로 Authorization을 추가
       if (jwt !== "") {
-        axiosConfig.addAuthHeader(jwt);
+        addAuthHeader(jwt);
       }
     }
 
