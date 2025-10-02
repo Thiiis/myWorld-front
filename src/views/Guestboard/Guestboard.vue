@@ -3,22 +3,14 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>💬 방명록</h3>
-        <button
-          v-if="!isWriting"
-          class="btn btn-outline-primary"
-          @click="isWriting = true">
+        <button v-if="!isWriting" class="btn btn-outline-primary" @click="isWriting = true">
           작성하기
         </button>
       </div>
 
       <!-- 작성 폼 -->
       <div v-if="isWriting" class="mb-4 border rounded p-3 bg-light">
-        <textarea
-          v-model="newContent"
-          class="form-control mb-2"
-          rows="3"
-          placeholder="따뜻한 메시지를 남겨주세요..."
-        ></textarea>
+        <textarea v-model="newContent" class="form-control mb-2" rows="3" placeholder="따뜻한 메시지를 남겨주세요..."></textarea>
         <div class="text-end">
           <button class="btn btn-outline-secondary btn-sm me-2 rounded-pill" @click="cancelWrite">
             취소
@@ -31,11 +23,7 @@
 
       <!-- 방명록 리스트 -->
       <div v-if="guestboards.length > 0">
-        <div
-          v-for="board in guestboards"
-          :key="board.gbid"
-          class="border rounded-pill py-2 px-3 mb-2"
-        >
+        <div v-for="board in guestboards" :key="board.gbid" class="border rounded-pill py-2 px-3 mb-2">
           <span class="fw-bold text-primary me-2">{{ board.nickname || "친구" }}:</span>
           <span>{{ board.content }}</span>
         </div>
@@ -52,8 +40,7 @@
 
 <script setup>
 import guestboardApi from "@/apis/guestboardApi";
-import store from "@/store";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -61,6 +48,10 @@ const route = useRoute();
 const isWriting = ref(false);
 const guestboards = ref([]);
 const newContent = ref("");
+
+const offset = ref(0);
+const limit = ref(10);
+const loading = ref(false);
 
 const account = route.params.account;
 
@@ -72,21 +63,48 @@ function cancelWrite() {
 async function submitBoard() {
   try {
     const guestboard = { content: newContent.value };
-
     await guestboardApi.createGuestBoard(account, guestboard);
     alert("방명록이 작성되었습니다");
     isWriting.value = false;
     newContent.value = "";
+
+    await fetchGuestboards();
+
   } catch (err) {
     console.error(err);
   }
 }
+
+// 방명록 불러오기
+async function fetchGuestboards() {
+  try {
+    loading.value = true;
+    const res = await guestboardApi.getGuestBoard(account, offset.value, limit.value);
+
+    guestboards.value.push(...res.data);
+    offset.value += 10; // offset 증가 (다음 페이지 준비)
+    // 아직 10개까지만 보이고 나중에 할래 너무 힘들당 
+    // 
+    // 무한스크롤 or 더보기 버튼 고민중
+    // IntersectionObserver 브라우저 표준 api
+    // spinner?
+  } catch (e) {
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(() => {
+  fetchGuestboards();
+});
 </script>
 
 <style scoped>
 .card {
   border-radius: 12px;
 }
+
 textarea {
   resize: none;
 }

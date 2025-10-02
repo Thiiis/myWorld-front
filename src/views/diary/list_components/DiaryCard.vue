@@ -2,61 +2,32 @@
   <div class="card diary-card p-3">
     <div class="img-box">
       <!-- ✅ thumbnail 우선 -->
-      <img
-        v-if="entry?.thumbnail"
-        :src="entry.thumbnail"
-        alt="일기 대표 이미지"
-        class="img-fluid rounded"
-      />
-
+      <img v-if="entry?.thumbnail" :src="entry.thumbnail" alt="일기 대표 이미지" class="img-fluid rounded" />
       <!-- ✅ thumbnail 없으면 images[0] -->
-      <img
-        v-else-if="entry?.images && entry.images.length"
-        :src="entry.images[0]"
-        alt="일기 첨부 이미지"
-        class="img-fluid rounded"
-      />
-
+      <img v-else-if="entry?.images && entry.images.length" :src="entry.images[0]" alt="일기 첨부 이미지" class="img-fluid rounded" />
       <!-- ✅ 둘 다 없으면 placeholder -->
-      <div v-else class="placeholder bg-light d-flex align-items-center justify-content-center">
-        <i class="bi bi-image text-muted fs-3"></i>
-      </div>
-
+      <div v-else class="placeholder bg-light d-flex align-items-center justify-content-center"> <i class="bi bi-image text-muted fs-3"></i> </div>
       <!-- 좋아요 뱃지 -->
-      <div class="like-badge">
-        <i class="bi bi-heart-fill text-danger"></i>
-        <span>{{ entry?.likes || 0 }}</span>
+      <div class="like-badge"> <i class="bi bi-heart-fill text-danger"></i> <span>{{ entry?.likes || 0 }}</span>
       </div>
     </div>
 
     <div class="card-content p-1 mt-2">
       <!-- 제목 -->
-      <h6 class="fw-bold text-primary text-truncate">
-        {{ entry?.title || "제목 없음" }}
-      </h6>
-
+      <h6 class="fw-bold text-primary text-truncate"> {{ entry?.title || "제목 없음" }} </h6>
       <!-- 날짜 / 날씨 / 감정 -->
       <p class="small text-muted mb-1">
         {{ entry?.date || "날짜 미정" }}
         <span v-if="entry?.weather"> · {{ entry.weather }}</span>
         <span v-if="entry?.emo"> · {{ entry.emo }}</span>
       </p>
-
       <!-- 내용 -->
-      <p class="small text-dark entry-content">
-        {{ entry?.content || "내용이 없습니다." }}
-      </p>
-
+      <p class="small text-dark entry-content"> {{ entry?.content || "내용이 없습니다." }} </p>
       <!-- 태그 -->
       <div class="d-flex flex-wrap gap-1 mt-2">
-        <span
-          v-for="tag in entry?.tags"
-          :key="tag"
-          class="badge bg-light text-primary"
-        >
-          #{{ tag }}
-        </span>
+        <span v-for="tag in entry?.tags" :key="tag" class="badge bg-light text-primary" > #{{ tag }} </span>
       </div>
+
     </div>
   </div>
 </template>
