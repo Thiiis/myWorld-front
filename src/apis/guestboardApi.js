@@ -1,19 +1,19 @@
-import axios from "axios";
+import { api } from '@/apis/axiosApi';
 
 function createGuestBoard(hostaccount, guestboard) {
-  return axios.post(`/guestboards/create/${hostaccount}`, guestboard);
+  return api.post(`/guestboards/create/${hostaccount}`, guestboard);
 }
 
 function getGuestBoard(hostaccount, offset = 0, limit = 10) {
-  return axios.get(`/guestboards/list/${hostaccount}`, { params: { offset, limit } });
+  return api.get(`/guestboards/list/${hostaccount}`, { params: { offset, limit } });
 }
 
 function updateGuestBoard(guestboard) {
-  return axios.put("/guestboards/update", guestboard);
+  return api.put("/guestboards/update", guestboard);
 }
 
 function deleteGuestBoard(gbid) {
-  return axios.delete(`/guestboards/delete/${gbid}`);
+  return api.delete(`/guestboards/delete/${gbid}`);
 }
 
 

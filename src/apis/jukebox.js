@@ -1,19 +1,19 @@
-import axios from "axios";
+import { api } from '@/apis/axiosApi';
 
 function createSong(song) {
-  return axios.post(`/songs/create`, song);
+  return api.post(`/songs/create`, song);
 }
 
 function searchSong(query) {
-  return axios.get(`/songs/search`, {params: { query }});
+  return api.get(`/songs/search`, {params: { query }});
 }
 
 function getMySong() {
-  return axios.get("/songs/mysongs");
+  return api.get("/songs/mysongs");
 }
 
 function deleteSong(sid) {
-  return axios.delete(`/songs/delete/${sid}`);
+  return api.delete(`/songs/delete/${sid}`);
 }
 
 
