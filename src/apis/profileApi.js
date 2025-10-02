@@ -5,7 +5,7 @@ import axios from "axios";
  * @param {string} account - 조회할 사용자의 계정명
  * @returns {Promise} Axios Promise
  */
-function getprofileInfo(account) {
+function getProfileInfo(account) {
   return axios.get(`/profiles/info/${account}`);
 }
 
@@ -62,7 +62,7 @@ function profileUpdateImage(imageFile) {
 
 // 최종적으로 사용할 API 함수들을 객체로 묶어 내보냅니다.
 const profileApi = {
-  getprofileInfo,
+  getProfileInfo,
   getMyProfileDetail,
   getAnotherProfileDetail,
   profileUpdate,

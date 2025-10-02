@@ -18,10 +18,15 @@ function memberDetail(account, jwt) {
   })
 }
 
+function searchMembers(keyword) {
+  return axios.get(`/members/search`, { params: { keyword } });
+}
+
 const memberApi = {
   memberSignup,
   memberLogin,
-  memberDetail
+  memberDetail,
+  searchMembers
 };
 
 export default memberApi;
