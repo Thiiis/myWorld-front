@@ -23,11 +23,32 @@
 
       <!-- 방명록 리스트 -->
       <div v-if="guestboards.length > 0">
-        <div v-for="board in guestboards" :key="board.gbid" class="border rounded-pill py-2 px-3 mb-2">
+        <div v-for="board in guestboards" :key="board.gbid" class="border rounded py-2 px-3 mb-2">
           <span class="fw-bold text-primary me-2">{{ board.nickname || "친구" }}:</span>
-          <span>{{ board.content }}</span>
+
+          <!-- 일반 모드 -->
+          <span v-if="editingId !== board.gbid">{{ board.content }}</span>
+
+          <!-- 수정 모드 -->
+          <div v-else class="mt-2">
+            <textarea v-model="editContent" class="form-control mb-2"></textarea>
+            <button class="btn btn-sm btn-primary me-2" @click="submitEdit(board.gbid)">수정 완료</button>
+            <button class="btn btn-sm btn-secondary" @click="cancelEdit">취소</button>
+          </div>
+
+          <!-- 로그인 사용자가 쓴 글이면 수정/삭제 버튼 표시 -->
+          <div class="text-end" v-if="board.gid == mid && editingId !== board.gbid">
+            <button class="btn btn-outline-secondary btn-sm mt-2" @click="startEdit(board)">
+              수정
+            </button>
+            <button class="btn btn-outline-danger btn-sm mt-2" @click="deleteBoard(board.gbid)">
+              삭제
+            </button>
+          </div>
         </div>
       </div>
+
+
 
       <!-- 방명록 없을 때 -->
       <div v-else class="text-center text-muted py-5 border rounded bg-light">
@@ -42,8 +63,11 @@
 import guestboardApi from "@/apis/guestboardApi";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import store from "@/store";
+
 
 const route = useRoute();
+
 
 const isWriting = ref(false);
 const guestboards = ref([]);
@@ -53,7 +77,12 @@ const offset = ref(0);
 const limit = ref(10);
 const loading = ref(false);
 
+// 수정 모드용
+const editingId = ref(null);
+const editContent = ref("");
+
 const account = route.params.account;
+const mid = store.state.mid;
 
 function cancelWrite() {
   isWriting.value = false;
@@ -68,6 +97,8 @@ async function submitBoard() {
     isWriting.value = false;
     newContent.value = "";
 
+    offset.value = 0;
+    guestboards.value = [];
     await fetchGuestboards();
 
   } catch (err) {
@@ -80,18 +111,63 @@ async function fetchGuestboards() {
   try {
     loading.value = true;
     const res = await guestboardApi.getGuestBoard(account, offset.value, limit.value);
+    console.log(res);
 
-    guestboards.value.push(...res.data);
-    offset.value += 10; // offset 증가 (다음 페이지 준비)
-    // 아직 10개까지만 보이고 나중에 할래 너무 힘들당 
-    // 
-    // 무한스크롤 or 더보기 버튼 고민중
-    // IntersectionObserver 브라우저 표준 api
-    // spinner?
+    if (offset.value === 0) {
+      guestboards.value = res.data;
+    } else {
+      guestboards.value.push(...res.data);
+    }
+    offset.value += 10;
+
   } catch (e) {
     console.error(e);
+    guestboards.value = [];
   } finally {
     loading.value = false;
+  }
+}
+
+// 방명록 수정
+function startEdit(board) {
+  editingId.value = board.gbid;
+  editContent.value = board.content;
+}
+
+// 수정 취소
+function cancelEdit() {
+  editingId.value = null;
+  editContent.value = "";
+}
+
+// 수정 제출
+async function submitEdit(gbid) {
+  try {
+    await guestboardApi.updateGuestBoard({ gbid, content: editContent.value });
+    alert("수정되었습니다");
+    editingId.value = null;
+    editContent.value = "";
+
+    offset.value = 0;
+    guestboards.value = [];
+    await fetchGuestboards();
+  } catch (e) {
+    console.error(e);
+    alert("수정 실패");
+  }
+}
+
+async function deleteBoard(gbid) {
+  try {
+    await guestboardApi.deleteGuestBoard(gbid);
+    alert("삭제되었습니다.");
+
+    offset.value = 0;
+    guestboards.value = [];
+    await fetchGuestboards();
+  } catch (e) {
+    console.error(e);
+    alert("삭제 실패");
   }
 }
 
