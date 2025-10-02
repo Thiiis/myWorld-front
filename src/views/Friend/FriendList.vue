@@ -28,29 +28,24 @@
             @click="goToHome(friend.friendInfo.account)"
             style="cursor:pointer"
           >
-            <img
-              v-if="friend.friendInfo?.imgUrl"
-              :src="friend.friendInfo.imgUrl"
-              alt="이미지"
-              class="rounded-circle me-2"
-              style="width: 32px; height: 32px; object-fit: cover;"
-            />
+            <img :src="friend.friendInfo?.imgUrl ? `${backendUrl}${friend.friendInfo.imgUrl}` : defaultProfile" alt="이미지" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;" />
           </div>
 
           <!-- 닉네임 + 상태메세지 -->
           <div
+            class="friend-info"
             @click="goToHome(friend.friendInfo.account)"
             style="cursor:pointer"
           >
             <strong>🏠 {{ friend.friendInfo.nickname }}</strong>
             <span class="text-muted small">
-              ({{ friend.friendInfo?.statusMessage }})
+              {{ friend.friendInfo?.statusMessage || '상태메세지가 없습니다.' }}
             </span>
           </div>
 
           <!-- 친구 끊기 버튼 -->
           <button
-            class="btn btn-sm btn-outline-danger"
+            class="btn btn-sm btn-danger"
             @click="remove(friend.fid)"
           >
             친구 끊기
@@ -66,11 +61,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import friendApi from "@/apis/friendApi";
-import profileApi from "@/apis/profileApi"; // ✅ account → mid 변환용
+import profileApi from "@/apis/profileApi";
+import defaultProfile from '@/assets/image/default-profile.png'
 import store from "@/store";
+
+const backendUrl = 'http://192.168.4.42:8080';
 
 const route = useRoute();
 const router = useRouter();
@@ -87,7 +85,7 @@ async function fetchFriends() {
     // 🔥 URL에 다른 사용자의 account가 들어오면 해당 mid로 변환
     const account = route.params.account;
     if (account && account !== store.state.account) {
-      const resProfile = await profileApi.profileInfo(account); // 여기서 mid를 받음
+      const resProfile = await profileApi.getProfileInfo(account); // 여기서 mid를 받음
       if (resProfile?.data?.mid) {
         targetMid = resProfile.data.mid;
       }
@@ -128,16 +126,58 @@ async function remove(fid) {
     await friendApi.removeFriend(fid);
     friends.value = friends.value.filter((f) => f.fid !== fid);
     filterList();
+    alert("친구가 끊어졌습니다.");
   } catch (e) {
     console.error(e);
   }
 }
 
 onMounted(fetchFriends);
+watch(
+  () => route.params.account,
+  () => {
+    fetchFriends();
+  }
+);
 </script>
 
 <style scoped>
 .input-group input {
   font-size: 0.875rem;
+}
+.list-group-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+/* ✅ 프로필 이미지와 텍스트 간격 */
+.list-group-item img {
+  margin-right: 12px;
+}
+
+/* ✅ 닉네임 + 상태메세지 영역을 왼쪽에서 자연스럽게 차지하도록 */
+.list-group-item .friend-info {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+/* ✅ 닉네임 스타일 */
+.friend-info strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px; /* 닉네임과 상태메세지 간격 */
+}
+
+/* ✅ 상태메세지 스타일 */
+.friend-info .text-muted {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* ✅ 버튼 영역 */
+.list-group-item button {
+  margin-left: 8px;
 }
 </style>
