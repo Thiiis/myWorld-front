@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import auth from '@/apis/axiosConfig';
 import memberApi from '@/apis/memberApi';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -41,20 +42,29 @@ async function handleLogin() {
   try {
     const data = structuredClone(loginForm.value);
     const response = await memberApi.memberLogin(data);
-
     const result = response.data;
 
     if (response.status === 200) {
-      //로그 나중에 삭제
-      console.log("mid:", result.mid);
-      console.log("account:", result.account);
-      console.log("jwt:", result.jwt);
+      // 2. 서버로부터 받은 JWT 토큰을 전역 axios 설정에 추가합니다.
+      // 이제부터 모든 axios 요청에 자동으로 인증 헤더가 포함됩니다.
+      auth.addAuthHeader(result.jwt);
 
+      // 3. Vuex 상태를 업데이트합니다. (기존 코드)
       store.dispatch("saveAuth", {
         mid: result.mid,
         account: result.account,
         jwt: result.jwt
       });
+      
+      // ✨ 중요: ProfileView.vue에서 '수정' 버튼을 표시하려면
+      // localStorage에도 로그인 정보가 필요합니다.
+      // Vuex의 saveAuth 액션 안에서 이 작업을 하거나, 아래 코드를 직접 추가할 수 있습니다.
+      const userToStore = {
+        mid: result.mid,
+        account: result.account
+      };
+      localStorage.setItem('loggedInUser', JSON.stringify(userToStore));
+
 
       await router.push(`/myworld/${result.account}`);
     } else {

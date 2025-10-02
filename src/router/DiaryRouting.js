@@ -1,6 +1,6 @@
 const routes = [
   {
-    path: '/myworld/:memberId/diary', // ✅ memberId 동적 파라미터
+    path: 'diary', // ✅ memberId 동적 파라미터
     component: () => import('@/views/Diary/Diary.vue'),
     children: [
       {
