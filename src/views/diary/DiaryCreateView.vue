@@ -1,6 +1,6 @@
 <template>
   <div class="diary-create-page">
-    <header class="header"> <button @click="goBack" class="back-btn"> ← 일기장으로 돌아가기 </button> <h1>새 일기 작성</h1> </header>
+    <header class="header"><h1>새 일기 작성</h1> </header>
 
     <div class="content-grid">
       <section class="left-column">
@@ -49,8 +49,9 @@
             </button>
           </div>
         </div>
-        
-<!--태그  <div class="input-card tag-selection-card">
+
+        <!--
+        <div class="input-card tag-selection-card">
           <label class="section-title"> ✏️ 분류 태그 </label>
           <p class="tag-hint">태그 선택 (최대 5개)</p>
           <input type="text" v-model="tagSearchTerm" @keydown.enter.prevent="addCustomTag" placeholder="태그 검색..." class="styled-input tag-search-input" />
@@ -60,12 +61,13 @@
             #{{ tag }}
             </button>
           </div>
-        </div> -->
+        </div>
+        -->
       </aside>
     </div>
 
     <div class="action-bar">
-      <button @click="cancelCreation" class="action-btn cancel-btn">취소</button>
+      <button @click="cancelCreation" class="action-btn cancel-btn">일기목록</button>
       <button @click="saveDiary" class="action-btn save-btn"> 💾 일기 저장하기 </button>
     </div>
 
@@ -76,78 +78,147 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+// 📌 API 불러오기
+import diaryApi from "@/apis/diarysApi"; 
 
 const router = useRouter();
 const store = useStore();
 
+// ================= 태그 관련 ================= //
+const predefinedTags = ref([
+  '일상', '행복', '여행', '맛집', '친구', '가족', '연인', '데이트',
+  '취미', '운동', '독서', '영화', '음악', '공부', '시험', '경제',
+  '카페', '산책', '사진', '요리'
+]);
 
-// --- State for Diary Data ---
+const tagSearchTerm = ref('');
+const MAX_TAGS = 5;
+
+const toggleTag = (tag) => {
+  const index = diaryData.tags.indexOf(tag);
+  if (index > -1) {
+    diaryData.tags.splice(index, 1);
+  } else if (diaryData.tags.length < MAX_TAGS) {
+    diaryData.tags.push(tag);
+  } else {
+    alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`);
+  }
+};
+
+const addCustomTag = () => {
+  const newTag = tagSearchTerm.value.trim();
+  if (newTag && !diaryData.tags.includes(newTag)) {
+    if (diaryData.tags.length < MAX_TAGS) {
+      diaryData.tags.push(newTag);
+      if (!predefinedTags.value.includes(newTag)) {
+        predefinedTags.value.unshift(newTag);
+      }
+    } else {
+      alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`);
+    }
+    tagSearchTerm.value = '';
+  }
+};
+
+// ================= 일기 데이터 ================= //
 const diaryData = reactive({
   title: '',
   content: '',
-  emo: 'joy', // Default selection or empty
-  weather: 'sunny', // Default selection or empty
-  photos: [], // Array to hold file objects or URLs
-  tags: ['일상'], // Array of selected tags
+  emo: 'joy',
+  weather: 'sunny',
+  photos: [],
+  tags: ['일상'],
 });
 
+// ================= 저장 기능 ================= //
 const saveDiary = async () => {
-  // 1. 필수 데이터 검증 (백엔드 요구사항에 맞춤)
   if (!diaryData.title || !diaryData.emo || !diaryData.weather) {
     alert('제목, 기분, 날씨는 필수 입력 사항입니다.');
     return;
   }
 
-  // 2. 백엔드 DTO(DiarysRequest)에 맞게 데이터 준비
-  const dto = {
-    title: diaryData.title,
-    content: diaryData.content,
+  try {
+    // FormData 객체 생성
+    const formData = new FormData();
 
+    // 1) dto 데이터를 JSON으로 묶기
+    const dto = {
+      title: diaryData.title,
+      content: diaryData.content,
+      emo: diaryData.emo,
+      weather: diaryData.weather,
+      //tags: diaryData.tags
+    };
+
+    // JSON → Blob으로 변환 후 dto라는 key로 넣기
+    formData.append(
+      "dto",
+      new Blob([JSON.stringify(dto)], { type: "application/json" })
+    );
+
+    // 2) 파일 추가
+    diaryData.photos.forEach(file => {
+      formData.append("files", file);
+    });
+
+
+    // 3) API 호출
+    await diaryApi.createDiary(formData);
+
+    alert("일기가 저장되었습니다!");
+    router.push({ name: "DiaryList" });
+  } catch (e) {
+    console.error("일기 저장 실패:", e);
+    alert("일기 저장 중 오류가 발생했습니다.");
   }
-  alert('일기가 저장되었습니다!');
-  // goBack();
 };
 
-// --- Constants for Options ---
-const emo = [
-  { emoji: '😊', label: '기쁨', value: 'joy' },
-  { emoji: '😌', label: '평온', value: 'peace' },
-  { emoji: '🤩', label: '신남', value: 'excitement' },
-  { emoji: '😥', label: '슬픔', value: 'sadness' },
-];
-const weathers = [
-  { emoji: '☀️', label: '맑음', value: 'sunny' },
-  { emoji: '🌥️', label: '흐림', value: 'cloudy' },
-  { emoji: '☔', label: '비', value: 'rain' },
-  { emoji: '❄️', label: '눈', value: 'snow' },
+// ================= 선택지(이모지) ================= //
+const emoes = [
+ { emoji: '😊', label: '기쁨', value: 'HAPPY' },
+ { emoji: '😌', label: '평온', value: 'CALM' },
+ { emoji: '🤩', label: '신남', value: 'EXCITED' },
+ { emoji: '😥', label: '슬픔', value: 'SAD' },
 ];
 
-// 사진관련
+const weathers = [
+  { emoji: '☀️', label: '맑음', value: 'SUNNY' },
+  { emoji: '🌥️', label: '흐림', value: 'CLOUDY' },
+  { emoji: '☔', label: '비', value: 'RAINY' },
+  { emoji: '❄️', label: '눈', value: 'SNOWY' },
+];
+
+// ================= 사진 업로드 ================= //
 const photoInput = ref(null);
+
 const triggerPhotoUpload = () => {
-  // Programmatically click the hidden file input
   if (diaryData.photos.length < 10 && photoInput.value) {
     photoInput.value.click();
   } else if (diaryData.photos.length >= 10) {
     alert('사진은 최대 10장까지 선택할 수 있습니다.');
   }
 };
+
 const handlePhotoUpload = (event) => {
   const files = event.target.files;
   if (!files) return;
-  
   const filesToAdd = Array.from(files).slice(0, 10 - diaryData.photos.length);
-  
   filesToAdd.forEach(file => {
-    console.log(`Adding photo: ${file.name}`);
-    diaryData.photos.push(file); // Store the File object
+    diaryData.photos.push(file);
   });
   event.target.value = '';
 };
 
-const goBack = () => { console.log('Navigating back to the diary list...'); };    
-const cancelCreation = () => { if (confirm('작성을 취소하고 돌아가시겠어요?')) { goBack(); } };
+// ================= 뒤로가기/취소 ================= //
+const goBack = () => { 
+  router.push({ name: "DiaryList" });
+};
 
+const cancelCreation = () => { 
+  if (confirm('작성을 취소하고 돌아가시겠어요?')) { 
+    goBack(); 
+  } 
+};
 </script>
 
 <style scoped>
@@ -414,34 +485,3 @@ const cancelCreation = () => { if (confirm('작성을 취소하고 돌아가시�
   }
 }
 </style>
-  <!-- 태그 관련
-  const predefinedTags = ref([
-    '일상', '행복', '여행', '맛집', '친구', '가족', '연인', '데이트',
-    '취미', '운동', '독서', '영화', '음악', '공부', '시험', '경제',
-    '카페', '산책', '사진', '요리'
-  ]);
-  
-  // --- State for Tag Search/Addition ---
-  const tagSearchTerm = ref('');
-  const MAX_TAGS = 5;
-  
-  const toggleTag = (tag) => {
-    const index = diaryData.tags.indexOf(tag);
-    if (index > -1) { diaryData.tags.splice(index, 1);
-    } else if (diaryData.tags.length < MAX_TAGS) {
-      diaryData.tags.push(tag);
-    } else { alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`); }
-  };
-  
-  const addCustomTag = () => {
-    const newTag = tagSearchTerm.value.trim();
-    if (newTag && !diaryData.tags.includes(newTag)) {
-      if (diaryData.tags.length < MAX_TAGS) {
-        diaryData.tags.push(newTag);
-        if (!predefinedTags.value.includes(newTag)) { predefinedTags.value.unshift(newTag);}
-      } else { alert(`태그는 최대 ${MAX_TAGS}개까지 선택할 수 있습니다.`);}
-  
-      tagSearchTerm.value = ''; // Clear search input
-    }
-  };
-  -->

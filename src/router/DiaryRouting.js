@@ -1,20 +1,20 @@
 const routes = [
   {
-    path: 'diary', // ✅ memberId 동적 파라미터
+    path: 'diary', 
     component: () => import('@/views/Diary/Diary.vue'),
     children: [
       {
-        path: '', // /myworld/:memberId/diary
+        path: '', 
         name: 'DiaryList',
         component: () => import('@/views/Diary/DiaryListView.vue'),
       },
       {
-        path: 'create', // /myworld/:memberId/diary/create
+        path: 'create',
         name: 'DiaryCreate',
         component: () => import('@/views/Diary/DiaryCreateView.vue'),
       },
       {
-        path: "updatet",
+        path: "update",
         name: "DiaryEdit",
         component: () => import("@/views/Diary/DiaryUpdateView.vue"),
       }

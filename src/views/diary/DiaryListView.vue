@@ -16,7 +16,7 @@
     <!-- 필터 박스 (폴더 버튼, 태그 버튼 등) -->
     <div class="filter-box d-flex justify-content-between align-items-center flex-wrap mb-3">
       <div class="d-flex gap-2 flex-wrap">
-        <!--폴더 버튼: 나중에 폴더별 필터링 기능 추가 예정
+        <!--폴더 버튼: 나중에 폴더별 필터링 기능 추가 예정-->
         <button
           v-for="f in folders"
           :key="f.id"
@@ -27,22 +27,20 @@
           <i class="bi bi-folder me-1"></i>{{ f.name }}
           <span class="count">{{ f.count }}</span>
         </button>
-        -->
+        
       </div>
 
       <!-- 태그 버튼 및 폴더 버튼 및 일기작성 버튼 -->
       <div class="d-flex gap-2 align-items-center">
-        <!-- 태그 버튼
+        <!-- 태그 버튼-->
         <button class="btn tab-btn" :class="{ active: folderType === 'tag' }" @click="$emit('update:folder-type', 'tag')"> 태그별 </button>
-        -->
-        <!-- 폴더 버튼
+        <!-- 폴더 버튼-->
         <button class="btn tab-btn" :class="{ active: folderType === 'custom' }" @click="$emit('update:folder-type', 'custom')"> 내폴더 </button>
-        -->
         <button class="btn btn-primary" @click="goToCreatePage"> <i class="bi bi-pencil-square me-1"></i>새 일기 작성 </button>
       </div>
     </div>
 
-    <!-- 검색 및 정렬 (나중에 기능 추가 예정)
+    <!-- 검색 및 정렬 (나중에 기능 추가 예정)-->
     <div class="d-flex gap-2 mb-3">
       <input v-model="store.state.diary.searchQuery" type="text" class="form-control" placeholder="검색어를 입력하세요..." />
       <button class="btn btn-outline-primary" @click="toggleSort">
@@ -50,7 +48,7 @@
         {{ store.state.diary.sortOrder === 'asc' ? '오름차순' : '내림차순' }}
       </button>
     </div>
-    -->
+    
 
     <!-- 일기 목록 -->
     <DiaryCardList :diary-entries="filteredEntries" @open-modal="openModal" />
@@ -121,4 +119,5 @@ onMounted(() => { store.dispatch("diary/fetchDiaries", 1); });
 .folder-btn { border-radius: 25px; padding: 6px 14px; background: #f8faff; color: #0d6efd; border: 1px solid #cfe2ff; font-size: 0.85rem; transition: all 0.2s; }
 .folder-btn.active { background: #0d6efd; color: white; }
 .diary-container { background: #f9fbff; border-radius: 16px; min-height: 100vh; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); }
+.diary-container * { font-family:  'Segoe UI Emoji',  'Apple Color Emoji',  'Segoe UI Symbol',  'Noto Color Emoji',  sans-serif !important; }
 </style>

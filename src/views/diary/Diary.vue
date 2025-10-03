@@ -51,19 +51,10 @@ const currentRouteProps = computed(() => {
   return {};
 });
 
-// -----------------------------
-// 라우터 이동 이벤트
-// -----------------------------
-// '새 일기 작성' 버튼 클릭 시
-const goToCreate = () => { 
-  router.push({ name: 'DiaryCreate' }); 
-};
-
-// '일기장으로 돌아가기' 버튼 클릭 시
-const goBack = () => { 
-  router.push({ name: 'DiaryList' }); 
-};
-
+// '새 일기 작성' 버튼 클릭 시(라우터 이동)
+const goToCreate = () => {  router.push({ name: 'DiaryCreate' });  };
+// '일기장으로 돌아가기' 버튼 클릭 시(라우터 이동)
+const goBack = () => { router.back(); };
 // -----------------------------
 // 기타 이벤트
 // -----------------------------
