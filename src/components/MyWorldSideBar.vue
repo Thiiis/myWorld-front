@@ -9,8 +9,15 @@
             <i v-else class="bi bi-person-circle profile-image-square"></i>
           </div>
           <div>
-            <h5 class="mt-2">{{ profileInfo.nickname }}님의 미니홈피</h5>
+            <h5 class="mt-2">{{ profileInfo.nickname }}님의 미니홈피</h5>             
             <p class="text-muted small">{{ miniHomeUrl }}</p>
+            <button
+              v-if="profileInfo.mid && profileInfo.mid !== store.state.mid"
+              class="btn btn-sm btn-primary ms-2 mb-3"
+              @click="addFriend(profileInfo.mid)"
+            >
+              친구 추가
+            </button>
             <ul class="list-unstyled text-start small">
               <li>🏠 상태메세지: {{ profileInfo.statusMessage }}</li>
             </ul>
@@ -35,9 +42,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import profileApi from '@/apis/profileApi'; // API 모듈 import
+import store from '@/store'
+import friendApi from '@/apis/friendApi';
+
 const backendUrl = 'http://192.168.4.42:8080';
 // 1. 현재 URL 정보를 얻기 위해 useRoute() 사용
 const route = useRoute();
@@ -46,17 +56,17 @@ const route = useRoute();
 const account = route.params.account;
 
 // 3. 메뉴 링크를 만들기 위한 기본 URL
-const miniHomeUrl = `/myworld/${account}`;
+const miniHomeUrl = ref(`/myworld/${route.params.account}`);
 
 // 4. 서버에서 받아온 프로필 정보를 저장할 반응형 변수. 초기값은 null.
 const profileInfo = ref(null);
 
 // 5. 컴포넌트가 화면에 그려질 때(마운트될 때) API를 호출하는 함수
-onMounted(async () => {
+async function loadProfile(account) {
   if (account) { // account가 URL에 존재할 때만 API 호출
     try {
       // account를 인자로 넘겨 특정 사용자의 프로필 정보를 요청
-      const response = await profileApi.getprofileInfo(account);
+      const response = await profileApi.getProfileInfo(account);
       // 성공적으로 데이터를 받아오면 profileInfo 변수에 저장
       profileInfo.value = response.data;
     } catch (error) {
@@ -64,10 +74,32 @@ onMounted(async () => {
       // 에러 발생 시 profileInfo는 계속 null 상태로 유지됨
     }
   }
+}
+
+async function addFriend(mid) {
+  if (!mid) return;
+  if (!confirm("이 사용자에게 친구 요청을 보내시겠습니까?")) return;
+  try {
+    await friendApi.sendFriendRequest(mid);
+    alert("친구 요청을 보냈습니다.");
+  } catch (err) {
+    console.error(err);
+    alert("이미 친구 요청을 보냈습니다.");
+  }
+}
+
+ onMounted(() => {
+  loadProfile(account);
 });
 
+watch(
+  () => route.params.account,
+  (newAccount) => {
+    miniHomeUrl.value = `/myworld/${newAccount}`;
+    loadProfile(newAccount);
+  }
+);
 </script>
-
 
 <style scoped>
 .profile-image-container {

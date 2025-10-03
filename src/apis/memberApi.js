@@ -1,15 +1,15 @@
-import axios from "axios";
+import { api } from '@/apis/axiosApi';
 
 function memberSignup(signupForm) {
-  return axios.post("/members/signup", signupForm);
+  return api.post("/members/signup", signupForm);
 }
 
 function memberLogin(loginForm) {
-  return axios.post("/members/login", loginForm);
+  return api.post("/members/login", loginForm);
 }
 
 function memberDetail(account, jwt) {
-  return axios.get("/members/detail", {
+  return api.get("/members/detail", {
      params: {account},
      headers: {
       //국제표준
@@ -18,10 +18,15 @@ function memberDetail(account, jwt) {
   })
 }
 
+function searchMembers(keyword) {
+  return api.get(`/members/search`, { params: { keyword } });
+}
+
 const memberApi = {
   memberSignup,
   memberLogin,
-  memberDetail
+  memberDetail,
+  searchMembers
 };
 
 export default memberApi;

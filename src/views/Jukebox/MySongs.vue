@@ -1,43 +1,65 @@
 <template>
   <div class="container my-4">
-    <div class="d-flex justify-content-between mb-3 align-items-center">
+    <div class="d-flex justify-content-between align-items-center mb-3">
       <h3>📀 나의 음악</h3>
-      <router-link to="/jukebox" class="btn btn-secondary">← 뒤로</router-link>
+      <div>
+        <router-link :to="`/myworld/${$route.params.account}/jukebox`" class="btn btn-secondary me-2">
+          뒤로
+        </router-link>
+        <router-link :to="`/myworld/${$route.params.account}/jukebox/search`" class="btn btn-primary">
+          🔍 검색하기
+        </router-link>
+      </div>
     </div>
 
-    <ul class="list-group shadow-sm">
-      <li
-        v-for="(song, idx) in mySongs"
-        :key="idx"
-        class="list-group-item d-flex justify-content-between align-items-center"
-      >
+    <!-- 내 음악 목록 -->
+    <ul class="list-group shadow-sm" v-if="mySongs.length > 0">
+      <li v-for="song in mySongs" :key="song.sid" class="list-group-item d-flex justify-content-between align-items-center">
         {{ song.title }} - {{ song.artist }}
         <div>
           <button class="btn btn-sm btn-outline-secondary me-2">▶</button>
-          <button class="btn btn-sm btn-danger" @click="deleteMySong(idx)">삭제</button>
+          <button class="btn btn-sm btn-danger" @click="deleteSong(song.sid)">삭제</button>
         </div>
       </li>
     </ul>
+
+    <!-- 비었을 때 -->
+    <div v-else class="text-center text-muted py-5 border rounded bg-light">
+      <div class="mb-2" style="font-size: 2.5rem;">🎶</div>
+      <p class="mb-0">아직 저장된 음악이 없습니다.<br>검색하기 버튼을 눌러 노래를 추가하세요!</p>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "MySongs",
-  data() {
-    return {
-      mySongs: [
-        { title: "봄날", artist: "BTS" },
-        { title: "Celebrity", artist: "아이유" },
-        { title: "WANNABE", artist: "ITZY" },
-        { title: "Stay", artist: "Justin Bieber" },
-      ],
-    };
-  },
-  methods: {
-    deleteMySong(idx) {
-      this.mySongs.splice(idx, 1);
-    },
-  },
-};
+<script setup>
+import { ref, onMounted } from "vue";
+import jukeboxApi from "@/apis/jukebox";
+
+const mySongs = ref([]);
+const loading = ref(false);
+
+async function loadMySongs() {
+  try {
+    loading.value = true;
+    const res = await jukeboxApi.getMySong();
+    mySongs.value = res.data;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function deleteSong(sid) {
+  try {
+    await jukeboxApi.deleteSong(sid);
+    await loadMySongs();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+onMounted(() => {
+  loadMySongs();
+});
 </script>

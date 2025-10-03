@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import auth from '@/apis/axiosConfig';
+import auth from '@/apis/axiosApi';
 import memberApi from '@/apis/memberApi';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';

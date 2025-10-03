@@ -51,12 +51,6 @@ export default {
     return {
       jukeboxes: [] // 처음엔 비어 있음
     };
-  },
-  methods: {
-    toggleLike(box) {
-      box.liked = !box.liked;
-      box.likes += box.liked ? 1 : -1;
-    }
   }
 };
 </script>
