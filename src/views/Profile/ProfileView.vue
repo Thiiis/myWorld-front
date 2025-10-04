@@ -13,7 +13,7 @@
         <div class="row">
           <!-- 프로필 이미지 -->
           <div class="col-md-3 text-center">
-            <img :src="profile.imgUrl ? `${backendUrl}${profile.imgUrl}` : '/placeholder.png'" class="img-responsive img-thumbnail" alt="프로필 사진"
+            <img :src="profile.imgUrl ? `${backendUrl}${profile.imgUrl}` : defaultProfile" class="img-responsive img-thumbnail" alt="프로필 사진"
               style="width: 150px; height: 150px; object-fit: cover;">
             <h4 class="dunggeunmo-font" style="margin-top: 15px;">{{ profile.nickname }}</h4>
             <p v-if="profile.statusMessage" class="dunggeunmo-font text-muted">"{{ profile.statusMessage }}"</p>
@@ -41,10 +41,21 @@
               <h4 class="dunggeunmo-font"><strong>기본 정보</strong></h4>
               <hr style="margin-top: 10px; margin-bottom: 10px;">
               <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="profile.birthdate">아이디</dt>
+                <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
+              </dl>
+              <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="profile.birthdate">이메일</dt>
+                <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
+              </dl>
+              <dl class="dl-horizontal dunggeunmo-font">
                 <dt v-if="profile.birthdate">생년월일</dt>
                 <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
               </dl>
-
+              <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="profile.birthdate">주소</dt>
+                <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
+              </dl>
               <br>
               <h4 class="dunggeunmo-font"><strong>자기소개</strong></h4>
               <hr style="margin-top: 10px; margin-bottom: 10px;">
@@ -60,6 +71,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import defaultProfile from '@/assets/image/default-profile.png' // 기본 이미지
 import profileApi from '@/apis/profileApi';
 
 // 이미지 경로를 완성하기 위한 백엔드 서버 주소
