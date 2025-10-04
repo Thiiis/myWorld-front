@@ -1,22 +1,56 @@
-<template>
-  <div class="container py-5">
-    <h2 class="text-center mb-4">로그인</h2>
-    <form @submit.prevent="handleLogin" class="mx-auto" style="max-width: 400px;">
-      <div class="mb-3">
-        <label class="form-label">아이디</label>
-        <input type="text" class="form-control" placeholder="아이디 입력" v-model="loginForm.account" />
+<template>   
+  <div class="container py-5 position-relative">
+    <div class="w-full max-w-md relative z-10">
+      <h2 class="text-center mb-4">☁️ 로그인 ☁️</h2>
+      <!-- Optional background elements (clouds, waves, etc.) could go here -->
       </div>
-      <div class="mb-3">
-        <label class="form-label">비밀번호</label>
-        <input type="password" class="form-control" placeholder="비밀번호 입력" v-model="loginForm.pwd" />
+    <div class="rounded-2xl p-8 shadow-xl backdrop-blur-sm">
+      <!-- Displaying error message if any -->
+        <div v-if="error" class="bg-red-100 text-red-800 p-2 rounded-lg mb-6">{{ error }}</div>
+        <!-- Login Form -->
+        <form @submit.prevent="handleLogin" class="mx-auto" style="max-width: 400px;">
+          <div class="mb-3">
+            <label for="id" class="form-label" >☁️ 아이디 (ID)</label>
+            <input type="text" class="form-control" placeholder="아이디를 입력해주세요." v-model="loginForm.account" />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">☁️ 비밀번호 (PASSWORD)</label>
+            <input type="password" class="form-control" placeholder="비밀번호를 입력해주세요." v-model="loginForm.pwd"/>
+          </div>
+          <div>
+          <button type="submit"
+                  class="btn btn-primary w-100"
+                  style="background: linear-gradient(135deg, #3B82F6, #1E40AF); color: white;">
+                  ☁️ 로그인 ☁️</button>
+          <button type="button" class="btn btn-white w-100 mt-2"
+                  style="background-color: rgba(59, 130, 246, 0.1); color: #1E40AF;" @click="$router.push('/signup')">
+                  💙 회원가입 💙</button>
+                  </div>
+          </form>
       </div>
-      <button type="submit" class="btn btn-primary w-100">로그인</button>
-      <button type="button" class="btn btn-link w-100 mt-2" @click="$router.push('/signup')">
-        회원가입 페이지로 이동
-      </button>
-    </form>
   </div>
 </template>
+
+<style scoped>
+.container {
+  position: relative; /* 부모 요소에 position: relative 설정 */
+  height: 100vh; /* 화면 전체 높이 */
+}
+
+.container .bi-cloud {
+  position: absolute;
+  top: 10%; /* 화면 상단에서 10% 위치 */
+  left: 10%; /* 화면 왼쪽에서 10% 위치 */
+  color: rgba(255, 255, 255, 0.3); /* 아이콘 색상 설정 */
+}
+
+.container .bi-water {
+  position: absolute;
+  top: 50%; /* 화면 상단에서 50% 위치 */
+  right: 10%; /* 화면 오른쪽에서 10% 위치 */
+  color: rgba(0, 0, 255, 0.3); /* 아이콘 색상 설정 */
+}
+</style>
 
 <script setup>
 import auth from '@/apis/axiosApi';
