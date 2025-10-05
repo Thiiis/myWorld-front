@@ -90,7 +90,7 @@
           <span class="fw-bold"> 마이월드</span>
         </div>
         <p class="mb-0 small">하늘처럼 맑고 깔끔한 모던 미니홈피 서비스</p>
-        <p class="mb-0 text-muted small">© 2024 마이월드. Made with 💙</p>
+        <p class="mb-0 text-muted small">© 2025 마이월드 Made by Thiiis💙</p>
       </div>
     </footer>
   </div>
@@ -118,5 +118,75 @@ const handleGetStarted = () => {
 }
 </script>
 
-<style scoped>
+<style>
+    @font-face{
+        font-family: 'DungGeunMo';
+        src:url('https://files.catbox.moe/pephe1.ttf') format('truetype')
+    }
+    @font-face{
+        font-family: 'Upheaval';
+        src:url('https://files.catbox.moe/6w2ji8.ttf') format('truetype')
+    }
+    
+    :root {
+        --maintheme: #3B82F6;
+        --titlecolor: #3B82F6;
+        --dividercolor: #1E40AF;
+        --outerlayer: #3B82F6;
+        --contact: #1E3A8A;
+        --cyworldblue: #3B82F6;
+        --sky-blue: #87CEEB;
+        --river-blue: #0EA5E9;
+        --deep-blue: #1E40AF;
+        --light-blue: #DBEAFE;
+        --pure-white: #FFFFFF;
+        --soft-gray: #F8FAFC;
+    }
+    
+    /* 폰트 강제 적용 */
+    * {
+        font-family: 'DungGeunMo', sans-serif !important;
+    }
+    
+    body {
+        font-family: 'DungGeunMo', sans-serif !important;
+        background: linear-gradient(135deg, var(--sky-blue) 0%, var(--river-blue) 100%);
+        min-height: 100vh;
+    }
+    
+    h1, h2, h3, h4, h5, h6, .pixel-font {
+        font-family: 'DungGeunMo', sans-serif !important;
+    }
+    
+    .english-pixel {
+        font-family: 'Upheaval', sans-serif !important;
+    }
+    
+    /* Bootstrap 요소들에도 폰트 적용 */
+    .btn, .form-control, .card, .navbar, .alert {
+        font-family: 'DungGeunMo', sans-serif !important;
+    }
+    
+    /* Bootstrap 커스터마이징 */
+    .btn-primary {
+        background-color: var(--maintheme);
+        border-color: var(--maintheme);
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--deep-blue);
+        border-color: var(--deep-blue);
+    }
+    
+    .text-primary {
+        color: var(--maintheme) !important;
+    }
+    
+    .bg-primary {
+        background-color: var(--maintheme) !important;
+    }
+    
+    .border-primary {
+        border-color: var(--maintheme) !important;
+    }
 </style>
