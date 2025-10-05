@@ -10,11 +10,9 @@
           <input id="diary-title" v-model="diaryData.title" type="text"
             placeholder="오늘 하루를 한 줄로 표현해보세요" class="styled-input title-input" />
         </div>
-
         <!-- 사진 업로드 카드 -->
         <div class="input-card photo-card">
           <label class="section-title photo-label">📸 사진 ({{ diaryData.photos.length }}/10) *</label>
-
           <!-- ✅ 대표 썸네일 영역 -->
           <div class="thumbnail-area" @click="triggerPhotoUpload">
             <template v-if="diaryData.photos.length">
@@ -29,27 +27,21 @@
               </div>
             </template>
           </div>
-
           <!-- ✅ 나머지 사진 리스트 -->
           <div v-if="diaryData.photos.length > 1" class="preview-list">
             <div v-for="(file, index) in diaryData.photos.slice(1)" :key="index + 1" class="preview-item">
               <img :src="getPreviewUrl(file)" class="preview-img" alt="추가 사진 미리보기" />
-              <button type="button" class="remove-btn" @click.stop="removePhoto(index + 1)">
-                <i class="bi bi-x-lg"></i>
-              </button>
+              <button type="button" class="remove-btn" @click.stop="removePhoto(index + 1)"> <i class="bi bi-x-lg"></i> </button>
               <button type="button" class="set-thumb-btn" @click.stop="setAsThumbnail(index + 1)">썸네일변경</button>
             </div>
           </div>
-
           <!-- 실제 파일 input -->
           <input type="file" ref="photoInput" @change="handlePhotoUpload" multiple accept="image/*" style="display: none" />
-
           <!-- ✅ 추가 업로드 버튼 -->
           <button v-if="diaryData.photos.length < 10" type="button" class="add-photo-btn" @click="triggerPhotoUpload">
             ⬆ 사진 더 추가하기 ({{ 10 - diaryData.photos.length }}장 남음)
           </button>
         </div>
-
         <!--내용-->
         <div class="input-card content-card">
           <label for="diary-content" class="section-title"> 📖 일기 내용 </label>
@@ -57,7 +49,6 @@
             placeholder="오늘 하루 있었던 일들을 자유롭게 적어보세요..." class="styled-textarea content-textarea"></textarea>
         </div>
       </section>
-
       <!--기분-->
       <aside class="right-column">
         <div class="input-card mood-card">
@@ -70,13 +61,11 @@
             </button>
           </div>
         </div>
-
         <!--날씨-->
         <div class="input-card weather-card">
           <label class="section-title"> ☁️ 오늘 날씨 * </label>
           <div class="tag-group emoji-tags">
-            <button v-for="weather in weathers" :key="weather.value"
-              :class="['tag-btn',{ 'is-selected': diaryData.weather === weather.value }]"
+            <button v-for="weather in weathers" :key="weather.value" :class="['tag-btn',{ 'is-selected': diaryData.weather === weather.value }]"
               @click="diaryData.weather = weather.value">
               {{ weather.emoji }} {{ weather.label }}
             </button>
@@ -87,14 +76,10 @@
 
     <div class="action-bar">
       <button @click="cancelEdit" class="action-btn cancel-btn">일기목록</button>
-      <button @click="updateDiaryData" class="action-btn save-btn"
-        :disabled="diaryData.photos.length > 10">
-        <template v-if="diaryData.photos.length > 10">
-          🚫 사진은 최대 10장까지만 저장할 수 있습니다
-        </template>
-        <template v-else>
-          💾 수정 완료
-        </template>
+
+      <button @click="updateDiaryData" class="action-btn save-btn" :disabled="diaryData.photos.length > 10">
+        <template v-if="diaryData.photos.length > 10"> 🚫 사진은 최대 10장까지만 저장할 수 있습니다 </template>
+        <template v-else> 💾 수정 완료 </template>
       </button>
     </div>
   </div>
@@ -117,11 +102,10 @@ const diaryData = reactive({
   content: "",
   emo: "HAPPY",
   weather: "SUNNY",
-  photos: [],      // [File | { url, aid }]
+  photos: [],      
   tags: []
 });
 const deleteAids = ref([]); // 서버 이미지 중 삭제할 aid 모음
-
 // ✅ 페이지 진입 시 데이터 불러오기
 onMounted(async () => {
   await store.dispatch("diary/fetchDiary", did);
@@ -153,10 +137,12 @@ const updateDiaryData = async () => {
     alert("제목, 기분, 날씨는 필수 입력 사항입니다.");
     return;
   }
+
   if (diaryData.photos.length > 10) {
     alert("사진은 최대 10장까지만 저장할 수 있습니다.");
     return;
   }
+
   try {
     const formData = new FormData();
     const dto = {
@@ -165,7 +151,7 @@ const updateDiaryData = async () => {
       content: diaryData.content,
       emo: diaryData.emo,
       weather: diaryData.weather,
-      tags: diaryData.tags
+      tags: diaryData.tags,
     };
     formData.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
 
@@ -176,9 +162,12 @@ const updateDiaryData = async () => {
       }
     });
 
-    // ✅ 삭제할 aid 배열 함께 전송
+    // 삭제할 aid 배열 함께 전송
     await store.dispatch("diary/updateDiary", { formData, deleteAids: deleteAids.value });
-    await store.dispatch("diary/fetchDiaries");
+
+    // ✅ fetchDiaries 호출 시 기본값 지정
+    const hostAccount = store.state.member?.account || null;
+    await store.dispatch("diary/fetchDiaries", { pageNo: 1, hostAccount });
 
     alert("일기가 수정되었습니다!");
     router.push({ name: "DiaryList" });
@@ -289,7 +278,16 @@ const cancelEdit = () => {
 .tag-hint {font-size:14px;color:#6c757d;margin-bottom:10px;}
 .tag-selection-card .tag-search-input {margin-bottom:15px;}
 .category-tags {overflow-y:auto;}
-.action-bar {position:sticky;bottom:0;left:0;right:0;margin:20px -20px -20px;padding:15px 40px;background:#fff;border-top:1px solid #e9ecef;display:flex;justify-content:flex-end;gap:15px;box-shadow:0 -2px 10px rgba(0,0,0,0.05);}
+.action-bar {
+  position: absolute; 
+  bottom: 20px;       
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  z-index: 1000; 
+}
 .action-btn {padding:12px 25px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:background-color 0.2s,opacity 0.2s;}
 .cancel-btn {background-color:#adb5bd;color:#fff;}
 .cancel-btn:hover {background-color:#6c757d;}

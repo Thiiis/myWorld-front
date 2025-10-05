@@ -64,11 +64,12 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
 const router = useRouter(); 
 const store = useStore();
+const route = useRoute();
 
 // ================= 태그 관련 ================= //
 const predefinedTags = ref(['일상','행복','여행','맛집','친구','가족','연인','데이트','취미','운동','독서','영화','음악','공부','시험','경제','카페','산책','사진','요리']);
@@ -89,8 +90,13 @@ const saveDiary = async () => {
     const dto = { title:diaryData.title, content:diaryData.content, emo:diaryData.emo, weather:diaryData.weather, tags:diaryData.tags }; 
     formData.append("dto", new Blob([JSON.stringify(dto)], { type:"application/json" })); 
     diaryData.photos.forEach(file => formData.append("files", file)); 
-    await store.dispatch("diary/createDiary", formData); 
-    await store.dispatch("diary/fetchDiaries"); 
+    
+    const hostAccount = route.params.account;
+    const myAccount = store.state.member?.account;
+    if(hostAccount && myAccount && hostAccount !== myAccount){alert("다른 사람의 미니홈피에서는 일기를 작성할 수 없습니다."); return;}
+
+    await store.dispatch("diary/createDiary", {formData, hostAccount}); 
+    await store.dispatch("diary/fetchDiaries", {hostAccount}); 
     alert("일기가 저장되었습니다!"); router.push({ name:"DiaryList" }); 
   } catch(e) { console.error("일기 저장 실패:", e); alert("일기 저장 중 오류가 발생했습니다."); } 
 };

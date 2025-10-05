@@ -46,7 +46,7 @@
         <span class="text-primary fw-bold small d-flex align-items-center"> <i class="bi bi-search me-1"></i> 검색 & 정렬 </span>
         <div class="d-flex gap-2">
           <button class="btn btn-outline-warning btn-sm" :class="{ active: multiSelect }" @click="multiSelect = !multiSelect" > ✓ 다중선택 </button>
-          <button class="btn btn-primary btn-sm" @click="goToCreatePage"> <i class="bi bi-pencil-square me-1"></i> 새 일기 작성 </button>
+          <button v-if="myAccount && hostAccount && isMyHome" class="btn btn-primary btn-sm" @click="goToCreatePage"> <i class="bi bi-pencil-square me-1"></i> 새 일기 작성 </button>
         </div>
       </div>
 
@@ -83,14 +83,8 @@
             <h6 class="fw-bold text-primary text-truncate"> {{ diary.title || "제목 없음" }} </h6>
             <div class="d-flex justify-content-between align-items-center small text-muted mb-1" >
               <div>
-                <span v-if="getWeatherEmoji(diary).emoji">
-                  {{ getWeatherEmoji(diary).emoji }}
-                  {{ getWeatherEmoji(diary).label }}
-                </span>
-                <span v-if="getMoodEmoji(diary).emoji">
-                  · {{ getMoodEmoji(diary).emoji }}
-                  {{ getMoodEmoji(diary).label }}
-                </span>
+                <span v-if="getWeatherEmoji(diary).emoji"> {{ getWeatherEmoji(diary).emoji }} {{ getWeatherEmoji(diary).label }} </span>
+                <span v-if="getMoodEmoji(diary).emoji"> · {{ getMoodEmoji(diary).emoji }} {{ getMoodEmoji(diary).label }} </span>
               </div>
               <div class="text-end"> {{ diary.date || "날짜 미정" }} </div>
             </div>
@@ -100,13 +94,11 @@
               <span v-for="tag in diary.tags" :key="tag" class="badge bg-light text-primary" >#{{ tag }}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
-
     <!-- 🔹 모달 & 페이지네이션 -->
-    <DiaryModal v-if="store.state.diary.selectedEntry" />
+    <DiaryModal />
     <DiaryPage :currentPage="currentPage" :totalPages="totalPages" :totalItems="totalItems" @go-page="goPage" />
   </div>
 </template>
@@ -118,12 +110,9 @@ import * as bootstrap from "bootstrap";
 import DiaryModal from "@/views/Diary/list_components/DiaryModal.vue";
 import DiaryPage from "@/views/Diary/list_components/DiaryPage.vue";
 import { useRoute } from "vue-router";
+import router from "@/router";
 
-const props = defineProps({
-  folders: Array,
-  activeFolder: String,
-  folderType: String,
-});
+const props = defineProps({ folders: Array, activeFolder: String, folderType: String, });
 const emit = defineEmits(["update:active-folder", "update:folder-type", "go-to-create", "add-folder"]);
 
 const store = useStore();
@@ -133,26 +122,21 @@ const sortOrder = ref("asc");
 const currentPage = ref(1);
 const multiSelect = ref(false);
 
+const hostAccount = computed(() => route.params.account);
+const myAccount = computed(() => store.state.account);
+const isMyHome = computed(() => hostAccount.value === myAccount.value);
+
 const goToCreatePage = () => emit("go-to-create");
-const toggleSort = () => (sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc");
+
+//const toggleSort = () => (sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc");
 
 const filteredEntries = computed(() => {
   let list = store.state.diary.diaryEntries || [];
   const q = store.state.diary.searchQuery?.toLowerCase() || "";
-
-  if (q)
-    list = list.filter(
-      (e) =>
-        e.title?.toLowerCase().includes(q) ||
-        e.content?.toLowerCase().includes(q)
-    );
-
-  if (sortType.value === "title")
-    list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-  else if (sortType.value === "content")
-    list.sort((a, b) => (a.content || "").localeCompare(b.content || ""));
+  if (q) list = list.filter( (e) => e.title?.toLowerCase().includes(q) || e.content?.toLowerCase().includes(q) );
+  if (sortType.value === "title") list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+  else if (sortType.value === "content") list.sort((a, b) => (a.content || "").localeCompare(b.content || ""));
   else list.sort((a, b) => new Date(a.date) - new Date(b.date));
-
   if (sortOrder.value === "desc") list.reverse();
   return list;
 });
@@ -167,38 +151,9 @@ const goPage = async (page) => {
   currentPage.value = page;
 };
 
-const EMOJI_MAP = {
-  SUNNY: { emoji: "☀️", label: "맑음" },
-  CLOUDY: { emoji: "🌥️", label: "흐림" },
-  RAINY: { emoji: "☔", label: "비" },
-  SNOWY: { emoji: "❄️", label: "눈" },
-  HAPPY: { emoji: "😊", label: "기쁨" },
-  CALM: { emoji: "😌", label: "평온" },
-  EXCITED: { emoji: "🤩", label: "신남" },
-  SAD: { emoji: "😥", label: "슬픔" },
-};
-
-const getWeatherEmoji = (diary) =>
-  EMOJI_MAP[diary.weather] || { emoji: "", label: "" };
-const getMoodEmoji = (diary) =>
-  EMOJI_MAP[diary.emo] || { emoji: "", label: "" };
-
-const openModal = async (entry) => { 
-  try {
-    // 1. Vuex에 선택된 일기 ID 저장 (모달 내에서 상세 데이터 다시 로드하기 위함)
-    store.commit("diary/setSelectedEntry", entry); // entry를 바로 setSelectedEntry로 커밋
-    // 2. 상세 정보 다시 로드 (attachments 등 모든 정보 포함)
-    await store.dispatch("diary/fetchDiary", entry.id); // 🚨 await로 완료를 기다림
-    // 3. 상세 정보 로드가 완료된 후 모달 열기
-    const modalEl = document.getElementById("diaryModal");
-    if (modalEl) {
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
-    }
-  } catch (error) {
-    console.error("모달 열기 실패:", error);
-  }
-};
+const EMOJI_MAP = { SUNNY: { emoji: "☀️", label: "맑음" }, CLOUDY: { emoji: "🌥️", label: "흐림" }, RAINY: { emoji: "☔", label: "비" }, SNOWY: { emoji: "❄️", label: "눈" }, HAPPY: { emoji: "😊", label: "기쁨" }, CALM: { emoji: "😌", label: "평온" }, EXCITED: { emoji: "🤩", label: "신남" }, SAD: { emoji: "😥", label: "슬픔" }, };
+const getWeatherEmoji = (diary) => EMOJI_MAP[diary.weather] || { emoji: "", label: "" };
+const getMoodEmoji = (diary) => EMOJI_MAP[diary.emo] || { emoji: "", label: "" };
 
 // ✅ hostAccount 기반으로 일기 불러오기
 onMounted(async () => {
@@ -216,6 +171,29 @@ watch(
     }
   }
 );
+
+watch(
+  () => store.state.member?.account,
+  (newVal) => {
+    if (newVal) {
+      console.log("로그인 계정 감지됨:", newVal);
+    }
+  }
+);
+//모달 열기
+const openModal = async (diary) => {
+  try {
+    // 1️⃣ 상세 데이터 서버에서 가져오기
+    store.commit("diary/setSelectedEntry", diary);
+    await store.dispatch("diary/fetchDiary", diary.id);
+    // 2️⃣ Bootstrap Modal 열기
+    const modalEl = document.getElementById("diaryModal");
+    const modalInstance = new bootstrap.Modal(modalEl);
+    modalInstance.show();
+  } catch (e) {
+    console.error("❌ 모달 열기 실패:", e);
+  }
+};
 </script>
 
 <style scoped>
