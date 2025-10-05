@@ -1,73 +1,117 @@
 <template>
-  <div class="text-center mt-4">
-  <button class="btn btn-link" :disabled="currentPage === 1" @click="goPage(1)">
-    &lt;&lt; 맨 처음
-  </button>
-  
-  <button class="btn btn-link" :disabled="currentPage === 1" @click="goPage(currentPage - 1)">
-    &lt; 이전
-  </button>
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center flex-wrap">
+      <!-- 🟦 처음 -->
+      <li
+        class="page-item"
+        :class="{ disabled: props.currentPage === 1 }"
+        @click="goPage(1)"
+      >
+        <a class="page-link" href="javascript:void(0)">⏮ 처음</a>
+      </li>
 
-  <button 
-    v-for="page in visiblePages" 
-    :key="page" 
-    class="btn mx-1"
-    :class="{ 'btn-primary': page === currentPage, 'btn-light': page !== currentPage }"
-    @click="goPage(page)">
-    {{ page }}
-  </button>
-  <button class="btn btn-link" :disabled="currentPage === totalPages" @click="goPage(currentPage + 1)">
-    다음 &gt;
-  </button>
+      <!-- ◀ 이전 -->
+      <li
+        class="page-item"
+        :class="{ disabled: props.currentPage === 1 }"
+        @click="goPage(props.currentPage - 1)"
+      >
+        <a class="page-link" href="javascript:void(0)">◀ 이전</a>
+      </li>
 
-  <button class="btn btn-link" :disabled="currentPage === totalPages" @click="goPage(totalPages)">
-    맨 끝 &gt;&gt;
-  </button>
-  
-  <span class="fw-bold mx-2 text-primary d-block d-md-inline">{{ currentPage }} / {{ totalPages }}</span>
-  <p class="small mt-2 text-muted">(총 {{ totalItems }}개 일기)</p>
-</div>
+      <!-- 🔹 번호 목록 -->
+      <li
+        v-for="page in visiblePages"
+        :key="page"
+        class="page-item"
+        :class="{ active: page === props.currentPage }"
+        @click="goPage(page)"
+      >
+        <a class="page-link" href="javascript:void(0)">{{ page }}</a>
+      </li>
+
+      <!-- 다음 ▶ -->
+      <li
+        class="page-item"
+        :class="{ disabled: props.currentPage === props.totalPages }"
+        @click="goPage(props.currentPage + 1)"
+      >
+        <a class="page-link" href="javascript:void(0)">다음 ▶</a>
+      </li>
+
+      <!-- 🟦 마지막 -->
+      <li
+        class="page-item"
+        :class="{ disabled: props.currentPage === props.totalPages }"
+        @click="goPage(props.totalPages)"
+      >
+        <a class="page-link" href="javascript:void(0)">⏭ 마지막</a>
+      </li>
+    </ul>
+
+    <!-- 하단 정보 -->
+    <div class="text-muted text-center small mt-2">
+      페이지 {{ props.currentPage }} / {{ props.totalPages }}
+      (총 {{ props.totalItems }}개의 일기)
+    </div>
+  </nav>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import diaryApi from '@/apis/diarysApi'; // 기존 API 파일
+import { computed } from "vue";
 
-const diaries = ref([]);
-const currentPage = ref(1);
-const totalPages = ref(1);
-const totalItems = ref(0);
-
-const fetchDiaries = async (page = 1) => {
-  try {
-    const res = await diaryApi.getDiaries(page);
-    diaries.value = res.data.diaries;       // diaries 배열
-    totalItems.value = res.data.totalItems; // 총 아이템
-    totalPages.value = res.data.totalPages; // 총 페이지
-    currentPage.value = page;
-  } catch (err) {
-    console.error("일기 목록 조회 실패:", err);
-  }
-};
-
-const goPage = (page) => {
-  if (page < 1 || page > totalPages.value) return;
-  fetchDiaries(page);
-};
-
-const visiblePages = computed(() => {
-  const pageGroupSize = 5; 
-  let startPage = Math.max(1, currentPage.value - Math.floor(pageGroupSize / 2));
-  let endPage = Math.min(totalPages.value, startPage + pageGroupSize - 1);
-
-  if (endPage - startPage + 1 < pageGroupSize) {
-    startPage = Math.max(1, endPage - pageGroupSize + 1);
-  }
-
-  return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+const props = defineProps({
+  currentPage: { type: Number, required: true },
+  totalPages: { type: Number, required: true },
+  totalItems: { type: Number, default: 0 },
 });
 
-onMounted(() => {
-  fetchDiaries(1);
+const emit = defineEmits(["go-page"]);
+
+/**
+ * ✅ 페이지 이동
+ */
+const goPage = (page) => {
+  if (page < 1 || page > props.totalPages) return;
+  emit("go-page", page);
+};
+
+/**
+ * ✅ 표시할 페이지 그룹 계산 (5개 단위)
+ */
+const visiblePages = computed(() => {
+  const groupSize = 5;
+  const total = props.totalPages;
+  const currentGroup = Math.ceil(props.currentPage / groupSize);
+  const start = (currentGroup - 1) * groupSize + 1;
+  const end = Math.min(start + groupSize - 1, total);
+
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 </script>
+
+<style scoped>
+.pagination {
+  font-size: 0.9rem;
+}
+.page-item {
+  cursor: pointer;
+  user-select: none;
+}
+.page-item.disabled .page-link {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.page-item.active .page-link {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: white;
+}
+.page-link {
+  color: #0d6efd;
+  border-radius: 6px;
+}
+.page-link:hover {
+  background-color: #e8f0ff;
+}
+</style>

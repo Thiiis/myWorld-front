@@ -1,7 +1,7 @@
 const routes = [
   {
     path: 'diary', 
-    component: () => import('@/views/Diary/Diary.vue'),
+    component: () => import('@/views/Diary/DiaryHome.vue'),
     children: [
       {
         path: '', 
@@ -14,9 +14,10 @@ const routes = [
         component: () => import('@/views/Diary/DiaryCreateView.vue'),
       },
       {
-        path: "update",
-        name: "DiaryEdit",
+        path: ":id/update",
+        name: "DiaryUpdate",
         component: () => import("@/views/Diary/DiaryUpdateView.vue"),
+        props: true
       }
     ]
   }
