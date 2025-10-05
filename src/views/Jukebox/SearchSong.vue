@@ -39,52 +39,40 @@
   </div>
 </template>
 
-<script>
-import axios from "axios";
+<script setup>
+import { ref } from "vue";
+import jukeboxApi from "@/apis/jukeboxApi";
 
-export default {
-  name: "SearchSongs",
-  data() {
-    return {
-      query: "",
-      results: [],
-      searched: false,
-    };
-  },
-  methods: {
-    async searchSongs() {
-      if (!this.query.trim()) return;
-      try {
-        const token = localStorage.getItem("jwt");
-        const res = await axios.get(`/songs/search`, {
-          params: { query: this.query },
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        this.results = res.data;
-        this.searched = true;
-      } catch (err) {
-        console.error("검색 실패:", err);
-      }
-    },
-    async addSong(videoId) {
-      try {
-        const token = localStorage.getItem("jwt");
-        const res = await axios.post(
-          `/songs/create`,
-          { videoId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        alert(`'${res.data.title}' 이(가) 나의 음악에 추가되었습니다!`);
-      } catch (err) {
-        console.error("추가 실패:", err);
-        alert("추가 실패!");
-      }
-    },
-  },
-};
+const query = ref("");
+const results = ref([]);
+const searched = ref(false);
+const loading = ref(false);
+
+async function searchSongs() {
+  if (!query.value.trim()) return;
+
+  try {
+    loading.value = true;
+    const res = await jukeboxApi.searchSong(query.value);
+    results.value = res.data;
+    searched.value = true;
+  } catch (err) {
+    console.error("검색 실패:", err);
+    searched.value = true;
+    results.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function addSong(videoId) {
+  try {
+    const res = await jukeboxApi.createSong({ videoId });
+    alert(`'${res.data.title}' 이(가) 나의 음악에 추가되었습니다!`);
+  } catch (err) {
+    console.error("추가 실패:", err);
+    alert("추가 실패!");
+  }
+}
 </script>
+

@@ -10,7 +10,11 @@ const routes = [
   {
     path: 'jukebox/create',
     component: () => import('@/views/Jukebox/CreateJukebox.vue'),
-  }
+  },
+  {
+    path: "jukebox/update/:jid",
+    component: () => import("@/views/Jukebox/UpdateJukebox.vue"),
+  },
 ];
 
 export default routes;

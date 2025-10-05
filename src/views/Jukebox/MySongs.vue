@@ -33,7 +33,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import jukeboxApi from "@/apis/jukebox";
+import jukeboxApi from "@/apis/jukeboxApi";
 
 const mySongs = ref([]);
 const loading = ref(false);
