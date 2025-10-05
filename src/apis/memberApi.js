@@ -8,6 +8,10 @@ function memberLogin(loginForm) {
   return api.post("/members/login", loginForm);
 }
 
+function memberInfo(account){
+  return api.get(`/members/detail?account=${account}`); 
+}
+
 function memberDetail(account, jwt) {
   return api.get("/members/detail", {
      params: {account},
@@ -26,6 +30,7 @@ const memberApi = {
   memberSignup,
   memberLogin,
   memberDetail,
+  memberInfo,
   searchMembers
 };
 

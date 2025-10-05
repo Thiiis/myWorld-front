@@ -1,22 +1,145 @@
-<template>
-  <div class="container py-5">
-    <h2 class="text-center mb-4">로그인</h2>
-    <form @submit.prevent="handleLogin" class="mx-auto" style="max-width: 400px;">
-      <div class="mb-3">
-        <label class="form-label">아이디</label>
-        <input type="text" class="form-control" placeholder="아이디 입력" v-model="loginForm.account" />
+<template>   
+   <div class="min-vh-100 d-flex align-items-center justify-content-center p-4" 
+       style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);">
+    
+    <!-- 배경 구름/물결 장식 -->
+    <div class="position-fixed top-0 start-0 w-100 h-100 overflow-hidden" style="pointer-events: none;">
+      <div class="position-absolute text-primary opacity-25" style="top: 40px; left: 40px;">
+        <i class="bi bi-cloud" style="font-size: 3rem;"></i>
       </div>
-      <div class="mb-3">
-        <label class="form-label">비밀번호</label>
-        <input type="password" class="form-control" placeholder="비밀번호 입력" v-model="loginForm.pwd" />
+      <div class="position-absolute text-info opacity-25" style="top: 128px; right: 64px;">
+        <i class="bi bi-water" style="font-size: 2.2rem;"></i>
       </div>
-      <button type="submit" class="btn btn-primary w-100">로그인</button>
-      <button type="button" class="btn btn-link w-100 mt-2" @click="$router.push('/signup')">
-        회원가입 페이지로 이동
+      <div class="position-absolute text-primary opacity-25" style="bottom: 96px; left: 64px;">
+        <i class="bi bi-cloud" style="font-size: 2.5rem;"></i>
+      </div>
+      <div class="position-absolute text-info opacity-25" style="bottom: 40px; right: 80px;">
+        <i class="bi bi-water" style="font-size: 1.75rem;"></i>
+      </div>
+      <div class="position-absolute text-primary opacity-25" style="top: 50%; left: 16.66%;">
+        <i class="bi bi-cloud" style="font-size: 1.9rem;"></i>
+      </div>
+      <div class="position-absolute text-info opacity-25" style="top: 25%; right: 25%;">
+        <i class="bi bi-water" style="font-size: 1.6rem;"></i>
+      </div>
+    </div>
+
+    <div class="w-100 position-relative" style="max-width: 448px; z-index: 10;">
+      <!-- 뒤로가기 버튼 -->
+      <button
+        @click="$emit('back-to-landing')"
+        class="btn btn-outline-primary mb-4 d-flex align-items-center gap-2 px-4 py-2 pixel-font"
+        style="border-radius: 12px; border-width: 2px; transition: all 0.2s;">
+        <i class="bi bi-arrow-left"></i>
+        돌아가기
       </button>
-    </form>
+      <!-- 상단 헤더 -->
+      <div class="text-center mb-4">
+        <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
+          <div class="d-flex align-items-center justify-content-center rounded-3 shadow-lg" 
+          style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--maintheme), var(--river-blue));">
+          <i class="bi bi-star-fill text-white"></i>
+        </div>
+        <h1 class="display-6 pixel-font text-primary mb-0" style="letter-spacing: 1.5px;">
+          마이월드
+        </h1>
+      </div>
+      <p class="small english-pixel text-muted" style="letter-spacing: 0.5px;">
+        ☁️ MODERN SKY & RIVER ☁️
+      </p>
+    </div>
+    <!-- 로그인 폼 -->
+      <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-body p-4" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+          
+          <div class="text-center mb-4">
+            <h2 class="h4 pixel-font text-primary d-flex align-items-center justify-content-center gap-2" 
+                style="letter-spacing: 1px;">
+              <i class="bi bi-cloud"></i>
+              로그인
+              <i class="bi bi-cloud"></i>
+            </h2>
+            <hr class="border-primary opacity-25 my-3">
+            <!-- Login Form -->
+            <form @submit.prevent="handleLogin" class="mx-auto" style="max-width: 400px;">
+              <div class="mb-4">
+                  <label for="id" class="form-label pixel-font fw-bold text-dark" >☁️ 아이디 (ID)</label>
+                  <input type="text" class="form-control pixel-font" placeholder="아이디를 입력해주세요." v-model="loginForm.account"
+                  style="border-width: 2px; background-color: #FAFAFA; font-size: 0.9rem; transition: all 0.2s;"/>
+              </div>
+
+              <div class="mb-4">
+                  <label for="password" class="form-label pixel-font fw-bold text-dark">☁️ 비밀번호 (PASSWORD)</label>
+                  <input type="password" class="form-control pixel-font" placeholder="비밀번호를 입력해주세요." v-model="loginForm.pwd"
+                  style="border-width: 2px; background-color: #FAFAFA; font-size: 0.9rem; transition: all 0.2s;"/>
+              </div>
+              <div class="pt-3">
+              <button type="submit"
+                      class="btn btn-primary w-100 mt-2"
+                      style="background: linear-gradient(135deg, #3B82F6, #1E40AF); color: white;">
+                      ☁️ 로그인 ☁️</button>
+              <button type="button" class="btn btn-white w-100 mt-2"
+                      style="font-size: 1rem; letter-spacing: 1px; border-width: 2px; background-color: rgba(59, 130, 246, 0.1); transition: all 0.2s;" @click="$router.push('/signup')">
+                      💙 회원가입 💙</button>
+                      </div>
+              </form>
+          </div>
+
+    <div class="rounded-2xl p-8 shadow-xl backdrop-blur-sm">
+      <!-- Displaying error message if any -->
+        <!-- 에러 메시지 -->
+          <div v-if="error" class="alert alert-danger alert-dismissible fade show pixel-font" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" @click="error = ''" aria-label="Close"></button>
+          </div>
+            <div class="mt-4 text-center">
+            <p class="small english-pixel text-muted" style="letter-spacing: 0.5px;">
+              ☁️ WELCOME TO MODERN SKY WORLD ☁️
+            </p>
+          </div>
+      </div>
+  </div>
+  </div>
+  </div>
   </div>
 </template>
+
+<style scoped>
+
+.pixel-font, * {
+  font-family: 'DungGeunMo', sans-serif !important;
+}
+
+.english-pixel {
+  font-family: 'Upheaval', sans-serif !important;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.form-control:focus {
+  border-color: var(--maintheme);
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+.alert {
+  border-radius: 12px;
+}
+
+.card {
+  backdrop-filter: blur(10px);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.floating {
+  animation: float 2s ease-in-out infinite;
+}
+</style>
 
 <script setup>
 import auth from '@/apis/axiosApi';

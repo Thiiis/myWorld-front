@@ -1,75 +1,103 @@
 <template>
   <div class="container my-4">
+    <!-- 상단 헤더 -->
     <div class="d-flex justify-content-between mb-3 align-items-center">
       <h3>➕ 새 주크박스 만들기</h3>
-      <router-link :to="`/myworld/${$route.params.account}/jukebox`" class="btn btn-secondary me-2">
+      <router-link
+        :to="`/myworld/${$route.params.account}/jukebox`"
+        class="btn btn-outline-secondary"
+      >
         뒤로
       </router-link>
     </div>
 
-    <div class="card shadow-sm p-3">
-      <input
-        type="text"
-        class="form-control mb-2"
-        placeholder="주크박스 제목"
-        v-model="newJukebox.title"
-      />
-      <textarea
-        class="form-control mb-2"
-        placeholder="설명"
-        v-model="newJukebox.description"
-      ></textarea>
+    <!-- 카드 형태 입력 폼 -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <!-- 제목 -->
+        <div class="mb-3">
+          <label class="form-label">제목</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="주크박스 제목을 입력하세요"
+            v-model="newJukebox.title"
+          />
+        </div>
 
-      <!-- 음악 검색 -->
-      <div class="input-group mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="곡명이나 가수명을 검색하세요"
-          v-model="searchQuery"
-          @keyup.enter="searchSongs"
-        />
-        <button class="btn btn-primary" @click="searchSongs">검색</button>
+        <!-- 설명 -->
+        <div class="mb-3">
+          <label class="form-label">설명</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            placeholder="주크박스에 대한 설명을 입력하세요"
+            v-model="newJukebox.content"
+          ></textarea>
+        </div>
+
+        <!-- 음악 선택 -->
+        <div class="mb-3">
+          <label class="form-label">음악 선택</label>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-outline-primary btn-sm" disabled>
+              + 음악 추가 (준비 중)
+            </button>
+          </div>
+        </div>
       </div>
 
-      <ul class="list-group mb-3">
-        <li
-          v-for="song in searchResults"
-          :key="song.id"
-          class="list-group-item d-flex justify-content-between align-items-center"
+      <!-- 하단 버튼 -->
+      <div class="card-footer d-flex justify-content-end gap-2">
+        <button class="btn btn-primary btn-sm" @click="createJukebox" :disabled="loading">
+          만들기
+        </button>
+        <router-link
+          :to="`/myworld/${$route.params.account}/jukebox`"
+          class="btn btn-light btn-sm"
         >
-          {{ song.title }} - {{ song.artist }}
-          <button class="btn btn-sm btn-outline-primary" @click="addSong(song)">추가</button>
-        </li>
-      </ul>
-
-      <!-- 선택된 곡 -->
-      <h6>추가된 곡</h6>
-      <ul class="list-group mb-3">
-        <li
-          v-for="(song, idx) in newJukebox.songs"
-          :key="idx"
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          {{ song.title }} - {{ song.artist }}
-          <button class="btn btn-sm btn-danger" @click="removeSong(idx)">삭제</button>
-        </li>
-      </ul>
-
-      <button class="btn btn-success w-100" @click="createJukebox">✅ 주크박스 생성</button>
+          취소
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "CreateJukebox",
-  data() {
-    return {
-      newJukebox: { title: "", description: "", songs: [] },
-      searchQuery: "",
-      searchResults: [],
-    };
-  },
-};
+<script setup>
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import jukeboxApi from "@/apis/jukeboxApi";
+
+const router = useRouter();
+const route = useRoute();
+const loading = ref(false);
+
+const account = route.params.account;
+
+// 새 주크박스 정보
+const newJukebox = ref({
+  title: "",
+  content: "",
+});
+
+// 주크박스 생성 함수
+async function createJukebox() {
+  if (!newJukebox.value.title.trim()) {
+    alert("제목을 입력하세요!");
+    return;
+  }
+
+  try {
+    loading.value = true;
+    const res = await jukeboxApi.createJukebox(newJukebox.value);
+    console.log("생성 완료:", res.data);
+    alert("주크박스가 성공적으로 생성되었습니다!");
+    router.push(`/myworld/${account}/jukebox`);
+  } catch (err) {
+    console.error("생성 실패:", err.response?.data || err);
+    alert("주크박스 생성에 실패했습니다.");
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
