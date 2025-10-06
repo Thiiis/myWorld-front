@@ -99,7 +99,7 @@ import profileApi from '@/apis/profileApi'; // API 모듈 import
 import memberApi from '@/apis/memberApi'; // API 모듈 import
 import store from '@/store'
 import friendApi from '@/apis/friendApi';
-// const backendUrl = 'http://192.168.4.42:8080';
+const backendUrl = 'http://kosa164.iptime.org:8080';
 // 1. 현재 URL 정보를 얻기 위해 useRoute() 사용
 const route = useRoute();
 
