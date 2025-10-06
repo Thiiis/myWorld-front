@@ -74,7 +74,7 @@ import defaultProfile from '@/assets/image/default-profile.png';
 import profileApi from '@/apis/profileApi';
 import memberApi from '@/apis/memberApi';
 
-const backendUrl = 'http://192.168.4.42:8080';
+const backendUrl = 'http://kosa164.iptime.org:8080';
 
 const route = useRoute();
 const profile = ref(null);
