@@ -45,7 +45,7 @@
     <div class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}/minihome`" class="nav-link nav-home" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}`" class="nav-link nav-home" active-class="active">
             <i class="bi bi-house-door-fill"></i>
             <span>홈</span>
           </RouterLink>
