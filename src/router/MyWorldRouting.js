@@ -1,6 +1,8 @@
 import FriendRouting from './FriendRouting'
 import DiaryRouting from './DiaryRouting'
 import JukeboxRouting from './JukeboxRouting'
+import MinihomeRouting from './MinihomeRouting'
+import ProfileRouting from './ProfileRouting'
 
 const routes = [
   {
@@ -8,8 +10,8 @@ const routes = [
     component: () => import('@/views/index.vue'),
     children: [
       {
-        path: '',
-        component: () => import('@/views/Home/Home.vue')
+        path: 'minihome',
+        component: () => import('@/views/Minihome/Minihome.vue')
       },
 
       {
@@ -30,7 +32,9 @@ const routes = [
       },
     ...DiaryRouting,
     ...JukeboxRouting,
-    ...FriendRouting
+    ...FriendRouting,
+    ...MinihomeRouting,
+    ...ProfileRouting
 
     ]
   }
