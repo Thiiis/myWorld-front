@@ -1,48 +1,91 @@
 <template>
-  <div>
+  <div class="custom-sidebar">
     <!-- 프로필 카드 -->
-    <div>
+    <div class="profile-section">
       <div v-if="profileInfo" class="card shadow-sm mb-4 text-center">
-        <div class="card-body" width="300" height="500">
+        <div class="card-body p-4 text-center" width="300" height="500">
           <div class="profile-image-container">
-            <img :src="profileInfo.imgUrl ? `${backendUrl}${profileInfo.imgUrl}` : defaultProfile" alt="Profile Image" class="profile-image-square">
+            <img :src="profileInfo.imgUrl ? `${backendUrl}${profileInfo.imgUrl}` : defaultProfile" alt="Profile Image"
+              class="profile-image-square">
           </div>
           <div>
-            <h5 class="mt-2">{{ profileInfo.nickname }}님의 미니홈피</h5>             
-            <p class="text-muted small">{{ miniHomeUrl }}</p>
-            <button
-              v-if="profileInfo.mid && profileInfo.mid !== store.state.mid"
-              class="btn btn-sm btn-primary ms-2 mb-3"
-              @click="addFriend(profileInfo.mid)"
-            >
+            <h5 class="mt-2">{{ profileInfo.nickname }}님의 미니홈피</h5>
+            <p class="text-muted small">{{ miniHomeUrl }}
+              <button class="btn btn-sm btn-outline-primary ms-2" @click="copyToClipboard(miniHomeUrl)">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </p>
+            <button v-if="profileInfo.mid && profileInfo.mid !== store.state.mid"
+              class="btn btn-sm btn-primary ms-2 mb-3" @click="addFriend(profileInfo.mid)">
               친구 추가
             </button>
-              <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small">
+            <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small">
 
-                <li>📧 이메일: {{ memberInfo.email }}</li>
-                <li>🎂 생년월일: {{ profileInfo.birthdate }}</li>
-                <li v-if="profileInfo.statusMessage" class="dunggeunmo-font" style="white-space: pre-wrap;">💬 상태메세지: {{ profileInfo.statusMessage }}</li>
+              <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small profile-info-list">
+                <li>
+                  <span class="info-label">📧 이메일: </span>
+                  <span class="info-data">{{ memberInfo.email }}</span>
+                </li>
+                <li>
+                  <span class="info-label">🎂 생년월일: </span>
+                  <span class="info-data">{{ profileInfo.birthdate }}</span>
+                </li>
+                <li v-if="profileInfo.statusMessage" class="dunggeunmo-font" style="white-space: pre-wrap;">
+                  <span class="info-label">💬 상태메세지: </span>
+                  <span class="info-data">{{ profileInfo.statusMessage }}</span>
+                </li>
                 <li v-else class="dunggeunmo-font text-muted">💬 상태메세지가 없습니다.</li>
               </ul>
-              <!-- <li v-if="profileInfo.address" class="dunggeunmo-font" style="white-space: pre-wrap;">{{ profileInfo.address }}</li>
-              <li v-else class="dunggeunmo-font text-muted">주소가 없습니다.</li> -->
+            </ul>
           </div>
         </div>
       </div>
-    <div v-if="!profileInfo && !memberInfo">
-      <p>로딩 중...</p>
+      <div v-if="!profileInfo && !memberInfo">
+        <p>로딩 중...</p>
+      </div>
     </div>
-    </div>
-    <div class="list-group shadow-sm">
-      <RouterLink :to="`${miniHomeUrl}`" class="list-group-item list-group-item-action">홈</RouterLink>
-      <RouterLink :to="`${miniHomeUrl}/diary`" class="list-group-item list-group-item-action">일기장</RouterLink>
-      <RouterLink :to="`${miniHomeUrl}/guestboard`" class="list-group-item list-group-item-action">방명록</RouterLink>
-      <RouterLink :to="`${miniHomeUrl}/jukebox`" class="list-group-item list-group-item-action">주크박스</RouterLink>
-      <RouterLink :to="`${miniHomeUrl}/friend`" class="list-group-item list-group-item-action">친구</RouterLink>
-      <RouterLink :to="`${miniHomeUrl}/profile`" class="list-group-item list-group-item-action">프로필</RouterLink>
+    <!-- 메뉴 항목 -->
+    <div class="sidebar-nav">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/minihome`" class="nav-link nav-home" active-class="active">
+            <i class="bi bi-house-door-fill"></i>
+            <span>홈</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/diary`" class="nav-link nav-diary" active-class="active">
+            <i class="bi bi-journal-richtext"></i>
+            <span>일기장</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/guestboard`" class="nav-link nav-guestboard" active-class="active">
+            <i class="bi bi-chat-left-text-fill"></i>
+            <span>방명록</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/jukebox`" class="nav-link nav-jukebox" active-class="active">
+            <i class="bi bi-music-note-beamed"></i>
+            <span>주크박스</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/friend`" class="nav-link nav-friend" active-class="active">
+            <i class="bi bi-people-fill"></i>
+            <span>친구</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/profile`" class="nav-link nav-profile" active-class="active">
+            <i class="bi bi-person-fill"></i>
+            <span>프로필</span>
+          </RouterLink>
+        </li>
+      </ul>
     </div>
   </div>
-  <!-- 메뉴 -->
 </template>
 
 <script setup>
@@ -53,7 +96,6 @@ import profileApi from '@/apis/profileApi'; // API 모듈 import
 import memberApi from '@/apis/memberApi'; // API 모듈 import
 import store from '@/store'
 import friendApi from '@/apis/friendApi';
-
 // const backendUrl = 'http://192.168.4.42:8080';
 // 1. 현재 URL 정보를 얻기 위해 useRoute() 사용
 const route = useRoute();
@@ -63,6 +105,19 @@ const account = route.params.account;
 
 // 3. 메뉴 링크를 만들기 위한 기본 URL
 const miniHomeUrl = ref(`/myworld/${route.params.account}`);
+
+// 현재 경로 확인하기 위한 메소드
+const isActive = (path) => {
+  return window.location.pathname.includes(path);
+};
+// 클립보드에 URL을 복사하는 메소드
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('링크가 클립보드에 복사되었습니다!');
+  }).catch((error) => {
+    console.error('복사 실패:', error);
+  });
+};
 
 // 4. 서버에서 받아온 프로필 정보를 저장할 반응형 변수. 초기값은 null.
 const profileInfo = ref(null);
@@ -109,7 +164,7 @@ async function addFriend(mid) {
   }
 }
 
- onMounted(() => {
+onMounted(() => {
   loadProfile(account);
   loadMember(account);
 });
@@ -125,22 +180,117 @@ watch(
 </script>
 
 <style scoped>
+/* 전체 사이드바 컨테이너 스타일 */
+.custom-sidebar {
+  background-color: #f8f9fa;
+  /* 연한 회색 배경 */
+  padding: 1rem;
+  border-radius: 15px;
+  /* 컨테이너 모서리 둥글게 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* 은은한 그림자 효과 */
+  width: 100%;
+  /* 부모 요소 너비의 100%를 차지하도록 설정 */
+  max-width: 400px;
+  /* 너비가 400px를 초과하지 않도록 제한 */
+  /* min-width: 280px;   */
+  /* 너무 얇아지지 않도록 최소 너비 설정 (선택 사항) */
+}
 .profile-image-container {
   /* flex 컨테이너의 자식 요소로서 공간을 차지하게 함 */
   display: flex;
-  justify-content: center; /* 내부 아이템(이미지 또는 아이콘)을 가로 중앙 정렬 */
-  align-items: center; /* 내부 아이템을 세로 중앙 정렬 */
-  margin-bottom: 1rem; /* 이미지와 닉네임 사이의 간격 */
+  justify-content: center;
+  /* 내부 아이템(이미지 또는 아이콘)을 가로 중앙 정렬 */
+  align-items: center;
+  /* 내부 아이템을 세로 중앙 정렬 */
+  margin-bottom: 1rem;
+  /* 이미지와 닉네임 사이의 간격 */
 }
 
 .profile-image-square {
-  width: 120px;   /* 원하는 크기로 조절 */
-  height: 120px;  /* 너비와 높이를 동일하게 설정 */
+  width: 120px;
+  /* 원하는 크기로 조절 */
+  height: 120px;
+  /* 너비와 높이를 동일하게 설정 */
   object-fit: cover;
-  border-radius: 15%; /* 둥근 모서리 */
-  
+  border-radius: 15%;
+  /* 둥근 모서리 */
+
   /* 아이콘 스타일 */
   font-size: 120px;
-  line-height: 1; /* 아이콘이 컨테이너 밖으로 나가지 않도록 줄 높이 조절 */
+  line-height: 1;
+  /* 아이콘이 컨테이너 밖으로 나가지 않도록 줄 높이 조절 */
+}
+
+
+/* --- 내비게이션 링크(a 태그) 공통 기본 스타일 --- */
+.nav-link {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  /* 기본 텍스트 색상을 여기서 지정하지 않고, 개별 클래스에서 지정합니다. */
+}
+
+/* 1. 각 메뉴별 기본 텍스트/아이콘 색상 (새로운 블루 팔레트) */
+.nav-link.nav-home       { color: #0052C6; } /* 홈 (진한 파랑) */
+.nav-link.nav-diary      { color: #007ABF; } /* 일기장 (중간 파랑) */
+.nav-link.nav-guestboard { color: #00A2CC; } /* 방명록 (진한 시안) */
+.nav-link.nav-jukebox    { color: #00BAAC; } /* 주크박스 (진한 청록) */
+.nav-link.nav-friend     { color: #00CCB1; } /* 친구 (진한 민트) */
+.nav-link.nav-profile    { color: #3600CC; } /* 프로필 (진한 청보라) */
+
+
+/* 2. 활성화된 링크의 공통 스타일 (글자색 흰색으로) */
+.nav-link.active {
+  color: #ffffff !important; /* 활성화 시 모든 텍스트/아이콘은 흰색 고정 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. 각 메뉴별 활성화(active) 상태 배경색 (새로운 블루 팔레트) */
+.nav-link.nav-home.active       { background-color: #0065F8; border-color: #0065F8; } /* 홈 (선명한 파랑) */
+.nav-link.nav-diary.active      { background-color: #009AEF; border-color: #009AEF; } /* 일기장 (밝은 파랑) */
+.nav-link.nav-guestboard.active { background-color: #00CAFF; border-color: #00CAFF; } /* 방명록 (시안) */
+.nav-link.nav-jukebox.active    { background-color: #00EAD9; border-color: #00EAD9; } /* 주크박스 (청록) */
+.nav-link.nav-friend.active     { background-color: #00FFDE; border-color: #00FFDE; } /* 친구 (민트) */
+.nav-link.nav-profile.active    { background-color: #4300FF; border-color: #4300FF; } /* 프로필 (선명한 청보라) */
+
+
+/* 4. 마우스 호버(hover) 효과 통일 */
+.nav-link:hover:not(.active) {
+  transform: translateY(-2px);
+  background-color: #f8f9fa; /* 마우스를 올렸을 때 연한 회색 배경으로 통일 */
+}
+
+
+/* 원한다면 hover 시 배경색도 각 메뉴별로 다르게 지정할 수 있습니다. */
+/*
+.nav-link.nav-home:hover:not(.active) { background-color: #e7f1ff; }
+.nav-link.nav-diary:hover:not(.active) { background-color: #e8f3ec; }
+*/
+
+
+/* --- 아이콘 공통 스타일 --- */
+.nav-link i {
+  margin-right: 0.75rem;
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+  transition: color 0.2s ease-in-out;
+  /* 아이콘 색상 변경도 부드럽게 */
+}
+
+/* 네비게이션 아이템(li) 간격 조절 */
+.nav-item {
+  margin-bottom: 1rem; /* 이 값을 늘려서 간격을 넓힙니다. 1.2rem 등으로 더 늘려도 좋습니다. */
+}
+
+/* 마지막 아이템에는 여백이 필요 없으므로 그대로 둡니다. */
+.nav-item:last-child {
+  margin-bottom: 0;
 }
 </style>
