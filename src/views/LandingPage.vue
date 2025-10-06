@@ -97,7 +97,6 @@
 </template>
 
 <script setup>
-import api from '@/apis/axiosApi';
 import memberApi from '@/apis/memberApi';
 import { useRouter } from 'vue-router';
 
@@ -123,7 +122,7 @@ const visitRandomMinihomep = async () => {
 
     // 2. 서버가 보내준 실제 데이터는 response.data 안에 있습니다.
     // 백엔드에서 { "account": "some_user" } 형태로 보낸다고 가정합니다.
-    const randomAccount = response.data.account;
+    const randomAccount = response.data;
 
     if (randomAccount) {
       // 3. 해당 사용자의 미니홈피 페이지로 이동합니다.
