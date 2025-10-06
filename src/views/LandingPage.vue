@@ -76,8 +76,8 @@
       <div class="container">
         <h2 class="fw-bold mb-3">지금 바로 시작하세요!</h2>
         <p class="mb-4">깔끔하고 모던한 나만의 미니홈피를 만들어보세요</p>
-        <button class="btn btn-light btn-lg text-primary fw-bold" @click="handleGetStarted">
-          ✨ 무료로 시작하기 ✨
+        <button class="btn btn-light btn-lg text-primary fw-bold" @click="visitRandomMinihomep">
+          🎲 랜덤 미니홈피 방문하기 🎲
         </button>
       </div>
     </section>
@@ -90,15 +90,18 @@
           <span class="fw-bold"> 마이월드</span>
         </div>
         <p class="mb-0 small">하늘처럼 맑고 깔끔한 모던 미니홈피 서비스</p>
-        <p class="mb-0 text-muted small">© 2025 마이월드 Made by Thiiis💙</p>
+        <p class="mb-0 small">© 2025 마이월드 Made by Thiiis💙</p>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
-const emit = defineEmits(["startTest", "signup"])
+import api from '@/apis/axiosApi';
+import memberApi from '@/apis/memberApi';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const features = [
   { icon: "bi bi-cloud", title: "하늘처럼 깔끔한", description: "깔끔하고 직관적인 UI로 편안한 경험 제공" },
   { icon: "bi bi-water", title: "강물처럼 자연스러운", description: "자연스러운 흐름의 소통과 인터랙션" },
@@ -113,9 +116,26 @@ const functionItems = [
   { icon: "bi bi-brush", label: "꾸미기", desc: "스타일링 기능" }
 ]
 
-const handleGetStarted = () => {
-  emit("signup")
-}
+const visitRandomMinihomep = async () => {
+  try {
+    // 1. memberRandom 함수를 호출하고 await으로 결과를 기다립니다.
+    const response = await memberApi.memberRandom(); // () 호출 및 await 추가
+
+    // 2. 서버가 보내준 실제 데이터는 response.data 안에 있습니다.
+    // 백엔드에서 { "account": "some_user" } 형태로 보낸다고 가정합니다.
+    const randomAccount = response.data.account;
+
+    if (randomAccount) {
+      // 3. 해당 사용자의 미니홈피 페이지로 이동합니다.
+      router.push(`/myworld/${randomAccount}`);
+    } else {
+      alert('랜덤 사용자를 찾지 못했어요.');
+    }
+  } catch (error) {
+    console.error('랜덤 방문 중 오류 발생:', error);
+    alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+};
 </script>
 
 <style>

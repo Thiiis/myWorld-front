@@ -12,6 +12,9 @@ function memberInfo(account){
   return api.get(`/members/detail?account=${account}`); 
 }
 
+function memberRandom(){
+  return api.get("members/random")
+}
 function memberDetail(account, jwt) {
   return api.get("/members/detail", {
      params: {account},
@@ -31,6 +34,7 @@ const memberApi = {
   memberLogin,
   memberDetail,
   memberInfo,
+  memberRandom,
   searchMembers
 };
 
