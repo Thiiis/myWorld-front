@@ -26,6 +26,7 @@
 
 <script setup>
 import { computed, defineProps } from 'vue';
+import { useRoute } from 'vue-router';
 
 const props = defineProps({
   pageName: {
@@ -89,10 +90,14 @@ const headerThemes = {
   }
 };
 
-// 현재 페이지 이름에 맞는 테마 객체를 반환
 const currentTheme = computed(() => {
-  return headerThemes[props.pageName] || headerThemes.default;
+  // pageName을 '/' 기준으로 나누고 첫 번째 부분을 사용합니다.
+  // 예: 'profile/edit' -> 'profile'
+  const baseName = props.pageName.split('/')[0]; 
+  
+  return headerThemes[baseName] || headerThemes.default;
 });
+
 </script>
 
 <style scoped>

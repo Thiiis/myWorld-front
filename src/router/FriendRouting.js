@@ -6,15 +6,20 @@ const routes = [
     children: [
       {
         path: 'list',
-        component: () => import('@/views/Friend/FriendList.vue')
+        component: () => import('@/views/Friend/FriendList.vue'),
+        meta: { theme: 'friend' }
+
       },
       {
         path: 'requests',
-        component: () => import('@/views/Friend/FriendRequestList.vue')
+        component: () => import('@/views/Friend/FriendRequestList.vue'),
+        meta: { theme: 'friend' }
+
       },
       {
         path: 'add',
-        component: () => import('@/views/Friend/FriendAdd.vue')
+        component: () => import('@/views/Friend/FriendAdd.vue'),
+        meta: { theme: 'friend' }
       }
     ]
   }

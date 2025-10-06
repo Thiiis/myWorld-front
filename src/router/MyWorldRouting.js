@@ -13,29 +13,29 @@ const routes = [
       {
         path: 'minihome',
         alias: '',
-        name: 'minihome',
         component: () => import('@/views/Minihome/Minihome.vue')
       },
 
       {
         path: 'guestboard',
-        name: 'guestboard',
-        component: () => import('@/views/Guestboard/Guestboard.vue')
+        component: () => import('@/views/Guestboard/Guestboard.vue'),
+        meta: { theme: 'guestboard' }
+
       },
       {
         path: 'profile',
-        name: 'profile', // 👈 'profile' 키와 연결됩니다.
-        component: () => import('@/views/Profile/ProfileView.vue')
+        component: () => import('@/views/Profile/ProfileView.vue'),
+        meta: { theme: 'profile' }
       },
       {
         path: 'jukebox',
-        name: 'jukebox',
-        component: () => import('@/views/Jukebox/Jukebox.vue')
+        component: () => import('@/views/Jukebox/Jukebox.vue'),
+        meta: { theme: 'jukebox' }
       },
       {
         path: 'friend',
-        name: 'friend',
-        component: () => import('@/views/Friend/FriendHome.vue')
+        component: () => import('@/views/Friend/FriendHome.vue'),
+        meta: { theme: 'friend' }
       },
     ...DiaryRouting,
     ...JukeboxRouting,

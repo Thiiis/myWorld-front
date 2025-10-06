@@ -9,8 +9,6 @@
 
     <div v-else-if="formData" class="row">
       <div class="col-md-8 col-md-offset-2">
-        <h2 class="dunggeunmo-font text-center">프로필 편집</h2>
-        <hr>
         <form @submit.prevent="handleSubmit" class="form-horizontal">
           <!-- 프로필 이미지 -->
           <div class="form-group">
