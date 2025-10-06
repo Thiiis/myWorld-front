@@ -7,7 +7,7 @@
       </RouterLink>
 
       <div v-if="isLoggedIn" class="d-flex align-items-center">
-        <span class="navbar-text me-3">
+        <span class="navbar-text me-3 pixel-font">
           <strong>{{ userAccount }}</strong>님 환영합니다!
         </span>
         
@@ -17,6 +17,9 @@
       </div>
 
       <div v-else>
+        <span class="navbar-text me-3 pixel-font">
+          <strong>★ 마이월드에 오신 것을 환영합니다!</strong>
+        </span>
           <RouterLink to="/login" class="btn btn-primary btn-sm">
             로그인
           </RouterLink>
@@ -53,9 +56,13 @@ function handleLogout() {
 .navbar-text {
   color: rgba(0, 0, 0, 0.7);
 }
-
-.btn-sm {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.9rem;
+.pixel-font, * {
+  font-family: 'DungGeunMo', sans-serif !important;
+}
+.english-pixel {
+  font-family: 'Upheaval', sans-serif !important;
+}
+.alert {
+  border-radius: 12px;
 }
 </style>
