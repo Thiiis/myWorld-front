@@ -20,8 +20,6 @@
               친구 추가
             </button>
             <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small">
-
-              <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small profile-info-list">
                 <li>
                   <span class="info-label">📧 이메일: </span>
                   <span class="info-data">{{ memberInfo.email }}</span>
@@ -35,7 +33,6 @@
                   <span class="info-data">{{ profileInfo.statusMessage }}</span>
                 </li>
                 <li v-else class="dunggeunmo-font text-muted">💬 상태메세지가 없습니다.</li>
-              </ul>
             </ul>
           </div>
         </div>

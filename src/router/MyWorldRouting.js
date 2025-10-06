@@ -11,6 +11,7 @@ const routes = [
     children: [
       {
         path: 'minihome',
+        alias: '',
         component: () => import('@/views/Minihome/Minihome.vue')
       },
 
