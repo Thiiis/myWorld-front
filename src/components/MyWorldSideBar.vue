@@ -51,37 +51,37 @@
     <div class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}`" class="nav-link nav-home" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}`" :class="['nav-link', 'nav-profile', { 'active': route.path === miniHomeUrl }]">
             <i class="bi bi-house-door-fill"></i>
             <span>홈</span>
           </RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}/diary`" class="nav-link nav-diary" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}/diary`" :class="['nav-link', 'nav-diary', { 'active': isLinkActive(`${miniHomeUrl}/diary`) }]">
             <i class="bi bi-journal-richtext"></i>
             <span>일기장</span>
           </RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}/guestboard`" class="nav-link nav-guestboard" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}/guestboard`" :class="['nav-link', 'nav-guestboard', { 'active': isLinkActive(`${miniHomeUrl}/guestboard`) }]">
             <i class="bi bi-chat-left-text-fill"></i>
             <span>방명록</span>
           </RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}/jukebox`" class="nav-link nav-jukebox" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}/jukebox`" :class="['nav-link', 'nav-jukebox', { 'active': isLinkActive(`${miniHomeUrl}/jukebox`) }]">
             <i class="bi bi-music-note-beamed"></i>
             <span>주크박스</span>
           </RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}/friend`" class="nav-link nav-friend" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}/friend`" :class="['nav-link', 'nav-friend', { 'active': isLinkActive(`${miniHomeUrl}/friend`) }]">
             <i class="bi bi-people-fill"></i>
             <span>친구</span>
           </RouterLink>
         </li>
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}/profile`" class="nav-link nav-profile" active-class="active">
+          <RouterLink :to="`${miniHomeUrl}/profile`" :class="['nav-link', 'nav-profile', { 'active': isLinkActive(`${miniHomeUrl}/profile`) }]">
             <i class="bi bi-person-fill"></i>
             <span>프로필</span>
           </RouterLink>
@@ -122,6 +122,10 @@ const copyToClipboard = (text) => {
   });
 };
 
+// ✅ 수정된 코드: 현재 경로가 특정 URL로 시작하는지 확인하는 함수
+const isLinkActive = (basePath) => {
+  return route.path.startsWith(basePath);
+};
 // 4. 서버에서 받아온 프로필 정보를 저장할 반응형 변수. 초기값은 null.
 const profileInfo = ref(null);
 const memberInfo = ref(null);
