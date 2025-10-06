@@ -39,23 +39,23 @@
               <h4 class="dunggeunmo-font"><strong>기본 정보</strong></h4>
               <hr style="margin-top: 10px; margin-bottom: 10px;">
               <dl class="dl-horizontal dunggeunmo-font">
-                <dt v-if="memberInfo.account">아이디</dt>
+                <dt v-if="memberInfo.account">☺️ 아이디</dt>
                 <dd v-if="memberInfo.account">{{ memberInfo.account }}</dd>
               </dl>
               <dl class="dl-horizontal dunggeunmo-font">
-                <dt v-if="memberInfo.email">이메일</dt>
+                <dt v-if="memberInfo.email">📧 이메일</dt>
                 <dd v-if="memberInfo.email">{{ memberInfo.email }}</dd>
               </dl>
               <dl class="dl-horizontal dunggeunmo-font">
-                <dt v-if="profile.birthdate">생년월일</dt>
+                <dt v-if="profile.birthdate">🎂 생년월일</dt>
                 <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
               </dl>
               <dl class="dl-horizontal dunggeunmo-font">
-                <dt v-if="profile.birthdate">주소</dt>
+                <dt v-if="profile.birthdate">🏠 주소</dt>
                 <dd v-if="profile.birthdate">{{ profile.mainAddress }}</dd>
               </dl>
               <br>
-              <h4 class="dunggeunmo-font"><strong>자기소개</strong></h4>
+              <h4 class="dunggeunmo-font"><strong>👍 자기소개</strong></h4>
               <hr style="margin-top: 10px; margin-bottom: 10px;">
               <p v-if="profile.intro" class="dunggeunmo-font" style="white-space: pre-wrap;">{{ profile.intro }}</p>
               <p v-else class="dunggeunmo-font text-muted">작성된 자기소개가 없습니다.</p>
