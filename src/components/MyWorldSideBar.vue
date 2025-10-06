@@ -47,47 +47,47 @@
         </div>
       </div>
     </div>
+    <!-- 메뉴 항목 -->
+    <div class="sidebar-nav">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}`" class="nav-link nav-home" active-class="active">
+            <i class="bi bi-house-door-fill"></i>
+            <span>홈</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/diary`" class="nav-link nav-diary" active-class="active">
+            <i class="bi bi-journal-richtext"></i>
+            <span>일기장</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/guestboard`" class="nav-link nav-guestboard" active-class="active">
+            <i class="bi bi-chat-left-text-fill"></i>
+            <span>방명록</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/jukebox`" class="nav-link nav-jukebox" active-class="active">
+            <i class="bi bi-music-note-beamed"></i>
+            <span>주크박스</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/friend`" class="nav-link nav-friend" active-class="active">
+            <i class="bi bi-people-fill"></i>
+            <span>친구</span>
+          </RouterLink>
+        </li>
+        <li class="nav-item">
+          <RouterLink :to="`${miniHomeUrl}/profile`" class="nav-link nav-profile" active-class="active">
+            <i class="bi bi-person-fill"></i>
+            <span>프로필</span>
+          </RouterLink>
+        </li>
+      </ul>
   </div>
-  <!-- 메뉴 항목 -->
-  <div class="sidebar-nav">
-    <ul class="nav flex-column">
-      <li class="nav-item">
-        <RouterLink :to="`${miniHomeUrl}`" class="nav-link nav-home" active-class="active">
-          <i class="bi bi-house-door-fill"></i>
-          <span>홈</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="`${miniHomeUrl}/diary`" class="nav-link nav-diary" active-class="active">
-          <i class="bi bi-journal-richtext"></i>
-          <span>일기장</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="`${miniHomeUrl}/guestboard`" class="nav-link nav-guestboard" active-class="active">
-          <i class="bi bi-chat-left-text-fill"></i>
-          <span>방명록</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="`${miniHomeUrl}/jukebox`" class="nav-link nav-jukebox" active-class="active">
-          <i class="bi bi-music-note-beamed"></i>
-          <span>주크박스</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="`${miniHomeUrl}/friend`" class="nav-link nav-friend" active-class="active">
-          <i class="bi bi-people-fill"></i>
-          <span>친구</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink :to="`${miniHomeUrl}/profile`" class="nav-link nav-profile" active-class="active">
-          <i class="bi bi-person-fill"></i>
-          <span>프로필</span>
-        </RouterLink>
-      </li>
-    </ul>
   </div>
 </template>
 
