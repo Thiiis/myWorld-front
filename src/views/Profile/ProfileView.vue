@@ -9,66 +9,62 @@
         </div>
         <p class="mt-3 text-muted">프로필을 불러오는 중...</p>
       </div>
-
+      
       <!-- 2. 프로필 카드: 로딩이 끝났고(false), profileInfo 데이터가 있을 때만 표시 -->
-      <div v-if="!isLoading && profileInfo" class="card shadow-sm mb-4">
-        <!-- ... 기존 프로필 카드 내용 ... -->
-      </div>
-    </div>
-
-    <div v-if="profile" class="panel panel-default">
-      <div class="panel-body">
-        <div class="row">
-          <!-- 프로필 이미지 -->
-          <div class="col-md-3 text-center">
-            <img :src="profile.imgUrl ? `${backendUrl}${profile.imgUrl}` : defaultProfile"
-              class="img-responsive img-thumbnail" alt="프로필 사진" style="width: 150px; height: 150px; object-fit: cover;">
-            <h4 class="dunggeunmo-font" style="margin-top: 15px;">{{ profile.nickname }}</h4>
-            <p v-if="profile.statusMessage" class="dunggeunmo-font text-muted">"{{ profile.statusMessage }}"</p>
-            <div>
-
+      <div v-if="profile" class="panel panel-default">
+        <div class="panel-body">
+          <div class="row">
+            <!-- 프로필 이미지 -->
+            <div class="col-md-3 text-center">
+              <img :src="profile.imgUrl ? `${backendUrl}${profile.imgUrl}` : defaultProfile"
+                class="img-responsive img-thumbnail" alt="프로필 사진" style="width: 150px; height: 150px; object-fit: cover;">
+              <h4 class="dunggeunmo-font" style="margin-top: 15px;">{{ profile.nickname }}</h4>
+              <p v-if="profile.statusMessage" class="dunggeunmo-font text-muted">"{{ profile.statusMessage }}"</p>
+              <div>
+  
+              </div>
+              <div v-if="isMyProfile" style="margin-top: 10px;">
+                <router-link :to="{ name: 'ProfileEdit', params: { account: profile.account } }"
+                  class="btn btn-primary btn-sm dunggeunmo-font">
+                  프로필 수정
+                </router-link>
+                <router-link to="/change-password" class="btn btn-default btn-sm dunggeunmo-font"
+                  style="margin-left: 5px;">
+                  비밀번호 변경
+                </router-link>
+              </div>
             </div>
-            <div v-if="isMyProfile" style="margin-top: 10px;">
-              <router-link :to="{ name: 'ProfileEdit', params: { account: profile.account } }"
-                class="btn btn-primary btn-sm dunggeunmo-font">
-                프로필 수정
-              </router-link>
-              <router-link to="/change-password" class="btn btn-default btn-sm dunggeunmo-font"
-                style="margin-left: 5px;">
-                비밀번호 변경
-              </router-link>
+            <!-- 프로필 상세 정보 -->
+            <div v-if="profile && memberInfo" class="col-md-9">
+              <h4 class="dunggeunmo-font"><strong>기본 정보</strong></h4>
+              <hr style="margin-top: 10px; margin-bottom: 10px;">
+              <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="memberInfo.account">아이디</dt>
+                <dd v-if="memberInfo.account">{{ memberInfo.account }}</dd>
+              </dl>
+              <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="memberInfo.email">이메일</dt>
+                <dd v-if="memberInfo.email">{{ memberInfo.email }}</dd>
+              </dl>
+              <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="profile.birthdate">생년월일</dt>
+                <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
+              </dl>
+              <dl class="dl-horizontal dunggeunmo-font">
+                <dt v-if="profile.birthdate">주소</dt>
+                <dd v-if="profile.birthdate">{{ profile.mainAddress }}</dd>
+              </dl>
+              <br>
+              <h4 class="dunggeunmo-font"><strong>자기소개</strong></h4>
+              <hr style="margin-top: 10px; margin-bottom: 10px;">
+              <p v-if="profile.intro" class="dunggeunmo-font" style="white-space: pre-wrap;">{{ profile.intro }}</p>
+              <p v-else class="dunggeunmo-font text-muted">작성된 자기소개가 없습니다.</p>
             </div>
-          </div>
-          <!-- 프로필 상세 정보 -->
-          <div v-if="profile && memberInfo" class="col-md-9">
-            <h4 class="dunggeunmo-font"><strong>기본 정보</strong></h4>
-            <hr style="margin-top: 10px; margin-bottom: 10px;">
-            <dl class="dl-horizontal dunggeunmo-font">
-              <dt v-if="memberInfo.account">아이디</dt>
-              <dd v-if="memberInfo.account">{{ memberInfo.account }}</dd>
-            </dl>
-            <dl class="dl-horizontal dunggeunmo-font">
-              <dt v-if="memberInfo.email">이메일</dt>
-              <dd v-if="memberInfo.email">{{ memberInfo.email }}</dd>
-            </dl>
-            <dl class="dl-horizontal dunggeunmo-font">
-              <dt v-if="profile.birthdate">생년월일</dt>
-              <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
-            </dl>
-            <dl class="dl-horizontal dunggeunmo-font">
-              <dt v-if="profile.birthdate">주소</dt>
-              <dd v-if="profile.birthdate">{{ profile.mainAddress }}</dd>
-            </dl>
-            <br>
-            <h4 class="dunggeunmo-font"><strong>자기소개</strong></h4>
-            <hr style="margin-top: 10px; margin-bottom: 10px;">
-            <p v-if="profile.intro" class="dunggeunmo-font" style="white-space: pre-wrap;">{{ profile.intro }}</p>
-            <p v-else class="dunggeunmo-font text-muted">작성된 자기소개가 없습니다.</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup>
