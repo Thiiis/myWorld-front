@@ -109,10 +109,6 @@ const account = route.params.account;
 // 3. 메뉴 링크를 만들기 위한 기본 URL
 const miniHomeUrl = ref(`/myworld/${route.params.account}`);
 
-// 현재 경로 확인하기 위한 메소드
-const isActive = (path) => {
-  return window.location.pathname.includes(path);
-};
 // 클립보드에 URL을 복사하는 메소드
 const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text).then(() => {
