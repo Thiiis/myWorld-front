@@ -12,7 +12,7 @@ const routes = [
       {
         // 프로필 조회 페이지
         // 최종 경로: /profiles/detail/:account
-        path: 'detail/:account',
+        path: 'detail',
         name: 'ProfileView',
         component: () => import('@/views/Profile/ProfileView.vue'),
         meta: { theme: 'profile' }
