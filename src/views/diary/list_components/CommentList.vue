@@ -1,10 +1,27 @@
 <template>
   <div class="comment-list">
 
-    <!-- 헤더 -->
-    <div class="d-flex align-items-center justify-content-between mb-2">
-      <h6 class="m-0 fw-bold">댓글</h6>
+    <!-- 고정 영역 -->
+    <div class="comment-header-sticky">
+      <!-- 헤더 -->
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="m-0 fw-bold">댓글</h6>
+      </div>
+
+      <!-- 작성 -->
+      <div class="comment-editor border rounded-3 p-2 mb-2">
+        <label class="form-label small mb-2 text-muted">새 댓글</label>
+        <textarea v-model="newContent" rows="3" class="form-control"
+          placeholder="내용을 입력하고 Ctrl+Enter로 등록"
+          @keyup.ctrl.enter="onCreate"></textarea>
+        <div class="text-end mt-2">
+          <button class="btn btn-primary btn-sm" :disabled="posting" @click="onCreate">
+            <span v-if="posting" class="spinner-border spinner-border-sm me-2"></span>등록
+          </button>
+        </div>
+      </div>
     </div>
+
     <!-- 로딩 -->
     <div v-if="loading" class="text-center py-3 text-muted">
       <div class="spinner-border spinner-border-sm me-2" role="status"></div>
@@ -58,18 +75,6 @@
         아직 댓글이 없습니다. 첫 댓글을 남겨보세요!
       </li>
     </ul>
-
-    <!-- 작성 -->
-    <div class="comment-editor border rounded-3 p-2">
-      <label class="form-label small mb-2 text-muted">새 댓글</label>
-      <textarea v-model="newContent" rows="3" class="form-control" placeholder="내용을 입력하고 Ctrl+Enter로 등록" @keyup.ctrl.enter="onCreate" />
-      <div class="text-end mt-2">
-        <button class="btn btn-primary btn-sm" :disabled="posting" @click="onCreate">
-          <span v-if="posting" class="spinner-border spinner-border-sm me-2"></span>
-          등록
-        </button>
-      </div>
-    </div>
 
   </div>
 </template>
@@ -159,5 +164,9 @@ const onDelete = async (c) => {
 </script>
 
 <style scoped>
-.comment-list :deep(textarea.form-control) { resize: vertical; }
+.comment-list{display:flex;flex-direction:column;min-height:0;}
+
+.comment-header-sticky{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #e7edff;padding:6px 0;}
+.comment-header-sticky textarea{max-height:160px;overflow:auto;}
+@media (prefers-color-scheme:dark){.comment-header-sticky{background:#0f1730;border-color:rgba(100,120,255,.20);}}
 </style>

@@ -58,10 +58,16 @@ const visiblePages = computed(() => {
 </script>
 
 <style scoped>
-.pagination { font-size: 0.9rem; }
+.pagination { font-size: 0.9rem; gap: 6px; /* ✅ 버튼 간 간격 */
+  flex-wrap: wrap; }
 .page-item { cursor: pointer; user-select: none; }
 .page-item.disabled .page-link { cursor: not-allowed; opacity: 0.6; }
 .page-item.active .page-link { background-color: #0d6efd; border-color: #0d6efd; color: white; }
-.page-link { color: #0d6efd; border-radius: 6px; }
-.page-link:hover { background-color: #e8f0ff; }
+/* ✅ 각 버튼을 살짝 넓히고 정돈 */
+.page-link { color: #0d6efd; border-radius: 6px;
+  padding: 6px 12px; /* 버튼 크기 조정 */
+  margin: 0 2px; /* 혹시 gap이 지원 안될 때 여유 */
+  transition: all 0.15s ease-in-out; }
+/* ✅ hover 시 더 부드럽게 */
+.page-link:hover { background-color: #e8f0ff; color: #084298; transform: translateY(-1px); }
 </style>
