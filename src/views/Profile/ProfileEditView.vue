@@ -9,12 +9,10 @@
 
     <div v-else-if="formData" class="row">
       <div class="col-md-8 col-md-offset-2">
-        <h2 class="dunggeunmo-font text-center">프로필 편집</h2>
-        <hr>
         <form @submit.prevent="handleSubmit" class="form-horizontal">
           <!-- 프로필 이미지 -->
           <div class="form-group">
-            <label class="col-sm-2 control-label dunggeunmo-font">이미지</label>
+            <label class="col-sm-2 control-label dunggeunmo-font">🎇 이미지</label>
             <div class="col-sm-10">
               <img :src="finalImageSrc" class="img-thumbnail" style="width: 150px; height: 150px; margin-bottom: 10px;">
               <input type="file" @change="handleFileChange" class="form-control">
@@ -23,7 +21,7 @@
           
           <!-- 닉네임 -->
           <div class="form-group">
-            <label for="nickname" class="col-sm-2 control-label dunggeunmo-font">닉네임</label>
+            <label for="nickname" class="col-sm-2 control-label dunggeunmo-font">☺️ 닉네임</label>
             <div class="col-sm-10">
               <input type="text" v-model="formData.nickname" class="form-control dunggeunmo-font" id="nickname" required>
             </div>
@@ -31,23 +29,29 @@
           
           <!-- 생년월일 -->
           <div class="form-group">
-            <label for="birthdate" class="col-sm-2 control-label dunggeunmo-font">생년월일</label>
+            <label for="birthdate" class="col-sm-2 control-label dunggeunmo-font">🎂 생년월일</label>
             <div class="col-sm-10">
               <input type="date" v-model="formData.birthdate" class="form-control dunggeunmo-font" id="birthdate">
             </div>
           </div>
           
+          <!-- 주소 -->
+          <div class="form-group">
+            <label for="mainAddress" class="col-sm-2 control-label dunggeunmo-font">🏠 주소</label>
+            <div class="col-sm-10">
+              <input type="text" v-model="formData.mainAddress" class="form-control dunggeunmo-font" id="mainAddress">
+            </div>
+          </div>
           <!-- 상태메시지 -->
           <div class="form-group">
-            <label for="statusMessage" class="col-sm-2 control-label dunggeunmo-font">상태메시지</label>
+            <label for="statusMessage" class="col-sm-2 control-label dunggeunmo-font">💬 상태메시지</label>
             <div class="col-sm-10">
               <input type="text" v-model="formData.statusMessage" class="form-control dunggeunmo-font" id="statusMessage">
             </div>
           </div>
-          
           <!-- 자기소개 -->
           <div class="form-group">
-            <label for="intro" class="col-sm-2 control-label dunggeunmo-font">자기소개</label>
+            <label for="intro" class="col-sm-2 control-label dunggeunmo-font">👍 자기소개</label>
             <div class="col-sm-10">
               <textarea v-model="formData.intro" class="form-control dunggeunmo-font" id="intro" rows="5"></textarea>
             </div>
@@ -109,6 +113,7 @@ onMounted(async () => {
     formData.value = {
       nickname: data.nickname || '',
       birthdate: data.birthdate ? data.birthdate.split('T')[0] : '',
+      mainAddress: data.mainAddress || '',
       statusMessage: data.statusMessage || '',
       intro: data.intro || ''
     };

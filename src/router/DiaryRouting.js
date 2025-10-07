@@ -7,16 +7,20 @@ const routes = [
         path: '', 
         name: 'DiaryList',
         component: () => import('@/views/Diary/DiaryListView.vue'),
+        meta: { theme: 'diary' }
       },
       {
         path: 'create',
         name: 'DiaryCreate',
         component: () => import('@/views/Diary/DiaryCreateView.vue'),
+        meta: { theme: 'diary' }
+
       },
       {
         path: ":id/update",
         name: "DiaryUpdate",
         component: () => import("@/views/Diary/DiaryUpdateView.vue"),
+        meta: { theme: 'diary' },
         props: true
       }
     ]

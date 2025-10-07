@@ -1,6 +1,9 @@
 import FriendRouting from './FriendRouting'
 import DiaryRouting from './DiaryRouting'
 import JukeboxRouting from './JukeboxRouting'
+import MinihomeRouting from './MinihomeRouting'
+import ProfileRouting from './ProfileRouting'
+import Guestboard from '@/views/Guestboard/Guestboard.vue'
 
 const routes = [
   {
@@ -8,29 +11,37 @@ const routes = [
     component: () => import('@/views/index.vue'),
     children: [
       {
-        path: '',
-        component: () => import('@/views/Home/Home.vue')
+        path: 'minihome',
+        alias: '',
+        component: () => import('@/views/Minihome/Minihome.vue')
       },
 
       {
         path: 'guestboard',
-        component: () => import('@/views/Guestboard/Guestboard.vue')
+        component: () => import('@/views/Guestboard/Guestboard.vue'),
+        meta: { theme: 'guestboard' }
+
       },
       {
         path: 'profile',
-        component: () => import('@/views/Profile/ProfileView.vue')
+        component: () => import('@/views/Profile/ProfileView.vue'),
+        meta: { theme: 'profile' }
       },
       {
         path: 'jukebox',
-        component: () => import('@/views/Jukebox/Jukebox.vue')
+        component: () => import('@/views/Jukebox/Jukebox.vue'),
+        meta: { theme: 'jukebox' }
       },
       {
         path: 'friend',
-        component: () => import('@/views/Friend/FriendHome.vue')
+        component: () => import('@/views/Friend/FriendHome.vue'),
+        meta: { theme: 'friend' }
       },
     ...DiaryRouting,
     ...JukeboxRouting,
-    ...FriendRouting
+    ...FriendRouting,
+    ...MinihomeRouting,
+    ...ProfileRouting
 
     ]
   }

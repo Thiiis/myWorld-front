@@ -3,7 +3,6 @@ import HomeView from '../views/LandingPage.vue'
 import ThemeTestRouting from "./ThemeTestRouting"
 import AuthRouting from "./AuthRouting"
 import MyWorldRouting from "./MyWorldRouting"
-import ProfileRouting from "./ProfileRouting"
 
 const routes = [
   {
@@ -14,7 +13,6 @@ const routes = [
   ...ThemeTestRouting,
   ...AuthRouting,
   ...MyWorldRouting,
-  ...ProfileRouting
 ]
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),

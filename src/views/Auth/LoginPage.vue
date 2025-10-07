@@ -27,7 +27,7 @@
     <div class="w-100 position-relative" style="max-width: 448px; z-index: 10;">
       <!-- 뒤로가기 버튼 -->
       <button
-        @click="$emit('back-to-landing')"
+        @click="goBackSafely"
         class="btn btn-outline-primary mb-4 d-flex align-items-center gap-2 px-4 py-2 pixel-font"
         style="border-radius: 12px; border-width: 2px; transition: all 0.2s;">
         <i class="bi bi-arrow-left"></i>
@@ -195,6 +195,17 @@ async function handleLogin() {
     }
   } catch (error) {
     console.error(error);
+  }
+}
+
+function goBackSafely() {
+  // router.options.history.state.back이 null이면 앱 내의 방문 기록이 없다는 뜻입니다.
+  if (router.options.history.state.back) {
+    // 앱 내 방문 기록이 있으면 뒤로 갑니다.
+    router.back();
+  } else {
+    // 방문 기록이 없으면 메인 페이지로 이동합니다.
+    router.push('/');
   }
 }
 
