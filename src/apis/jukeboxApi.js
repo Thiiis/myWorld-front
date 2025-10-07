@@ -24,8 +24,6 @@ function deleteJukebox(jid) {
 
 
 
-
-
 // 음악 생성
 function createSong(song) {
   return api.post(`/songs/create`, song);
@@ -44,6 +42,23 @@ function deleteSong(sid) {
 }
 
 
+
+
+// 트랙 생성
+function createTrack(track) {
+  return api.post("/tracks/create", track);
+}
+
+function getMyTrack() {
+  return api.get("tracks/list");
+}
+
+function deleteTrack(trid) {
+  return api.delete(`tracks/delete/${trid}`);
+}
+
+
 export default { 
   createJukebox, getJukeboxList, getJukeboxDetail, updateJukebox, deleteJukebox,
-  createSong, searchSong, getMySong, deleteSong };
+  createSong, searchSong, getMySong, deleteSong,
+  createTrack, getMyTrack, deleteTrack };
