@@ -54,8 +54,18 @@
 
         <!-- 일기 본문 -->
         <div class="modal-body">
-          <div>
-            <i class="bi bi-heart-fill text-danger"></i> {{ selectedEntry.likes || 0 }}
+          <!-- 교체: 좋아요 토글 + 개수 + 비활성화 표시 -->
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <button
+              class="btn btn-sm d-inline-flex align-items-center gap-1"
+              :class="selectedEntry.likedByMe ? 'btn-danger' : 'btn-outline-danger'"
+              @click="onToggleLike"
+              :disabled="likeLoading || !(selectedEntry?.did ?? selectedEntry?.id)"
+            >
+              <i :class="['bi', selectedEntry.likedByMe ? 'bi-heart-fill' : 'bi-heart']"></i>
+              <span>{{ selectedEntry.likes ?? 0 }}</span>
+            </button>
+
           </div>
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="d-flex gap-2 flex-wrap">
@@ -82,7 +92,7 @@
             </p>
           </div>
           <div class="border-top pt-3">
-            <CommentList :comments="selectedEntry.comments || []" />
+             <CommentList :did="selectedEntry.did" /> <!-- CommentList에 현재 일기 ID 전달 -->
           </div>
         </div>
 
@@ -92,7 +102,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useStore } from "vuex";
 import * as bootstrap from "bootstrap";
 import CommentList from "@/views/Diary/list_components/CommentList.vue";
@@ -101,6 +111,7 @@ import { useRoute } from "vue-router";
 
 const store = useStore();
 const route = useRoute();
+
 // 로그인한 사용자 mid
 const myMid = computed(() => store.state?.mid);
 // 선택된 일기
@@ -164,16 +175,29 @@ const onEditDiary = () => {
 };
 
 // 이모지 매핑
-const emojiMap = {
-  SUNNY: { emoji: "☀️", label: "맑음" },
-  CLOUDY: { emoji: "🌥️", label: "흐림" },
-  RAINY: { emoji: "☔", label: "비" },
-  SNOWY: { emoji: "❄️", label: "눈" },
-  HAPPY: { emoji: "😊", label: "기쁨" },
-  CALM: { emoji: "😌", label: "평온" },
-  EXCITED: { emoji: "🤩", label: "신남" },
-  SAD: { emoji: "😥", label: "슬픔" },
+const emojiMap = { SUNNY: { emoji: "☀️", label: "맑음" }, CLOUDY: { emoji: "🌥️", label: "흐림" }, RAINY: { emoji: "☔", label: "비" }, SNOWY: { emoji: "❄️", label: "눈" }, HAPPY: { emoji: "😊", label: "기쁨" }, CALM: { emoji: "😌", label: "평온" }, EXCITED: { emoji: "🤩", label: "신남" }, SAD: { emoji: "😥", label: "슬픔" }, };
+
+// 좋아요 가능 여부 (예: 로그인 필요만 체크)
+const canLike = computed(() => {
+  const did = selectedEntry.value?.did || selectedEntry.value?.id;
+  return !!myMid.value && !!did; // 로그인했고 did가 있으면 가능
+});
+
+// 좋아요 토글
+const likeLoading = ref(false);
+const onToggleLike = async () => {
+  const did = selectedEntry.value?.did || selectedEntry.value?.id;
+  if (!did || !canLike.value) return;
+  likeLoading.value = true;
+  try {
+    await store.dispatch("diary/toggleLike", did);
+  } finally {
+    likeLoading.value = false;
+  }
+  await nextTick();
 };
+
+
 </script>
 
 <style scoped>

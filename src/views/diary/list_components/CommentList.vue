@@ -1,236 +1,163 @@
 <template>
-  <div class="comment-list mt-4 p-3 bg-white rounded-lg">
+  <div class="comment-list">
 
-    <h6 class="fw-bold comment-header mb-3"> 댓글 ({{ comments.length }}) </h6>
-    <!-- 댓글 입력창 -->
-    <div class="d-flex mb-4 comment-input-group">
-      <input v-model="newComment" type="text" class="form-control comment-input"
-        placeholder="댓글을 입력하세요..."
-        @keyup.enter="emitAddComment"
-      />
-      <button 
-        class="btn btn-send ms-2" 
-        @click="emitAddComment" 
-        :disabled="!newComment.trim()"
-        :class="{ 'disabled-send': !newComment.trim() }"
-      >
-        <i class="bi bi-send-fill"></i>
-      </button>
+    <!-- 헤더 -->
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h6 class="m-0 fw-bold">댓글</h6>
+    </div>
+    <!-- 로딩 -->
+    <div v-if="loading" class="text-center py-3 text-muted">
+      <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+      불러오는 중...
     </div>
 
-    <!-- 댓글 없음 -->
-    <div v-if="!comments.length" class="text-muted small mb-3 text-center p-3">
-      아직 댓글이 없습니다.
+    <!-- 에러 -->
+    <div v-else-if="error" class="alert alert-danger py-2">
+      댓글을 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.
     </div>
 
-    <!-- 댓글 목록 -->
-    <div v-for="c in comments" :key="c.id" class="comment-item mb-3">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <div class="user-info">
-          <strong class="comment-user">{{ c.user }}</strong>
-          <small class="text-muted ms-2 comment-date">{{ c.date }}</small>
-        </div>
-
-        <!-- 댓글 액션 -->
-        <div class="d-flex gap-2 comment-actions">
-          <template v-if="editingComment !== c.id">
-            <button class="btn btn-sm btn-action-icon text-secondary" title="수정" @click="startEditComment(c)">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-action-icon text-danger" title="삭제" @click="emitDeleteComment(c.id)">
-              <i class="bi bi-trash"></i>
-            </button>
-            <button class="btn btn-sm btn-reply-btn" title="답글" @click="startReply(c.id)">
-              <i class="bi bi-reply-fill"></i>
-            </button>
-          </template>
-        </div>
-      </div>
-
-      <!-- 댓글 수정 입력창 / 일반 텍스트 -->
-      <div v-if="editingComment === c.id" class="d-flex align-items-center gap-2 mb-2">
-        <input v-model="editContent" type="text" class="form-control form-control-sm" />
-        <button class="btn btn-sm btn-success" @click="emitSaveEditComment(c.id)">저장</button>
-        <button class="btn btn-sm btn-secondary" @click="cancelEdit">취소</button>
-      </div>
-      <p v-else class="small mb-1 comment-text">{{ c.text }}</p>
-
-      <!-- 대댓글 목록 -->
-      <div v-if="c.replies?.length" class="ms-4 mt-2 reply-wrapper">
-        <div v-for="reply in c.replies" :key="reply.id" class="reply-item mb-2 p-2 rounded">
-          <div class="d-flex justify-content-between align-items-center mb-1">
-            <div class="user-info">
-              <strong class="text-secondary reply-user">{{ reply.user }}</strong>
-              <small class="text-muted ms-2 comment-date">{{ reply.date }}</small>
+    <!-- 리스트 -->
+    <ul v-else class="list-unstyled mb-3">
+      <li v-for="c in comments" :key="c.dcid" class="p-2 rounded-3 border mb-2 bg-light">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="flex-grow-1 pe-2">
+            <!-- 내용 / 편집영역 -->
+            <div v-if="editingId === c.dcid" class="mb-2">
+              <textarea v-model="editBuffer" rows="3" class="form-control" placeholder="댓글을 입력하세요" @keyup.ctrl.enter="onSubmitEdit(c)" />
+              <div class="d-flex gap-2 mt-2">
+                <button class="btn btn-sm btn-primary" @click="onSubmitEdit(c)">
+                  저장
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" @click="cancelEdit">
+                  취소
+                </button>
+              </div>
             </div>
+            <p v-else class="mb-1 text-dark" style="white-space: pre-line;">{{ c.content }}</p>
 
-            <!-- 대댓글 액션 -->
-            <div class="d-flex gap-2 reply-actions">
-              <template v-if="editingReply?.id !== reply.id">
-                <button class="btn btn-sm btn-action-icon text-secondary" title="수정"
-                  @click="startEditReply(c.id, reply)">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-action-icon text-danger" title="삭제"
-                  @click="emitDeleteReply(c.id, reply.id)">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </template>
+            <!-- 메타 -->
+            <div class="small text-muted">
+              <span class="me-2">{{ formatDate(c.createdAt) }}</span>
+              <span v-if="c.updatedAt && c.updatedAt !== c.createdAt">(수정됨)</span>
+              <span v-if="c.mine" class="badge bg-secondary-subtle text-secondary ms-2 align-middle">내 댓글</span>
             </div>
           </div>
 
-          <!-- 대댓글 수정 입력창 / 일반 텍스트 -->
-          <div v-if="editingReply?.id === reply.id" class="d-flex align-items-center gap-2">
-            <input v-model="editContent" type="text" class="form-control form-control-sm" />
-            <button class="btn btn-sm btn-success" @click="emitSaveReplyEdit(c.id, reply.id)">저장</button>
-            <button class="btn btn-sm btn-secondary" @click="cancelEdit">취소</button>
+          <!-- 액션 -->
+          <div class="ms-2" v-if="c.mine && editingId !== c.dcid">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary" @click="startEdit(c)">수정</button>
+              <button class="btn btn-outline-danger" @click="onDelete(c)">삭제</button>
+            </div>
           </div>
-          <p v-else class="small mb-0 comment-text">{{ reply.text }}</p>
         </div>
-      </div>
+      </li>
 
-      <!-- 대댓글 입력창 -->
-      <div v-if="replyingTo === c.id" class="d-flex mt-3 ms-4 reply-input-group">
-        <input
-          v-model="replyContent"
-          type="text"
-          class="form-control comment-input"
-          placeholder="대댓글을 입력하세요..."
-          @keyup.enter="emitAddReply(c.id)"
-        />
-        <button 
-          class="btn btn-send ms-2" 
-          @click="emitAddReply(c.id)" 
-          :disabled="!replyContent.trim()"
-          :class="{ 'disabled-send': !replyContent.trim() }"
-        >
-          <i class="bi bi-send-fill"></i>
-        </button>
-        <button class="btn btn-cancel ms-1" @click="cancelReply">
-          <i class="bi bi-x"></i>
+      <!-- 비었을 때 -->
+      <li v-if="!comments.length" class="text-center text-muted py-3">
+        아직 댓글이 없습니다. 첫 댓글을 남겨보세요!
+      </li>
+    </ul>
+
+    <!-- 작성 -->
+    <div class="comment-editor border rounded-3 p-2">
+      <label class="form-label small mb-2 text-muted">새 댓글</label>
+      <textarea v-model="newContent" rows="3" class="form-control" placeholder="내용을 입력하고 Ctrl+Enter로 등록" @keyup.ctrl.enter="onCreate" />
+      <div class="text-end mt-2">
+        <button class="btn btn-primary btn-sm" :disabled="posting" @click="onCreate">
+          <span v-if="posting" class="spinner-border spinner-border-sm me-2"></span>
+          등록
         </button>
       </div>
     </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
 
-const props = defineProps({
-  comments: { type: Array, default: () => [] }
-});
-const emit = defineEmits(["update:comments"]);
-
-const newComment = ref("");
-const replyContent = ref("");
-const replyingTo = ref(null);
-
-const editingComment = ref(null);   // 편집 중인 댓글 ID
-const editingReply = ref(null);     // 편집 중인 대댓글 { pid, id }
-const editContent = ref("");
-
-// -----------------------------
-// 댓글 추가/삭제
-// -----------------------------
-const emitAddComment = () => {
-  if (!newComment.value.trim()) return;
-  const newC = {
-    id: Date.now(),
-    user: "평화로운일상",
-    text: newComment.value,
-    date: new Date().toLocaleString("ko-KR", { hour12: false }),
-    replies: [],
-  };
-  emit("update:comments", [...props.comments, newC]);
-  newComment.value = "";
+// 부모에서 내려옴
+const props = defineProps({ did: { type: [String, Number], required: true, }, });
+const store = useStore();
+// Vuex 연결
+const comments = computed(() => store.getters["diary/comments"]);
+const loading = computed(() => store.getters["diary/commentsLoading"]);
+const error = computed(() => store.getters["diary/commentsError"]);
+// 폼 상태
+const newContent = ref("");
+const posting = ref(false);
+// 수정 상태
+const editingId = computed(() => store.getters["diary/editingCommentId"]);
+const editBuffer = ref("");
+// 최초/변경 시 댓글 로드 (부모에서도 fetchDiary에서 불러오지만, 방어적으로 한 번 더)
+const load = async () => {
+  if (!props.did) return;
+  await store.dispatch("diary/fetchComments", props.did);
 };
+onMounted(load);
+watch(() => props.did, load);
+// 날짜 포맷 (간단)
+function formatDate(iso) {
+  if (!iso) return "";
+  try {
+    const d = new Date(iso);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return `${y}-${m}-${day} ${hh}:${mm}`;
+  } catch {
+    return iso;
+  }
+}
+// 생성
+const onCreate = async () => {
+  const content = newContent.value?.trim();
+  if (!content) return alert("내용을 입력하세요.");
+  if (!props.did) return;
 
-const emitDeleteComment = (cid) => {
-  emit("update:comments", props.comments.filter(c => c.id !== cid));
+  posting.value = true;
+  try {
+    await store.dispatch("diary/createComment", { did: props.did, content });
+    newContent.value = "";
+  } catch (e) {
+    console.error("댓글 생성 실패:", e);
+    alert("댓글 등록에 실패했습니다.");
+  } finally {
+    posting.value = false;
+  }
 };
-
-// -----------------------------
-// 대댓글 추가/삭제
-// -----------------------------
-const emitAddReply = (cid) => {
-  if (!replyContent.value.trim()) return;
-  const updated = props.comments.map(c => {
-    if (c.id === cid) {
-      return {
-        ...c,
-        replies: [...c.replies, {
-          id: Date.now(),
-          user: "답글러",
-          text: replyContent.value,
-          date: new Date().toLocaleString("ko-KR", { hour12: false })
-        }]
-      };
-    }
-    return c;
-  });
-  emit("update:comments", updated);
-  replyContent.value = "";
-  replyingTo.value = null;
+// 수정 시작
+const startEdit = (c) => { editBuffer.value = c.content; store.commit("diary/setEditingCommentId", c.dcid); };
+// 수정 취소
+const cancelEdit = () => { editBuffer.value = ""; store.commit("diary/clearEditingCommentId"); };
+// 수정 제출
+const onSubmitEdit = async (c) => {
+  const content = editBuffer.value?.trim();
+  if (!content) return alert("내용을 입력하세요.");
+  try {
+    await store.dispatch("diary/updateComment", { did: props.did, dcid: c.dcid, content });
+    editBuffer.value = "";
+  } catch (e) {
+    console.error("댓글 수정 실패:", e);
+    alert("댓글 수정에 실패했습니다.");
+  }
 };
-
-const emitDeleteReply = (cid, rid) => {
-  const updated = props.comments.map(c => {
-    if (c.id === cid) {
-      return {
-        ...c,
-        replies: c.replies.filter(r => r.id !== rid)
-      };
-    }
-    return c;
-  });
-  emit("update:comments", updated);
+// 삭제
+const onDelete = async (c) => {
+  if (!confirm("이 댓글을 삭제하시겠습니까?")) return;
+  try {
+    await store.dispatch("diary/deleteComment", { did: props.did, dcid: c.dcid });
+  } catch (e) {
+    console.error("댓글 삭제 실패:", e);
+    alert("댓글 삭제에 실패했습니다.");
+  }
 };
-
-// -----------------------------
-// 편집 (댓글 / 대댓글)
-// -----------------------------
-const startEditComment = (comment) => {
-  editingComment.value = comment.id;
-  editContent.value = comment.text;
-};
-
-const emitSaveEditComment = (cid) => {
-  const updated = props.comments.map(c => {
-    if (c.id === cid) {
-      return { ...c, text: editContent.value };
-    }
-    return c;
-  });
-  emit("update:comments", updated);
-  cancelEdit();
-};
-
-const startEditReply = (pid, reply) => {
-  editingReply.value = { pid, id: reply.id };
-  editContent.value = reply.text;
-};
-
-const emitSaveReplyEdit = (pid, rid) => {
-  const updated = props.comments.map(c => {
-    if (c.id === pid) {
-      return {
-        ...c,
-        replies: c.replies.map(r => r.id === rid ? { ...r, text: editContent.value } : r)
-      };
-    }
-    return c;
-  });
-  emit("update:comments", updated);
-  cancelEdit();
-};
-
-const cancelEdit = () => {
-  editingComment.value = null;
-  editingReply.value = null;
-  editContent.value = "";
-};
-// 답글 입력창 열기/닫기
-const startReply = (cid) => replyingTo.value = cid;
-const cancelReply = () => { replyingTo.value = null; replyContent.value = ""; };
 </script>
+
+<style scoped>
+.comment-list :deep(textarea.form-control) { resize: vertical; }
+</style>

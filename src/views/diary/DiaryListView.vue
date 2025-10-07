@@ -76,7 +76,9 @@
             <img v-if="diary.thumbnail" :src="diary.thumbnail" alt="일기 대표 이미지" class="img-fluid rounded" />
             <div v-else class="placeholder bg-light d-flex align-items-center justify-content-center" > <i class="bi bi-image text-muted fs-2"></i> </div>
             <!-- 좋아요 배지 -->
-            <div class="like-badge"> <i class="bi bi-heart-fill text-danger"></i> <span>{{ diary.likes || 0 }}</span> </div>
+            <div class="like-badge" :class="{ liked: diary.likedByMe }"> <i :class="['bi', diary.likedByMe ? 'bi-heart-fill text-danger' : 'bi-heart text-danger']"></i>
+              <span>{{ diary.likes ?? 0 }}</span>
+            </div>
           </div>
 
           <div class="card-content p-1 mt-2">
@@ -210,5 +212,6 @@ const openModal = async (diary) => {
 .diary-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12); }
 .img-box { position: relative; height: 160px; overflow: hidden; border-radius: 10px; background: #f9fbff; display: flex; align-items: center; justify-content: center; }
 .like-badge { position: absolute; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.9); border-radius: 20px; padding: 4px 10px; font-size: 0.8rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); display: flex; align-items: center; gap: 4px; }
+.like-badge.liked { background: rgba(255, 228, 232, 0.9); }
 .entry-content { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 2.4em; }
 </style>
