@@ -24,9 +24,12 @@
                 <i class="bi bi-clipboard"></i>
               </button>
             </p>
-            <button v-if="profileInfo.mid && profileInfo.mid !== store.state.mid"
+            <button v-if="profileInfo.mid && profileInfo.mid !== store.state.mid && !profileInfo.isFriend"
               class="btn btn-sm btn-primary ms-2 mb-3" @click="addFriend(profileInfo.mid)">
-              친구 추가
+              <i class="bi bi-person-plus"></i> 친구 신청
+            </button>
+            <button v-else-if="profileInfo.isFriend" class="btn btn-sm btn-secondary ms-2 mb-3" disabled>
+              <i class="bi bi-person-check"></i> 친구 신청
             </button>
             <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small">
               <li>
@@ -134,6 +137,14 @@ async function loadProfile(account) {
       const response = await profileApi.getProfileInfo(account);
       // 성공적으로 데이터를 받아오면 profileInfo 변수에 저장
       profileInfo.value = response.data;
+     
+      if (profileInfo.value && profileInfo.value.mid !== store.state.mid) {
+      const myFriendsRes = await friendApi.getFriendList(store.state.mid);
+      const myFriendMids = myFriendsRes.data.map(f => f.friendInfo.mid);
+      profileInfo.value.isFriend = myFriendMids.includes(profileInfo.value.mid);
+    } else {
+      profileInfo.value.isFriend = false;
+    }
     } catch (error) {
       console.error("사이드바 프로필 정보를 불러오는 데 실패했습니다:", error);
       // 에러 발생 시 profileInfo는 계속 null 상태로 유지됨

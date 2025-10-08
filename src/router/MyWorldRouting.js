@@ -35,6 +35,7 @@ const routes = [
       {
         path: 'friend',
         component: () => import('@/views/Friend/FriendHome.vue'),
+        redirect: to => `/myworld/${to.params.account}/friends/list`,
         meta: { theme: 'friend' }
       },
     ...DiaryRouting,
