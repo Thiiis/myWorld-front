@@ -1,6 +1,7 @@
 import { addAuthHeader, removeAuthHeader } from '@/apis/axiosApi';
 import { createStore } from 'vuex'
 import diary from '@/store/diary';
+import chat from './chat';
 
 const store = createStore({
   state: {
@@ -98,7 +99,8 @@ const store = createStore({
   },
   //하위 상태
   modules: {
-    diary
+    diary,
+    chat
   }
 })
 
