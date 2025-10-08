@@ -26,7 +26,15 @@
       >
         <i class="bi bi-search"></i> 친구 찾기
       </RouterLink>
-      
+
+      <RouterLink
+        v-if="isMyPage"
+        :to="`/myworld/${account}/friends/chatList`"
+        class="nav-link"
+        :class="{ active: $route.path === `/myworld/${account}/friends/chatList` }"
+      >
+        <i class="bi bi-chat"></i> 채팅 목록
+      </RouterLink>
     </nav>
 
     <RouterView />

@@ -26,6 +26,9 @@
 
             <!-- 오른쪽: 버튼 영역 -->
             <div v-if="route.params.account === store.state.account" class="d-flex gap-2 ms-2">
+              <button class="btn btn-outline-primary btn-icon" @click="openChat(friend)">
+                <i class="bi bi-chat-dots-fill"></i>
+              </button>
               <button class="btn btn-outline-danger btn-icon" @click="remove(friend.fid)">
                 <i class="bi bi-person-dash-fill"></i>
               </button>
@@ -60,6 +63,7 @@ import defaultProfile from '@/assets/image/default-profile.png';
 import store from "@/store";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import chatApi from "@/apis/chatApi";
 
 const backendUrl = 'http://192.168.4.42:8080';
 
@@ -128,6 +132,17 @@ async function remove(fid) {
     alert("친구가 끊어졌습니다.");
   } catch (e) {
     console.error(e);
+  }
+}
+
+async function openChat(friend) {
+  try {
+    const res = await chatApi.createRoom(friend.friendInfo.mid);
+    const roomId = res.data.id;
+    store.commit("chat/addOpenRoom", { id: roomId, friend: friend.friendInfo });
+  } catch (e) {
+    console.error(e);
+    alert("채팅방을 생성할 수 없습니다.");
   }
 }
 
