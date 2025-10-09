@@ -1,36 +1,45 @@
-import {api, fileApi } from "@/apis/axiosApi";
-import store from "@/store";
+import { api, fileApi } from "@/apis/axiosApi";
 
 // 📌 일기 생성 (멀티파트)
-function createDiary(formData) {
-  return fileApi.post("/diaries/create", formData);
+function createDiary(formData, hostAccount = null) {
+  const params = {};
+  if (hostAccount) params.hostAccount = hostAccount; // ✅ 추가
+  return fileApi.post("/diaries/create", formData, { params });
 }
-
 // 📌 일기 상세 조회
-function getDiary(did) {
-  return api.get("/diaries/list/detail", { params: { did } });
-}
-
+function getDiary(did) { return api.get("/diaries/list/detail", { params: { did } }); }
 // 📌 일기 리스트 조회 (pageNo 기반)
 function getDiaries(pageNo = 1, hostAccount = null) {
   const params = {pageNo};
   if(hostAccount) params.hostAccount = hostAccount;
   return api.get("/diaries/list", { params });
 }
-
 // 📌 일기 수정 (멀티파트 + 삭제 aid 파라미터)
-function updateDiary(formData, deleteAids = []) {
-  return fileApi.post("/diaries/update", formData, { params: { deleteAids } });
+function updateDiary(formData, deleteAids = [], hostAccount = null) {
+  const params = {};
+  if (deleteAids.length) params.deleteAids = deleteAids; // 삭제할 aid 배열
+  if (hostAccount) params.hostAccount = hostAccount; // hostAccount 전달
+  return fileApi.post("/diaries/update", formData, { params });
 }
-
 // 📌 일기 단일 삭제
-function deleteDiary(did) {
-  return api.delete(`/diaries/delete/${did}`);
+function deleteDiary(did, hostAccount = null) {
+  const params = {};
+  if (hostAccount) params.hostAccount = hostAccount;
+  return api.delete(`/diaries/delete/${did}`, { params });
 }
-
 // 📌 일기 다중 삭제
-function deleteMultipleDiaries(dids) {
-  return api.delete("/diaries/delete-list", { params: { did: dids } });
+function deleteMultipleDiaries(dids, hostAccount = null) {
+  const params = { did: dids }; // ?did=1&did=2 ...
+  if (hostAccount) params.hostAccount = hostAccount;
+  return api.delete("/diaries/delete-list", { params });
 }
+// 댓글 관련
+function createDiaryComment(did, commentData) { return api.post(`/diaries/${did}/comment/create`, commentData); }       // 댓글 생성
+function getDiaryComments(did) { return api.get(`/diaries/${did}/comment/list`); }                                      // 댓글 리스트 조회
+function updateDiaryComment(did, dcid, commentData) { return api.put(`/diaries/${did}/comment/${dcid}`, commentData); } // 댓글 수정
+function deleteDiaryComment(did, dcid) { return api.delete(`/diaries/${did}/comment/${dcid}`); }                        // 댓글 삭제
+// 좋아요 관련
+function likeDiary(did) { return api.post(`/diaries/${did}/like`).then(res => res.data);   }     // 좋아요 생성
+function unlikeDiary(did) { return api.delete(`/diaries/${did}/like`).then(res => res.data); }
 
-export default { createDiary, getDiary, getDiaries, updateDiary, deleteDiary, deleteMultipleDiaries };
+export default { createDiary, getDiary, getDiaries, updateDiary, deleteDiary, deleteMultipleDiaries, createDiaryComment, getDiaryComments, updateDiaryComment, deleteDiaryComment, likeDiary, unlikeDiary };

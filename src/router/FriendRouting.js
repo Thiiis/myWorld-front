@@ -2,7 +2,6 @@ const routes = [
   {
     path: 'friends',
     component: () => import('@/views/Friend/FriendHome.vue'),
-    redirect: to => `/myworld/:account/friends/list`,
     children: [
       {
         path: 'list',
@@ -18,7 +17,12 @@ const routes = [
       },
       {
         path: 'add',
-        component: () => import('@/views/Friend/FriendAdd.vue'),
+        component: () => import('@/views/Friend/FriendSearch.vue'),
+        meta: { theme: 'friend' }
+      },
+      {
+        path: 'chatList',
+        component: () => import('@/views/Chat/ChatRoomList.vue'),
         meta: { theme: 'friend' }
       }
     ]
