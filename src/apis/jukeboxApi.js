@@ -5,12 +5,12 @@ function createJukebox(jukebox) {
   return api.post("/jukeboxes/create", jukebox);
 }
 
-function getJukeboxList(mid) {
-  return api.get("/jukeboxes/list", {params: { mid }});
+function getJukeboxList(account) {
+  return api.get("/jukeboxes/list", {params: { account }});
 }
 
 function getJukeboxDetail(jid) {
-  return api.get("/jukeboxes/detail", {params: { jid}});
+  return api.get("/jukeboxes/detail", {params: { jid }});
 }
 
 function updateJukebox(jukebox) {
@@ -19,6 +19,10 @@ function updateJukebox(jukebox) {
 
 function deleteJukebox(jid) {
   return api.delete(`/jukeboxes/delete/${jid}`);
+}
+
+function likeJukebox(jid) {
+  return api.post("/jukeboxes/like", null, {params: { jid }});
 }
 
 
@@ -49,8 +53,8 @@ function createTrack(track) {
   return api.post("/tracks/create", track);
 }
 
-function getMyTrack() {
-  return api.get("tracks/list");
+function getMyTrack(jid) {
+  return api.get("tracks/list", { params: { jid }});
 }
 
 function deleteTrack(trid) {
@@ -59,6 +63,6 @@ function deleteTrack(trid) {
 
 
 export default { 
-  createJukebox, getJukeboxList, getJukeboxDetail, updateJukebox, deleteJukebox,
+  createJukebox, getJukeboxList, getJukeboxDetail, updateJukebox, deleteJukebox, likeJukebox,
   createSong, searchSong, getMySong, deleteSong,
   createTrack, getMyTrack, deleteTrack };

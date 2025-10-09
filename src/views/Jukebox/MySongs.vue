@@ -3,16 +3,10 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3>📀 나의 음악</h3>
       <div>
-        <router-link
-          :to="`/myworld/${$route.params.account}/jukebox`"
-          class="btn btn-secondary me-2"
-        >
+        <router-link :to="`/myworld/${$route.params.account}/jukebox`" class="btn btn-secondary me-2">
           뒤로
         </router-link>
-        <router-link
-          :to="`/myworld/${$route.params.account}/jukebox/search`"
-          class="btn btn-primary"
-        >
+        <router-link :to="`/myworld/${$route.params.account}/jukebox/search`" class="btn btn-primary">
           🔍 검색하기
         </router-link>
       </div>
@@ -20,21 +14,22 @@
 
     <!-- 내 음악 목록 -->
     <ul class="list-group shadow-sm" v-if="mySongs.length > 0">
-      <li
-        v-for="song in mySongs"
-        :key="song.sid"
-        class="list-group-item"
-      >
+      <li v-for="song in mySongs" :key="song.sid" class="list-group-item">
         <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <strong>{{ song.title }}</strong> - {{ song.artist }}
+          <div class="d-flex align-items-center">
+            <!-- 🎵 썸네일 추가 -->
+            <img :src="`https://img.youtube.com/vi/${song.videoId}/hqdefault.jpg`" alt="thumbnail" class="rounded me-3" style="width: 100px; height: 56px; object-fit: cover; cursor: pointer;"
+              @click="togglePlay(song)" />
+
+            <!-- 제목/가수 -->
+            <div>
+              <strong>{{ song.title }}</strong>
+              <div class="text-muted small">{{ song.artist }}</div>
+            </div>
           </div>
+
           <div>
-            <button
-              class="btn btn-sm"
-              :class="isPlaying(song) ? 'btn-outline-danger' : 'btn-outline-secondary'"
-              @click="togglePlay(song)"
-            >
+            <button class="btn btn-sm" :class="isPlaying(song) ? 'btn-outline-danger' : 'btn-outline-secondary'" @click="togglePlay(song)">
               {{ isPlaying(song) ? '⏸ 정지' : '▶ 재생' }}
             </button>
             <button class="btn btn-sm btn-danger ms-2" @click="deleteSong(song.sid)">
@@ -43,13 +38,9 @@
           </div>
         </div>
 
-        <!-- 🎵 재생 중일 때 iframe (소리만 나옴, 화면에는 안보임) -->
+        <!-- 재생 중이지만 영상은 숨김 -->
         <div v-if="isPlaying(song)" class="hidden-player">
-          <iframe
-            :src="`https://www.youtube.com/embed/${song.videoId}?autoplay=1&mute=0`"
-            frameborder="0"
-            allow="autoplay; encrypted-media"
-          ></iframe>
+          <iframe :src="`https://www.youtube.com/embed/${song.videoId}?autoplay=1&mute=0`" frameborder="0" allow="autoplay; encrypted-media"></iframe>
         </div>
       </li>
     </ul>
@@ -77,18 +68,16 @@ async function loadMySongs() {
     const res = await jukeboxApi.getMySong();
     mySongs.value = res.data;
   } catch (e) {
-    console.error("❌ 음악 목록 로드 실패:", e);
+    console.error(e);
   }
 }
 
-// 🎵 재생 토글
+// 재생 토글
 function togglePlay(song) {
   if (currentPlaying.value === song.sid) {
-    // 같은 곡 다시 누르면 정지
-    currentPlaying.value = null;
+    currentPlaying.value = null; // 정지
   } else {
-    // 다른 곡 클릭하면 교체 재생
-    currentPlaying.value = song.sid;
+    currentPlaying.value = song.sid; // 다른 곡 재생
   }
 }
 
@@ -97,29 +86,33 @@ function isPlaying(song) {
   return currentPlaying.value === song.sid;
 }
 
-// 🗑 삭제 기능
+// 삭제 기능
 async function deleteSong(sid) {
   if (!confirm("이 노래를 삭제하시겠습니까?")) return;
   try {
     await jukeboxApi.deleteSong(sid);
     await loadMySongs();
   } catch (e) {
-    console.error("❌ 삭제 실패:", e);
+    console.error(e);
   }
 }
 
-onMounted(() => {
-  loadMySongs();
-});
+onMounted(() => loadMySongs());
 </script>
 
 <style scoped>
 .hidden-player {
-  width: 1px;
-  height: 1px;
+  width: 0;
+  height: 0;
   overflow: hidden;
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  visibility: hidden;
+}
+
+.list-group-item {
+  transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+  background-color: #f8f9fa;
 }
 </style>

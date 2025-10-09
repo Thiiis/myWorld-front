@@ -9,23 +9,13 @@
 
     <!-- 검색창 -->
     <div class="input-group mb-3">
-      <input
-        v-model="query"
-        type="text"
-        class="form-control"
-        placeholder="노래 제목이나 가수를 입력하세요"
-        @keyup.enter="searchSongs"
-      />
+      <input v-model="query" type="text" class="form-control" placeholder="노래 제목이나 가수를 입력하세요" @keyup.enter="searchSongs" />
       <button class="btn btn-primary" @click="searchSongs">검색</button>
     </div>
 
     <!-- 검색 결과 -->
     <ul v-if="results.length > 0" class="list-group shadow-sm">
-      <li
-        v-for="(song, idx) in results"
-        :key="idx"
-        class="list-group-item d-flex justify-content-between align-items-center"
-      >
+      <li v-for="(song, idx) in results" :key="idx" class="list-group-item d-flex justify-content-between align-items-center">
         {{ song.title }} - {{ song.artist }}
         <button class="btn btn-sm btn-outline-success" @click="addSong(song.videoId)">
           ➕ 추가
@@ -75,4 +65,3 @@ async function addSong(videoId) {
   }
 }
 </script>
-

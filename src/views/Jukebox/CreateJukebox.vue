@@ -55,7 +55,7 @@
 
     <!-- 음악 선택 모달 -->
     <div v-if="showModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.4);">
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">🎵 나의 음악 선택</h5>
@@ -68,7 +68,7 @@
                   {{ song.title }} - {{ song.artist }}
                 </div>
 
-                <!-- ✅ 상태에 따라 버튼 스타일 변경 -->
+                <!-- 상태에 따라 버튼 스타일 변경 -->
                 <button class="btn btn-sm" :class="isSelected(song.sid) ? 'btn-success' : 'btn-outline-success'" @click="toggleSong(song)">
                   {{ isSelected(song.sid) ? '✅ 추가됨' : '➕ 추가' }}
                 </button>
@@ -81,18 +81,18 @@
         </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useStore } from "vuex";
 import jukeboxApi from "@/apis/jukeboxApi";
 
 const router = useRouter();
 const route = useRoute();
-const store = useStore();
 
 const newJukebox = ref({
   title: "",
@@ -103,37 +103,31 @@ const mySongs = ref([]); // 내 음악 목록
 const selectedSongs = ref([]); // 선택된 음악들
 const showModal = ref(false);
 
-// ✅ 모달 열기/닫기
+// 모달 열기
 function openSongModal() {
   showModal.value = true;
 }
+// 모달 닫기
 function closeSongModal() {
   showModal.value = false;
 }
 
-// ✅ 내 음악 불러오기
+// 내 음악 불러오기
 async function loadMySongs() {
   try {
     const res = await jukeboxApi.getMySong();
     mySongs.value = res.data;
-  } catch (err) {
-    console.error("❌ 음악 불러오기 실패:", err);
+  } catch (e) {
+    console.error(e);
   }
 }
 
-// ✅ 음악 추가
-function addSong(song) {
-  if (!selectedSongs.value.find((s) => s.sid === song.sid)) {
-    selectedSongs.value.push(song);
-  }
-}
-
-// ✅ 선택 취소
+// 선택 취소
 function removeSong(sid) {
   selectedSongs.value = selectedSongs.value.filter((s) => s.sid !== sid);
 }
 
-// ✅ 주크박스 생성 + 트랙 생성
+// 주크박스 생성 + 트랙 생성
 async function createJukebox() {
   try {
     const res = await jukeboxApi.createJukebox(newJukebox.value);
@@ -146,26 +140,26 @@ async function createJukebox() {
         sid: song.sid
       });
     }
-
-    alert("주크박스가 생성되었습니다!");
+    alert("주크박스가 생성되었습니다");
     router.push(`/myworld/${route.params.account}/jukebox`);
-  } catch (err) {
-    console.error("❌ 생성 실패:", err.response?.data || err);
-    alert("생성 중 오류가 발생했습니다.");
+  } catch (e) {
+    console.error(e);
   }
 }
 
-// ✅ 선택 여부 확인
+
+// 선택 여부 확인
 function isSelected(sid) {
+  // 조건을 만족하는 요소가 있으면 true
   return selectedSongs.value.some((s) => s.sid === sid);
 }
 
-// ✅ 추가/제거 토글 기능
+// 추가/제거 토글
 function toggleSong(song) {
   const index = selectedSongs.value.findIndex((s) => s.sid === song.sid);
   if (index !== -1) {
     // 이미 추가된 경우 → 제거
-    selectedSongs.value.splice(index, 1);
+    selectedSongs.value.splice(index, 1); // index 위치부터 1개 제거
   } else {
     // 아직 안 추가된 경우 → 추가
     selectedSongs.value.push(song);
