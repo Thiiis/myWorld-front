@@ -309,19 +309,27 @@ function stopPlaying() {
 
 
 
-onMounted( async () => {
-  await loadProfile(account.value);
-  await loadMember(account.value);
-  await loadJukebox();
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    await loadProfile(account.value);
+    await loadMember(account.value);
+    await loadJukebox();
 
-  if (jukebox.value && jukebox.value.songs?.length > 0) {
-    setTimeout(() => {
-      playAllSongs();
-      console.log("미니홈 입장 시 자동 재생");
-    }, 1000);
+    if (jukebox.value && jukebox.value.songs?.length > 0) {
+      setTimeout(() => {
+        playAllSongs();
+        console.log("미니홈 입장 시 자동 재생");
+      }, 1000);
+    }
+  } catch (err) {
+    console.error("사이드바 데이터 로딩 중 에러 발생:", err);
+    error.value = "데이터를 불러오는 중 문제가 발생했습니다.";
+  } finally {
+    isLoading.value = false; // 모든 작업이 끝나면 로딩 상태 해제
   }
-
 });
+
 
 watch(
   () => route.params.account,
