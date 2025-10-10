@@ -333,25 +333,24 @@ watch(
   border-color: #00CAFF;
 }
 
-/* 방명록 (시안) */
+/* 주크박스 (청록) */
 .nav-link.nav-jukebox.active {
   background-color: #00EAD9;
   border-color: #00EAD9;
 }
 
-/* 주크박스 (청록) */
+/* 친구 (민트) */
 .nav-link.nav-friend.active {
   background-color: #00FFDE;
   border-color: #00FFDE;
 }
 
-/* 친구 (민트) */
+/* 프로필 (선명한 청보라) */
 .nav-link.nav-profile.active {
   background-color: #4300FF;
   border-color: #4300FF;
 }
 
-/* 프로필 (선명한 청보라) */
 
 
 /* 4. 마우스 호버(hover) 효과 통일 */
@@ -360,14 +359,6 @@ watch(
   background-color: #f8f9fa;
   /* 마우스를 올렸을 때 연한 회색 배경으로 통일 */
 }
-
-
-/* 원한다면 hover 시 배경색도 각 메뉴별로 다르게 지정할 수 있습니다. */
-/*
-.nav-link.nav-home:hover:not(.active) { background-color: #e7f1ff; }
-.nav-link.nav-diary:hover:not(.active) { background-color: #e8f3ec; }
-*/
-
 
 /* --- 아이콘 공통 스타일 --- */
 .nav-link i {
