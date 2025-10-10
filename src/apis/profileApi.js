@@ -60,13 +60,29 @@ function profileUpdateImage(imageFile) {
   });
 }
 
+
+
+// ✅ 선택된 주크박스 저장 (회원의 프로필에 주크박스 ID 연결)
+function updateSelectedJukebox(account, jid) {
+  return api.post(`/profiles/${account}/jukebox`, { jid });
+}
+
+
+// ✅ 선택된 주크박스 조회
+function getSelectedJukebox(account) {
+  return api.get(`/profiles/${account}/jukebox`);
+}
+
+
 // 최종적으로 사용할 API 함수들을 객체로 묶어 내보냅니다.
 const profileApi = {
   getProfileInfo,
   getMyProfileDetail,
   getAnotherProfileDetail,
   profileUpdate,
-  profileUpdateImage
+  profileUpdateImage,
+  updateSelectedJukebox, 
+  getSelectedJukebox
 };
 
 export default profileApi;
