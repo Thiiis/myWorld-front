@@ -14,8 +14,7 @@
       <div v-if="profileInfo" class="card shadow-sm mb-4 text-center">
         <div class="card-body p-4 text-center" width="300" height="500">
           <div class="profile-image-container">
-            <img :src="profileInfo.imgUrl ? `${backendUrl}${profileInfo.imgUrl}` : defaultProfile" alt="Profile Image"
-              class="profile-image-square">
+            <img :src="profileInfo.imgUrl ? `${backendUrl}${profileInfo.imgUrl}` : defaultProfile" alt="Profile Image" class="profile-image-square">
           </div>
           <div>
             <h5 class="mt-2">{{ profileInfo.nickname }}님의 미니홈피</h5>
@@ -24,8 +23,7 @@
                 <i class="bi bi-clipboard"></i>
               </button>
             </p>
-            <button v-if="profileInfo.mid && profileInfo.mid !== store.state.mid && !profileInfo.isFriend"
-              class="btn btn-sm btn-primary ms-2 mb-3" @click="addFriend(profileInfo.mid)">
+            <button v-if="profileInfo.mid && profileInfo.mid !== store.state.mid && !profileInfo.isFriend" class="btn btn-sm btn-primary ms-2 mb-3" @click="addFriend(profileInfo.mid)">
               <i class="bi bi-person-plus"></i> 친구 신청
             </button>
             <button v-else-if="profileInfo.isFriend" class="btn btn-sm btn-secondary ms-2 mb-3" disabled>
@@ -90,27 +88,78 @@
           </RouterLink>
         </li>
       </ul>
-  </div>
+    </div>
+
+    <!-- 🎵 주크박스 섹션 -->
+    <div class="jukebox-section mt-4 p-3 text-center">
+      <h6 class="text-primary fw-bold">
+        <i class="bi bi-music-note-beamed"></i> 주크박스
+      </h6>
+
+      <!-- 선택된 주크박스가 있을 때 -->
+      <div v-if="jukebox" class="jukebox-box p-3 mt-2">
+        <p class="fw-bold mb-1 text-dark">{{ jukebox.title }}</p>
+        <p class="small text-muted mb-2">
+          🎶 {{ currentSong ? `${currentSong.artist} - ${currentSong.title}` : '재생할 곡이 없습니다.' }}
+        </p>
+
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-primary btn-sm rounded-circle" @click="playAllSongs" v-if="!isPlaying">
+            <i class="bi bi-play-fill"></i>
+          </button>
+          <button class="btn btn-secondary btn-sm rounded-circle" @click="stopPlaying" v-if="isPlaying">
+            <i class="bi bi-pause-fill"></i>
+          </button>
+        </div>
+
+        <!-- 숨겨진 YouTube 플레이어 -->
+        <div id="sidebar-youtube-player" class="hidden-player"></div>
+      </div>
+
+      <!-- 선택된 주크박스가 없을 때 -->
+      <div v-else class="jukebox-box p-3 mt-2 text-muted">
+        <p class="mb-0">선택된 주크박스가 없습니다.</p>
+      </div>
+    </div>
+
+
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+/* global YT */
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import defaultProfile from '@/assets/image/default-profile.png' // 기본 이미지
 import profileApi from '@/apis/profileApi'; // API 모듈 import
 import memberApi from '@/apis/memberApi'; // API 모듈 import
 import store from '@/store'
 import friendApi from '@/apis/friendApi';
+import jukeboxApi from '@/apis/jukeboxApi';
+
 const backendUrl = 'http://kosa164.iptime.org:8080';
 // 1. 현재 URL 정보를 얻기 위해 useRoute() 사용
 const route = useRoute();
 
 // 2. URL 파라미터에서 'account'를 추출 (예: /myworld/userA -> 'userA')
-const account = route.params.account;
+const account = ref(route.params.account);
+const mid = store.state.mid;
 
 // 3. 메뉴 링크를 만들기 위한 기본 URL
 const miniHomeUrl = ref(`/myworld/${route.params.account}`);
+
+
+// 주크박스 관련 변수
+const jukebox = ref(null);
+const currentSong = ref(null);
+const isPlaying = ref(false);
+
+let player = null;
+let playerReady = false;
+let apiLoaded = false;
+
+
 
 // 클립보드에 URL을 복사하는 메소드
 const copyToClipboard = (text) => {
@@ -137,14 +186,14 @@ async function loadProfile(account) {
       const response = await profileApi.getProfileInfo(account);
       // 성공적으로 데이터를 받아오면 profileInfo 변수에 저장
       profileInfo.value = response.data;
-     
+
       if (profileInfo.value && profileInfo.value.mid !== store.state.mid) {
-      const myFriendsRes = await friendApi.getFriendList(store.state.mid);
-      const myFriendMids = myFriendsRes.data.map(f => f.friendInfo.mid);
-      profileInfo.value.isFriend = myFriendMids.includes(profileInfo.value.mid);
-    } else {
-      profileInfo.value.isFriend = false;
-    }
+        const myFriendsRes = await friendApi.getFriendList(store.state.mid);
+        const myFriendMids = myFriendsRes.data.map(f => f.friendInfo.mid);
+        profileInfo.value.isFriend = myFriendMids.includes(profileInfo.value.mid);
+      } else {
+        profileInfo.value.isFriend = false;
+      }
     } catch (error) {
       console.error("사이드바 프로필 정보를 불러오는 데 실패했습니다:", error);
       // 에러 발생 시 profileInfo는 계속 null 상태로 유지됨
@@ -178,9 +227,109 @@ async function addFriend(mid) {
   }
 }
 
-onMounted(() => {
-  loadProfile(account);
-  loadMember(account);
+// ✅ 주크박스 불러오기
+async function loadJukebox() {
+  try {
+    // 1️⃣ 프로필에서 선택된 주크박스 정보 가져오기
+    const res = await profileApi.getSelectedJukebox(account.value);
+    if (!res.data || !res.data.jid) {
+      console.log("선택된 주크박스 없음");
+      jukebox.value = null;
+      return;
+    }
+
+    // 2️⃣ 주크박스 상세 정보 가져오기 (곡 리스트 포함)
+    const detailRes = await jukeboxApi.getJukeboxDetail(res.data.jid);
+    jukebox.value = detailRes.data;
+    currentSong.value = jukebox.value?.songs?.[0] || null;
+
+    console.log("🎧 선택된 주크박스 로드 완료:", jukebox.value);
+
+    await nextTick();
+    await loadYouTubeAPI();
+    createPlayer();
+
+
+    if (jukebox.value?.songs?.length > 0) {
+      setTimeout(() => {
+        playAllSongs();
+      }, 500);
+    }
+  } catch (err) {
+    console.error("주크박스 정보를 불러오지 못했습니다:", err);
+  }
+}
+
+// ✅ YouTube API 로드
+function loadYouTubeAPI() {
+  return new Promise((resolve) => {
+    if (window.YT && window.YT.Player) return resolve(window.YT);
+    if (apiLoaded) return;
+    apiLoaded = true;
+
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = () => resolve(window.YT);
+  });
+}
+
+// ✅ Player 생성
+function createPlayer() {
+  if (player) return;
+  player = new YT.Player("sidebar-youtube-player", {
+    height: "0",
+    width: "0",
+    playerVars: { autoplay: 0, controls: 0, rel: 0 },
+    events: {
+      onReady: () => (playerReady = true),
+      onStateChange: (event) => {
+        if (event.data === YT.PlayerState.ENDED) nextSong();
+      },
+    },
+  });
+}
+
+// ✅ 전체 재생
+function playAllSongs() {
+  if (!jukebox.value?.songs?.length || !playerReady) return;
+  isPlaying.value = true;
+  currentSong.value = jukebox.value.songs[0];
+  player.loadVideoById(currentSong.value.videoId);
+}
+
+// ✅ 다음 곡
+function nextSong() {
+  const songs = jukebox.value.songs;
+  const currentIndex = songs.findIndex(s => s.sid === currentSong.value.sid);
+  const nextIndex = (currentIndex + 1) % songs.length;
+  currentSong.value = songs[nextIndex];
+  player.loadVideoById(currentSong.value.videoId);
+}
+
+// ✅ 정지
+function stopPlaying() {
+  isPlaying.value = false;
+  player.stopVideo();
+}
+
+
+
+
+
+onMounted( async () => {
+  await loadProfile(account);
+  await loadMember(account);
+  await loadJukebox();
+
+  if (jukebox.value && jukebox.value.songs?.length > 0) {
+    setTimeout(() => {
+      playAllSongs();
+      console.log("미니홈 입장 시 자동 재생");
+    }, 1000);
+  }
+
 });
 
 watch(
@@ -191,6 +340,31 @@ watch(
     loadMember(newAccount);
   }
 );
+
+// 주크박스 변경 감지
+watch(
+  () => route.params.account,
+  async (newAccount) => {
+    miniHomeUrl.value = `/myworld/${newAccount}`;
+    account.value = newAccount; // ✅ ref 값 변경
+    await loadProfile(newAccount);
+    await loadMember(newAccount);
+
+    if (player) {
+      player.stopVideo();
+      player.destroy();
+      player = null;
+      playerReady = false;
+    }
+
+    isPlaying.value = false;
+    jukebox.value = null;
+
+    await loadJukebox();
+  }
+);
+
+
 </script>
 
 <style scoped>
@@ -388,5 +562,17 @@ watch(
 /* 마지막 아이템에는 여백이 필요 없으므로 그대로 둡니다. */
 .nav-item:last-child {
   margin-bottom: 0;
+}
+
+.jukebox-section {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.jukebox-box {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background-color: #fdfdfd;
 }
 </style>

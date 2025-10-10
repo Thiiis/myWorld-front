@@ -16,13 +16,29 @@
     <!-- 목록 -->
     <div v-if="jukeboxes.length > 0" class="row">
       <div v-for="box in jukeboxes" :key="box.jid" class="col-md-4 mb-3">
-        <div class="jukebox-card h-100 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title mb-0 text-primary fw-bold" style="cursor: pointer;" @click="openDetail(box.jid)">
-              {{ box.title }}
-            </h5>
-            <p class="text-muted small mb-3">{{ box.content }}</p>
+        <div class="jukebox-card h-100 shadow-sm" :class="{ selected: selectedJukeboxId === box.jid }">
+          
+          <!-- ✅ 제목과 선택 버튼을 같은 줄에 배치 -->
+          <div class="card-body d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="card-title mb-0 text-primary fw-bold" style="cursor: pointer;" @click="openDetail(box.jid)">
+                {{ box.title }}
+              </h5>
+              <p class="text-muted small mb-2">{{ box.content }}</p>
+            </div>
+
+            <!-- 선택 버튼 추가 -->
+            <button
+              v-if="isMyPage"
+              class="btn btn-sm"
+              :class="selectedJukeboxId === box.jid ? 'btn-success' : 'btn-outline-secondary'"
+              @click="selectJukebox(box.jid)"
+              style="white-space: nowrap; font-size: 0.75rem; height: 28px;"
+            >
+              {{ selectedJukeboxId === box.jid ? "🎧" : "선택" }}
+            </button>
           </div>
+
           <div class="card-footer d-flex justify-content-between align-items-center">
             <p class="small text-muted mb-0 ms-1">
               {{ box.updatedAt?.substring(0, 10) || box.createdAt?.substring(0, 10) }}
@@ -36,6 +52,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- 비었을 때 -->
     <div v-else class="text-center text-muted py-5 border rounded bg-light">
@@ -98,6 +115,7 @@ import { ref, onMounted, onBeforeUnmount, computed, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
 import jukeboxApi from "@/apis/jukeboxApi";
+import profileApi from "@/apis/profileApi";
 
 const store = useStore();
 const route = useRoute();
@@ -120,6 +138,7 @@ const detail = ref({});
 
 const isPlaying = ref(false);
 const currentIndex = ref(-1);
+const selectedJukeboxId = ref(null);
 
 // 내부 상태
 let player = null;
@@ -127,6 +146,7 @@ let playerReady = false;
 let apiScriptLoaded = false;
 
 const account = route.params.account;
+const mid = store.state.mid;
 
 // 내 홈 여부. 내 홈이 아니면 주크박스 리스트만 보임
 const isMyPage = computed(() => route.params.account === store.state.account);
@@ -155,6 +175,27 @@ async function openDetail(jid) {
     console.error(e);
   }
 }
+
+// 선택 기능 (서버에 선택 저장 + 상태 갱신)
+async function selectJukebox(jid) {
+  try {
+    if (selectedJukeboxId.value === jid) {
+      selectedJukeboxId.value = null;
+      await profileApi.updateSelectedJukebox(account, null);
+      store.commit("jukebox/setSelectedJukebox", null);
+      console.log("주크박스 선택 해제됨");
+      return;
+    }
+
+    selectedJukeboxId.value = jid;
+    await profileApi.updateSelectedJukebox(account, jid);
+    store.commit("jukebox/setSelectedJukebox", { jid });
+    console.log(`선택된 주크박스 저장 완료 (jid=${jid})`);
+  } catch (err) {
+    console.error("주크박스 선택 중 오류:", err);
+  }
+}
+
 
 // YouTube API 로드 (Promise 기반)
 // ********* 여기는 조금 더 알아봐야될것같아... 유튜브 api 괜히썻나...... ************
@@ -258,8 +299,7 @@ async function deleteJukebox(jid) {
 }
 
 
-// 좋아요 아직 미완성
-// 여기!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// 좋아요
 async function likeJukebox(box) {
   try {
     await jukeboxApi.likeJukebox(box.jid);
@@ -278,8 +318,21 @@ function formatDuration(seconds) {
   return `${m}:${s}`;
 }
 
-onMounted(() => {
-  loadJukeboxes();
+onMounted(async () => {
+  await loadJukeboxes();
+
+  // 페이지 진입 시 선택된 주크박스 복원
+  try {
+    const res = await profileApi.getSelectedJukebox(account);
+    if (res.data && res.data.jid) {
+      selectedJukeboxId.value = res.data.jid; // 선택 상태 복원
+      console.log("선택된 주크박스 복원:", res.data.jid);
+    } else {
+      console.log("선택된 주크박스 없음");
+    }
+  } catch (e) {
+    console.warn("선택된 주크박스 조회 실패:", e);
+  }
 });
 
 onBeforeUnmount(() => {
@@ -319,12 +372,21 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transform: scale(1); /* 기본 크기 */
+  transform: scale(1);
+  /* 기본 크기 */
 }
 
 /* 💫 hover 시 살짝 확대 & 그림자 강조 */
 .jukebox-card:hover {
-  transform: scale(1.03); /* 3% 커짐 */
+  transform: scale(1.03);
+  /* 3% 커짐 */
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+/* ✅ 선택된 카드 강조 스타일 */
+.selected {
+  border: 2px solid #198754;
+  /* Bootstrap success 색상 */
+  box-shadow: 0 0 10px rgba(25, 135, 84, 0.3);
 }
 </style>
