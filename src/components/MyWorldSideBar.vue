@@ -151,7 +151,7 @@ const isLoading = ref(true);
 const error = ref(null);
 const isMyProfile = ref(false);
 
-// Jukebox
+// 주크박스 관련 변수
 const jukebox = ref(null);
 const currentSong = ref(null);
 const isPlaying = ref(false);
@@ -218,10 +218,10 @@ async function addFriend(friendMid) {
   }
 }
 
-// 주크박스 불러오기
+// ✅ 주크박스 불러오기
 async function loadJukebox() {
   try {
-    // 프로필에서 선택된 주크박스 정보 가져오기
+    // 1️⃣ 프로필에서 선택된 주크박스 정보 가져오기
     const res = await profileApi.getSelectedJukebox(account.value);
     if (!res.data || !res.data.jid) {
       console.log("선택된 주크박스 없음");
@@ -229,7 +229,7 @@ async function loadJukebox() {
       return;
     }
 
-    // 주크박스 상세 정보 가져오기 (곡 리스트 포함)
+    // 2️⃣ 주크박스 상세 정보 가져오기 (곡 리스트 포함)
     const detailRes = await jukeboxApi.getJukeboxDetail(res.data.jid);
     jukebox.value = detailRes.data;
     currentSong.value = jukebox.value?.songs?.[0] || null;
@@ -251,8 +251,7 @@ async function loadJukebox() {
   }
 }
 
-
-// YouTube API 로드
+// ✅ YouTube API 로드
 function loadYouTubeAPI() {
   return new Promise((resolve) => {
     if (window.YT && window.YT.Player) return resolve(window.YT);
@@ -267,7 +266,7 @@ function loadYouTubeAPI() {
   });
 }
 
-// Player 생성
+// ✅ Player 생성
 function createPlayer() {
   if (player) return;
   player = new YT.Player("sidebar-youtube-player", {
@@ -283,7 +282,7 @@ function createPlayer() {
   });
 }
 
-// 전체 재생
+// ✅ 전체 재생
 function playAllSongs() {
   if (!jukebox.value?.songs?.length || !playerReady) return;
   isPlaying.value = true;
@@ -291,7 +290,7 @@ function playAllSongs() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
-// 다음 곡
+// ✅ 다음 곡
 function nextSong() {
   const songs = jukebox.value.songs;
   const currentIndex = songs.findIndex(s => s.sid === currentSong.value.sid);
@@ -300,100 +299,65 @@ function nextSong() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
-// 정지
+// ✅ 정지
 function stopPlaying() {
   isPlaying.value = false;
   player.stopVideo();
 }
 
 
-// onMounted: 로딩 상태를 명확하게 관리하도록 수정
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    await Promise.all([
-      loadProfile(account.value),
-      loadMember(account.value),
-      loadJukebox(account.value),
-    ]);
 
-    if (jukebox.value && jukebox.value.songs?.length > 0) {
-      setTimeout(() => {
-        playAllSongs();
-        console.log("미니홈 입장 시 자동 재생");
-      }, 1000);
-    }
-  } catch (err) {
-    console.error("사이드바 데이터 로딩 중 에러 발생:", err);
-    error.value = "데이터를 불러오는 중 문제가 발생했습니다.";
-  } finally {
-    isLoading.value = false; // 모든 작업이 끝나면 로딩 상태 해제
+
+
+onMounted( async () => {
+  await loadProfile(account.value);
+  await loadMember(account.value);
+  await loadJukebox();
+
+  if (jukebox.value && jukebox.value.songs?.length > 0) {
+    setTimeout(() => {
+      playAllSongs();
+      console.log("미니홈 입장 시 자동 재생");
+    }, 1000);
   }
+
 });
 
-
-watch(() => route.params.account,
+watch(
+  () => route.params.account,
   async (newAccount) => {
-    isLoading.value = true;
     miniHomeUrl.value = `/myworld/${newAccount}`;
     account.value = newAccount;
 
-    // 플레이어 정리
+    // 플레이어 리셋
     if (player) {
       player.stopVideo();
       player.destroy();
       player = null;
       playerReady = false;
     }
+
     isPlaying.value = false;
     jukebox.value = null;
 
-    try {
-      await Promise.all([
-        loadProfile(newAccount),
-        loadMember(newAccount),
-        loadJukebox(newAccount),
-      ]);
-    } catch (err) {
-      console.error("계정 변경 후 데이터 로딩 중 에러 발생:", err);
-      error.value = "데이터를 새로 불러오는 중 문제가 발생했습니다.";
-    } finally {
-      isLoading.value = false;
-    }
-  }
-);
-
-watch(
-  () => route.params.account,
-  (newAccount) => {
-    miniHomeUrl.value = `/myworld/${newAccount}`;
-    loadProfile(newAccount);
-    loadMember(newAccount);
-  }
-);
-
-// 주크박스 변경 감지
-watch(
-  () => route.params.account,
-  async (newAccount) => {
-    miniHomeUrl.value = `/myworld/${newAccount}`;
-    account.value = newAccount; // ref 값 변경
     await loadProfile(newAccount);
     await loadMember(newAccount);
-
-    if (player) {
-      player.stopVideo();
-      player.destroy();
-      player = null;
-      playerReady = false;
-    }
-
-    isPlaying.value = false;
-    jukebox.value = null;
-
     await loadJukebox();
+
+    // ✅ 주크박스가 있고, 곡이 있을 때 자동재생 시도
+    if (jukebox.value && jukebox.value.songs?.length > 0) {
+      const waitUntilReady = setInterval(() => {
+        if (playerReady) {
+          clearInterval(waitUntilReady);
+          playAllSongs();
+          console.log("친구 홈 입장 시 자동 재생 ✅");
+        }
+      }, 300);
+    }
   }
 );
+
+
 </script>
 
 <style scoped>

@@ -170,7 +170,7 @@ async function openDetail(jid) {
 
     await nextTick(); // DOM이 업데이트된 다음에 코드를 실행. 모달이 화면에 나타난 뒤에
     await loadYouTubeAPI(); // 이 안에서
-    createPlayer(); // youtube player 찾기
+    await createPlayer(); // youtube player 찾기
   } catch (e) {
     console.error(e);
   }
@@ -277,7 +277,16 @@ function closeModal() {
   stopPlaying();
   showModal.value = false;
   detail.value = {};
+
+  // ✅ 플레이어 완전히 제거 
+  if (player) {
+    player.destroy();
+    player = null;
+    playerReady = false;
+    console.log("🧹 YouTube Player destroyed");
+  }
 }
+
 
 // 주크박스 수정
 function updateJukebox(jid) {
