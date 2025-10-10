@@ -200,16 +200,16 @@ watch(
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 3rem 1rem;
   /* 위아래로 충분한 여백을 줍니다. */
-  min-height: 250px;
+  padding: 3rem 1rem;
   /* 프로필 카드의 최소 높이와 비슷하게 설정하여 레이아웃 깨짐 방지 */
-  background-color: #fff;
+  min-height: 250px;
   /* 배경을 흰색으로 */
-  border-radius: 15px;
+  background-color: #fff;
   /* 프로필 카드와 동일한 둥근 모서리 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
   /* 은은한 그림자 효과 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* 스피너 애니메이션의 크기 조절 (선택 사항) */
@@ -220,45 +220,45 @@ watch(
 
 /* 전체 사이드바 컨테이너 스타일 */
 .custom-sidebar {
-  background-color: #f8f9fa;
   /* 연한 회색 배경 */
+  background-color: #f8f9fa;
   padding: 1rem;
-  border-radius: 15px;
   /* 컨테이너 모서리 둥글게 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
   /* 은은한 그림자 효과 */
-  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   /* 부모 요소 너비의 100%를 차지하도록 설정 */
-  max-width: 400px;
+  width: 100%;
   /* 너비가 400px를 초과하지 않도록 제한 */
-  /* min-width: 280px;   */
+  max-width: 400px;
   /* 너무 얇아지지 않도록 최소 너비 설정 (선택 사항) */
+  /* min-width: 280px;   */
 }
 
 .profile-image-container {
   /* flex 컨테이너의 자식 요소로서 공간을 차지하게 함 */
   display: flex;
-  justify-content: center;
   /* 내부 아이템(이미지 또는 아이콘)을 가로 중앙 정렬 */
-  align-items: center;
+  justify-content: center;
   /* 내부 아이템을 세로 중앙 정렬 */
-  margin-bottom: 1rem;
+  align-items: center;
   /* 이미지와 닉네임 사이의 간격 */
+  margin-bottom: 1rem;
 }
 
 .profile-image-square {
-  width: 120px;
   /* 원하는 크기로 조절 */
-  height: 120px;
+  width: 120px;
   /* 너비와 높이를 동일하게 설정 */
+  height: 120px;
   object-fit: cover;
-  border-radius: 15%;
   /* 둥근 모서리 */
+  border-radius: 15%;
 
   /* 아이콘 스타일 */
   font-size: 120px;
-  line-height: 1;
   /* 아이콘이 컨테이너 밖으로 나가지 않도록 줄 높이 조절 */
+  line-height: 1;
 }
 
 
@@ -276,36 +276,36 @@ watch(
 }
 
 /* 1. 각 메뉴별 기본 텍스트/아이콘 색상 (새로운 블루 팔레트) */
+/* 홈 (진한 파랑) */
 .nav-link.nav-home {
   color: #0052C6;
 }
 
-/* 홈 (진한 파랑) */
+/* 일기장 (중간 파랑) */
 .nav-link.nav-diary {
   color: #007ABF;
 }
 
-/* 일기장 (중간 파랑) */
+/* 방명록 (진한 시안) */
 .nav-link.nav-guestboard {
   color: #00A2CC;
 }
 
-/* 방명록 (진한 시안) */
+/* 주크박스 (진한 청록) */
 .nav-link.nav-jukebox {
   color: #00BAAC;
 }
 
-/* 주크박스 (진한 청록) */
+/* 친구 (진한 민트) */
 .nav-link.nav-friend {
   color: #00CCB1;
 }
 
-/* 친구 (진한 민트) */
+/* 프로필 (진한 청보라) */
 .nav-link.nav-profile {
   color: #3600CC;
 }
 
-/* 프로필 (진한 청보라) */
 
 
 /* 2. 활성화된 링크의 공통 스타일 (글자색 흰색으로) */
