@@ -36,7 +36,7 @@
             </div>
             <!-- 프로필 상세 정보 -->
             <div v-if="profile && memberInfo" class="col-md-9">
-              <h4 class="dunggeunmo-font"><strong>기본 정보</strong></h4>
+              <h4 class="dunggeunmo-font"><strong>🎞️ 기본 정보</strong></h4>
               <hr style="margin-top: 10px; margin-bottom: 10px;">
               <dl class="dl-horizontal dunggeunmo-font">
                 <dt v-if="memberInfo.account">☺️ 아이디</dt>
@@ -74,7 +74,7 @@ import defaultProfile from '@/assets/image/default-profile.png';
 import profileApi from '@/apis/profileApi';
 import memberApi from '@/apis/memberApi';
 
-const backendUrl = 'http://kosa164.iptime.org:8080';
+const backendUrl = 'http://192.168.4.42:8080';
 
 const route = useRoute();
 const profile = ref(null);

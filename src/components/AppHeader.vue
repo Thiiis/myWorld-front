@@ -5,25 +5,27 @@
         <i class="bi bi-star-fill me-2"></i>
         마이월드
       </RouterLink>
-
       <div v-if="isLoggedIn" class="d-flex align-items-center">
         <span class="navbar-text me-3 pixel-font">
           <strong>{{ userAccount }}</strong>님 환영합니다!
         </span>
-        
-        <button @click="handleLogout" class="btn btn-outline-primary btn-sm">
+
+        <button @click="handleLogout" class="btn btn-outline-primary btn-sm me-2">
           로그아웃
         </button>
+        <RouterLink :to="`/myworld/${userAccount}`" class="btn btn-primary btn-sm">
+          내 미니홈
+        </RouterLink>
       </div>
 
       <div v-else>
         <span class="navbar-text me-3 pixel-font">
           <strong>★ 마이월드에 오신 것을 환영합니다!</strong>
         </span>
-          <RouterLink to="/login" class="btn btn-primary btn-sm">
-            로그인
-          </RouterLink>
-        </div>
+        <RouterLink to="/login" class="btn btn-primary btn-sm">
+          로그인
+        </RouterLink>
+      </div>
     </div>
   </nav>
 </template>
@@ -45,7 +47,7 @@ const userAccount = computed(() => store.state.account);
 function handleLogout() {
   // store의 `removeAuth` 액션을 호출합니다.
   store.dispatch('removeAuth');
-  
+
   alert('로그아웃 되었습니다.');
   router.push('/');
 }
@@ -56,12 +58,16 @@ function handleLogout() {
 .navbar-text {
   color: rgba(0, 0, 0, 0.7);
 }
-.pixel-font, * {
+
+.pixel-font,
+* {
   font-family: 'DungGeunMo', sans-serif !important;
 }
+
 .english-pixel {
   font-family: 'Upheaval', sans-serif !important;
 }
+
 .alert {
   border-radius: 12px;
 }
