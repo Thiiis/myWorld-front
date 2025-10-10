@@ -12,7 +12,7 @@
         <form @submit.prevent="handleSubmit" class="form-horizontal">
           <!-- 프로필 이미지 -->
           <div class="form-group">
-            <label class="col-sm-2 control-label dunggeunmo-font">🎇 이미지</label>
+            <label class="col-sm-2 control-label dunggeunmo-font">📷 이미지</label>
             <div class="col-sm-10">
               <img :src="finalImageSrc" class="img-thumbnail" style="width: 150px; height: 150px; margin-bottom: 10px;">
               <input type="file" @change="handleFileChange" class="form-control">

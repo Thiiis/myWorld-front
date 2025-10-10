@@ -43,50 +43,50 @@ const headerThemes = {
     title: '미니홈',
     icon: 'bi-house-heart-fill',
     subtitle: '당신의 작은 세상에 오신 것을 환영합니다.',
-    colorClass: 'theme-home',
-    textColorClass: 'text-theme-home',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   },
   diary: {
     title: '일기장',
     icon: 'bi-book-fill',
     subtitle: '오늘의 감정과 생각을 소중하게 기록해보세요.',
-    colorClass: 'theme-diary',
-    textColorClass: 'text-theme-diary',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   },
   guestboard: {
     title: '방명록',
     icon: 'bi-chat-left-text-fill',
     subtitle: '친구들과 즐거운 이야기를 나누는 공간입니다.',
-    colorClass: 'theme-guestboard',
-    textColorClass: 'text-theme-guestboard',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   },
   jukebox: {
     title: '주크박스',
     icon: 'bi-music-note-beamed',
     subtitle: '오늘 당신의 기분에 맞는 음악을 골라보세요.',
-    colorClass: 'theme-jukebox',
-    textColorClass: 'text-theme-jukebox',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   },
   friend: {
     title: '친구',
     icon: 'bi-people-fill',
     subtitle: '소중한 친구 목록을 확인하고 관리하세요.',
-    colorClass: 'theme-friend',
-    textColorClass: 'text-theme-friend',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   },
   profile: {
     title: '프로필',
     icon: 'bi-person-circle',
     subtitle: '개인 정보를 확인하고 수정할 수 있습니다.',
-    colorClass: 'theme-profile',
-    textColorClass: 'text-theme-profile',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   },
   default: { // 기본값은 'home' 테마를 사용
     title: '미니홈',
     icon: 'bi-house-heart-fill',
     subtitle: '당신의 작은 세상에 오신 것을 환영합니다.',
-    colorClass: 'theme-home',
-    textColorClass: 'text-theme-home',
+    colorClass: 'theme-background',
+    textColorClass: 'text-theme-color',
   }
 };
 
@@ -118,19 +118,9 @@ const currentTheme = computed(() => {
 /* --- 새로운 테마 색상 정의 --- */
 
 /* 1. 배경색 클래스 (활성화 색상 기준, 그라데이션 적용) */
-.theme-home       { background-image: linear-gradient(45deg, #0065F8, #0d8eff); }
-.theme-diary      { background-image: linear-gradient(45deg, #009AEF, #00bfff); }
-.theme-guestboard { background-image: linear-gradient(45deg, #00CAFF, #5ee6ff); }
-.theme-jukebox    { background-image: linear-gradient(45deg, #00EAD9, #54f2e2); }
-.theme-friend     { background-image: linear-gradient(45deg, #00FFDE, #79ffee); }
-.theme-profile    { background-image: linear-gradient(45deg, #4300FF, #7c3aed); }
+.theme-background       { background-image: linear-gradient(45deg, #0065F8, #0d8eff); }
 
 /* 2. 텍스트 색상 클래스 (선명한 단색으로 통일감 부여) */
-.text-theme-home       { color: #0065F8; }
-.text-theme-diary      { color: #009AEF; }
-.text-theme-guestboard { color: #00CAFF; }
-.text-theme-jukebox    { color: #00EAD9; }
-.text-theme-friend     { color: #00FFDE; }
-.text-theme-profile    { color: #4300FF; }
+.text-theme-color       { color: #0065F8; }
 </style>
 
