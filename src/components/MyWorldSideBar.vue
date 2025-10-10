@@ -14,7 +14,7 @@
       <div v-else-if="error" class="alert alert-danger">
         {{ error }}
       </div>
-      
+
       <!-- 3. 프로필 카드: 로딩이 끝났고(false), profileInfo 데이터가 있을 때만 표시 -->
       <div v-else-if="profileInfo" class="card shadow-sm mb-4 text-center">
         <div class="card-body p-4 text-center" width="300" height="500">
@@ -35,7 +35,7 @@
             <button v-else-if="!isMyProfile && profileInfo.isFriend" class="btn btn-sm btn-secondary ms-2 mb-3" disabled>
               <i class="bi bi-person-check"></i> 친구
             </button>
-            
+
             <ul v-if="memberInfo" class="list-unstyled text-start small">
               <li>
                 <span class="info-label">📧 이메일: </span>
@@ -97,11 +97,12 @@
       </ul>
     </div>
 
-    <!-- 🎵 주크박스 섹션 -->
+    <!-- 🎵 주크박스 -->
     <div class="jukebox-section mt-4 p-3 text-center">
       <h6 class="text-primary fw-bold">
         <i class="bi bi-music-note-beamed"></i> 주크박스
       </h6>
+
       <div v-if="jukebox" class="jukebox-box p-3 mt-2">
         <p class="fw-bold mb-1 text-dark">{{ jukebox.title }}</p>
         <p class="small text-muted mb-2">
@@ -117,10 +118,13 @@
         </div>
         <div id="sidebar-youtube-player" class="hidden-player"></div>
       </div>
+
       <div v-else class="jukebox-box p-3 mt-2 text-muted">
         <p class="mb-0">선택된 주크박스가 없습니다.</p>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -147,10 +151,11 @@ const isLoading = ref(true);
 const error = ref(null);
 const isMyProfile = ref(false);
 
-// Jukebox variables
+// Jukebox
 const jukebox = ref(null);
 const currentSong = ref(null);
 const isPlaying = ref(false);
+
 let player = null;
 let playerReady = false;
 let apiLoaded = false;
@@ -173,7 +178,7 @@ async function loadProfile(targetAccount) {
     const response = await profileApi.getProfileInfo(targetAccount);
     profileInfo.value = response.data;
 
-    // ✅ isMyProfile 상태를 여기서 명확하게 설정
+    // isMyProfile 상태를 여기서 명확하게 설정
     if (profileInfo.value && profileInfo.value.mid === store.state.mid) {
       isMyProfile.value = true;
       profileInfo.value.isFriend = false; // 내 프로필은 친구가 아님
@@ -213,38 +218,56 @@ async function addFriend(friendMid) {
   }
 }
 
-async function loadJukebox(targetAccount) {
-  if (!targetAccount) return;
+// 주크박스 불러오기
+async function loadJukebox() {
   try {
-    const res = await profileApi.getSelectedJukebox(targetAccount);
+    // 프로필에서 선택된 주크박스 정보 가져오기
+    const res = await profileApi.getSelectedJukebox(account.value);
     if (!res.data || !res.data.jid) {
+      console.log("선택된 주크박스 없음");
       jukebox.value = null;
       return;
     }
+
+    // 주크박스 상세 정보 가져오기 (곡 리스트 포함)
     const detailRes = await jukeboxApi.getJukeboxDetail(res.data.jid);
     jukebox.value = detailRes.data;
     currentSong.value = jukebox.value?.songs?.[0] || null;
+
+    console.log("🎧 선택된 주크박스 로드 완료:", jukebox.value);
+
     await nextTick();
     await loadYouTubeAPI();
     createPlayer();
+
+
+    if (jukebox.value?.songs?.length > 0) {
+      setTimeout(() => {
+        playAllSongs();
+      }, 500);
+    }
   } catch (err) {
     console.error("주크박스 정보를 불러오지 못했습니다:", err);
   }
 }
 
-// ... (Jukebox player functions: loadYouTubeAPI, createPlayer, etc. remain the same)
+
+// YouTube API 로드
 function loadYouTubeAPI() {
   return new Promise((resolve) => {
     if (window.YT && window.YT.Player) return resolve(window.YT);
     if (apiLoaded) return;
     apiLoaded = true;
+
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
+
     window.onYouTubeIframeAPIReady = () => resolve(window.YT);
   });
 }
 
+// Player 생성
 function createPlayer() {
   if (player) return;
   player = new YT.Player("sidebar-youtube-player", {
@@ -260,6 +283,7 @@ function createPlayer() {
   });
 }
 
+// 전체 재생
 function playAllSongs() {
   if (!jukebox.value?.songs?.length || !playerReady) return;
   isPlaying.value = true;
@@ -267,6 +291,7 @@ function playAllSongs() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
+// 다음 곡
 function nextSong() {
   const songs = jukebox.value.songs;
   const currentIndex = songs.findIndex(s => s.sid === currentSong.value.sid);
@@ -275,13 +300,14 @@ function nextSong() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
+// 정지
 function stopPlaying() {
   isPlaying.value = false;
   player.stopVideo();
 }
-// ---
 
-// ✅ onMounted: 로딩 상태를 명확하게 관리하도록 수정
+
+// onMounted: 로딩 상태를 명확하게 관리하도록 수정
 onMounted(async () => {
   isLoading.value = true;
   try {
@@ -290,6 +316,13 @@ onMounted(async () => {
       loadMember(account.value),
       loadJukebox(account.value),
     ]);
+
+    if (jukebox.value && jukebox.value.songs?.length > 0) {
+      setTimeout(() => {
+        playAllSongs();
+        console.log("미니홈 입장 시 자동 재생");
+      }, 1000);
+    }
   } catch (err) {
     console.error("사이드바 데이터 로딩 중 에러 발생:", err);
     error.value = "데이터를 불러오는 중 문제가 발생했습니다.";
@@ -322,11 +355,43 @@ watch(() => route.params.account,
         loadJukebox(newAccount),
       ]);
     } catch (err) {
-       console.error("계정 변경 후 데이터 로딩 중 에러 발생:", err);
-       error.value = "데이터를 새로 불러오는 중 문제가 발생했습니다.";
+      console.error("계정 변경 후 데이터 로딩 중 에러 발생:", err);
+      error.value = "데이터를 새로 불러오는 중 문제가 발생했습니다.";
     } finally {
       isLoading.value = false;
     }
+  }
+);
+
+watch(
+  () => route.params.account,
+  (newAccount) => {
+    miniHomeUrl.value = `/myworld/${newAccount}`;
+    loadProfile(newAccount);
+    loadMember(newAccount);
+  }
+);
+
+// 주크박스 변경 감지
+watch(
+  () => route.params.account,
+  async (newAccount) => {
+    miniHomeUrl.value = `/myworld/${newAccount}`;
+    account.value = newAccount; // ref 값 변경
+    await loadProfile(newAccount);
+    await loadMember(newAccount);
+
+    if (player) {
+      player.stopVideo();
+      player.destroy();
+      player = null;
+      playerReady = false;
+    }
+
+    isPlaying.value = false;
+    jukebox.value = null;
+
+    await loadJukebox();
   }
 );
 </script>
@@ -390,12 +455,29 @@ watch(() => route.params.account,
 }
 
 /* 1. 각 메뉴별 기본 텍스트/아이콘 색상 (새로운 블루 팔레트) */
-.nav-link.nav-home { color: #0052C6; }
-.nav-link.nav-diary { color: #007ABF; }
-.nav-link.nav-guestboard { color: #00A2CC; }
-.nav-link.nav-jukebox { color: #00BAAC; }
-.nav-link.nav-friend { color: #00CCB1; }
-.nav-link.nav-profile { color: #3600CC; }
+.nav-link.nav-home {
+  color: #0052C6;
+}
+
+.nav-link.nav-diary {
+  color: #007ABF;
+}
+
+.nav-link.nav-guestboard {
+  color: #00A2CC;
+}
+
+.nav-link.nav-jukebox {
+  color: #00BAAC;
+}
+
+.nav-link.nav-friend {
+  color: #00CCB1;
+}
+
+.nav-link.nav-profile {
+  color: #3600CC;
+}
 
 
 /* 2. 활성화된 링크의 공통 스타일 (글자색 흰색으로) */
@@ -405,12 +487,35 @@ watch(() => route.params.account,
 }
 
 /* 3. 각 메뉴별 활성화(active) 상태 배경색 (새로운 블루 팔레트) */
-.nav-link.nav-home.active { background-color: #0065F8; border-color: #0065F8; }
-.nav-link.nav-diary.active { background-color: #009AEF; border-color: #009AEF; }
-.nav-link.nav-guestboard.active { background-color: #00CAFF; border-color: #00CAFF; }
-.nav-link.nav-jukebox.active { background-color: #00EAD9; border-color: #00EAD9; }
-.nav-link.nav-friend.active { background-color: #00FFDE; border-color: #00FFDE; }
-.nav-link.nav-profile.active { background-color: #4300FF; border-color: #4300FF; }
+.nav-link.nav-home.active {
+  background-color: #0065F8;
+  border-color: #0065F8;
+}
+
+.nav-link.nav-diary.active {
+  background-color: #009AEF;
+  border-color: #009AEF;
+}
+
+.nav-link.nav-guestboard.active {
+  background-color: #00CAFF;
+  border-color: #00CAFF;
+}
+
+.nav-link.nav-jukebox.active {
+  background-color: #00EAD9;
+  border-color: #00EAD9;
+}
+
+.nav-link.nav-friend.active {
+  background-color: #00FFDE;
+  border-color: #00FFDE;
+}
+
+.nav-link.nav-profile.active {
+  background-color: #4300FF;
+  border-color: #4300FF;
+}
 
 
 /* 4. 마우스 호버(hover) 효과 통일 */
