@@ -148,6 +148,8 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 
+const error = ref("");
+
 //전역 상태를 읽고 변경하기 위해 Store 얻기
 const store = useStore();
 

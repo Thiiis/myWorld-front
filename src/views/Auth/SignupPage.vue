@@ -105,6 +105,8 @@ import memberApi from '@/apis/memberApi'; // API 모듈 임포트
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+const error = ref("");
+
 // Router 얻기
 const router = useRouter();
 
