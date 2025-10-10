@@ -10,8 +10,13 @@
         <p class="mt-3 text-muted">프로필을 불러오는 중...</p>
       </div>
 
-      <!-- 2. 프로필 카드: 로딩이 끝났고(false), profileInfo 데이터가 있을 때만 표시 -->
-      <div v-if="profileInfo" class="card shadow-sm mb-4 text-center">
+      <!-- 2. 에러 메시지: 로딩이 끝났고 에러가 있을 때 표시 -->
+      <div v-else-if="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+      
+      <!-- 3. 프로필 카드: 로딩이 끝났고(false), profileInfo 데이터가 있을 때만 표시 -->
+      <div v-else-if="profileInfo" class="card shadow-sm mb-4 text-center">
         <div class="card-body p-4 text-center" width="300" height="500">
           <div class="profile-image-container">
             <img :src="profileInfo.imgUrl ? `${backendUrl}${profileInfo.imgUrl}` : defaultProfile" alt="Profile Image" class="profile-image-square">
@@ -23,13 +28,15 @@
                 <i class="bi bi-clipboard"></i>
               </button>
             </p>
-            <button v-if="profileInfo.mid && profileInfo.mid !== store.state.mid && !profileInfo.isFriend" class="btn btn-sm btn-primary ms-2 mb-3" @click="addFriend(profileInfo.mid)">
+            <!-- '내 프로필'이 아닐 때만 친구 신청 버튼을 보여줌 -->
+            <button v-if="!isMyProfile && !profileInfo.isFriend" class="btn btn-sm btn-primary ms-2 mb-3" @click="addFriend(profileInfo.mid)">
               <i class="bi bi-person-plus"></i> 친구 신청
             </button>
-            <button v-else-if="profileInfo.isFriend" class="btn btn-sm btn-secondary ms-2 mb-3" disabled>
-              <i class="bi bi-person-check"></i> 친구 신청
+            <button v-else-if="!isMyProfile && profileInfo.isFriend" class="btn btn-sm btn-secondary ms-2 mb-3" disabled>
+              <i class="bi bi-person-check"></i> 친구
             </button>
-            <ul v-if="profileInfo && memberInfo" class="list-unstyled text-start small">
+            
+            <ul v-if="memberInfo" class="list-unstyled text-start small">
               <li>
                 <span class="info-label">📧 이메일: </span>
                 <span class="info-data">{{ memberInfo.email }}</span>
@@ -52,7 +59,7 @@
     <div class="sidebar-nav">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <RouterLink :to="`${miniHomeUrl}`" :class="['nav-link', 'nav-profile', { 'active': route.path === miniHomeUrl }]">
+          <RouterLink :to="`${miniHomeUrl}`" :class="['nav-link', 'nav-home', { 'active': route.path === miniHomeUrl }]">
             <i class="bi bi-house-door-fill"></i>
             <span>홈</span>
           </RouterLink>
@@ -95,14 +102,11 @@
       <h6 class="text-primary fw-bold">
         <i class="bi bi-music-note-beamed"></i> 주크박스
       </h6>
-
-      <!-- 선택된 주크박스가 있을 때 -->
       <div v-if="jukebox" class="jukebox-box p-3 mt-2">
         <p class="fw-bold mb-1 text-dark">{{ jukebox.title }}</p>
         <p class="small text-muted mb-2">
           🎶 {{ currentSong ? `${currentSong.artist} - ${currentSong.title}` : '재생할 곡이 없습니다.' }}
         </p>
-
         <div class="d-flex justify-content-center gap-2">
           <button class="btn btn-primary btn-sm rounded-circle" @click="playAllSongs" v-if="!isPlaying">
             <i class="bi bi-play-fill"></i>
@@ -111,19 +115,12 @@
             <i class="bi bi-pause-fill"></i>
           </button>
         </div>
-
-        <!-- 숨겨진 YouTube 플레이어 -->
         <div id="sidebar-youtube-player" class="hidden-player"></div>
       </div>
-
-      <!-- 선택된 주크박스가 없을 때 -->
       <div v-else class="jukebox-box p-3 mt-2 text-muted">
         <p class="mb-0">선택된 주크박스가 없습니다.</p>
       </div>
     </div>
-
-
-
   </div>
 </template>
 
@@ -131,151 +128,123 @@
 /* global YT */
 import { ref, onMounted, watch, nextTick } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
-import defaultProfile from '@/assets/image/default-profile.png' // 기본 이미지
-import profileApi from '@/apis/profileApi'; // API 모듈 import
-import memberApi from '@/apis/memberApi'; // API 모듈 import
-import store from '@/store'
+import defaultProfile from '@/assets/image/default-profile.png';
+import profileApi from '@/apis/profileApi';
+import memberApi from '@/apis/memberApi';
+import store from '@/store';
 import friendApi from '@/apis/friendApi';
 import jukeboxApi from '@/apis/jukeboxApi';
 
 const backendUrl = 'http://192.168.4.42:8080';
-// 1. 현재 URL 정보를 얻기 위해 useRoute() 사용
 const route = useRoute();
-
-// 2. URL 파라미터에서 'account'를 추출 (예: /myworld/userA -> 'userA')
 const account = ref(route.params.account);
-const mid = store.state.mid;
-
-// 3. 메뉴 링크를 만들기 위한 기본 URL
 const miniHomeUrl = ref(`/myworld/${route.params.account}`);
 
+// State variables
+const profileInfo = ref(null);
+const memberInfo = ref(null);
+const isLoading = ref(true);
+const error = ref(null);
+const isMyProfile = ref(false);
 
-// 주크박스 관련 변수
+// Jukebox variables
 const jukebox = ref(null);
 const currentSong = ref(null);
 const isPlaying = ref(false);
-
 let player = null;
 let playerReady = false;
 let apiLoaded = false;
 
-
-
-// 클립보드에 URL을 복사하는 메소드
 const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text).then(() => {
     alert('링크가 클립보드에 복사되었습니다!');
-  }).catch((error) => {
-    console.error('복사 실패:', error);
+  }).catch((err) => {
+    console.error('복사 실패:', err);
   });
 };
 
-// ✅ 수정된 코드: 현재 경로가 특정 URL로 시작하는지 확인하는 함수
 const isLinkActive = (basePath) => {
   return route.path.startsWith(basePath);
 };
-// 4. 서버에서 받아온 프로필 정보를 저장할 반응형 변수. 초기값은 null.
-const profileInfo = ref(null);
-const memberInfo = ref(null);
 
-// 5. 컴포넌트가 화면에 그려질 때(마운트될 때) API를 호출하는 함수
-async function loadProfile(account) {
-  if (account) { // account가 URL에 존재할 때만 API 호출
-    try {
-      // account를 인자로 넘겨 특정 사용자의 프로필 정보를 요청
-      const response = await profileApi.getProfileInfo(account);
-      // 성공적으로 데이터를 받아오면 profileInfo 변수에 저장
-      profileInfo.value = response.data;
+async function loadProfile(targetAccount) {
+  if (!targetAccount) return;
+  try {
+    const response = await profileApi.getProfileInfo(targetAccount);
+    profileInfo.value = response.data;
 
-      if (profileInfo.value && profileInfo.value.mid !== store.state.mid) {
-        const myFriendsRes = await friendApi.getFriendList(store.state.mid);
-        const myFriendMids = myFriendsRes.data.map(f => f.friendInfo.mid);
-        profileInfo.value.isFriend = myFriendMids.includes(profileInfo.value.mid);
-      } else {
-        profileInfo.value.isFriend = false;
-      }
-    } catch (error) {
-      console.error("사이드바 프로필 정보를 불러오는 데 실패했습니다:", error);
-      // 에러 발생 시 profileInfo는 계속 null 상태로 유지됨
+    // ✅ isMyProfile 상태를 여기서 명확하게 설정
+    if (profileInfo.value && profileInfo.value.mid === store.state.mid) {
+      isMyProfile.value = true;
+      profileInfo.value.isFriend = false; // 내 프로필은 친구가 아님
+    } else {
+      isMyProfile.value = false;
+      // 다른 사람 프로필일 때만 친구 상태 확인
+      const myFriendsRes = await friendApi.getFriendList(store.state.mid);
+      const myFriendMids = myFriendsRes.data.map(f => f.friendInfo.mid);
+      profileInfo.value.isFriend = myFriendMids.includes(profileInfo.value.mid);
     }
-  }
-}
-// 5. 컴포넌트가 화면에 그려질 때(마운트될 때) API를 호출하는 함수
-async function loadMember(account) {
-  if (account) { // account가 URL에 존재할 때만 API 호출
-    try {
-      // account를 인자로 넘겨 특정 사용자의 프로필 정보를 요청
-      const response = await memberApi.memberInfo(account);
-      // 성공적으로 데이터를 받아오면 profileInfo 변수에 저장
-      memberInfo.value = response.data;
-    } catch (error) {
-      console.error("사이드바 멤버 정보를 불러오는 데 실패했습니다:", error);
-      // 에러 발생 시 profileInfo는 계속 null 상태로 유지됨
-    }
+  } catch (err) {
+    console.error("사이드바 프로필 정보를 불러오는 데 실패했습니다:", err);
+    error.value = "프로필 정보를 가져올 수 없습니다.";
   }
 }
 
-async function addFriend(mid) {
-  if (!mid) return;
+async function loadMember(targetAccount) {
+  if (!targetAccount) return;
+  try {
+    const response = await memberApi.memberInfo(targetAccount);
+    memberInfo.value = response.data;
+  } catch (err) {
+    console.error("사이드바 멤버 정보를 불러오는 데 실패했습니다:", err);
+    // 멤버 정보는 부가 정보이므로, 실패해도 전체 에러로 처리하지 않음
+  }
+}
+
+async function addFriend(friendMid) {
+  if (!friendMid) return;
   if (!confirm("이 사용자에게 친구 요청을 보내시겠습니까?")) return;
   try {
-    await friendApi.sendFriendRequest(mid);
+    await friendApi.sendFriendRequest(friendMid);
     alert("친구 요청을 보냈습니다.");
   } catch (err) {
     console.error(err);
-    alert("이미 친구 요청을 보냈습니다.");
+    alert(err.response?.data?.message || "이미 친구 요청을 보냈거나 처리 중입니다.");
   }
 }
 
-// ✅ 주크박스 불러오기
-async function loadJukebox() {
+async function loadJukebox(targetAccount) {
+  if (!targetAccount) return;
   try {
-    // 1️⃣ 프로필에서 선택된 주크박스 정보 가져오기
-    const res = await profileApi.getSelectedJukebox(account.value);
+    const res = await profileApi.getSelectedJukebox(targetAccount);
     if (!res.data || !res.data.jid) {
-      console.log("선택된 주크박스 없음");
       jukebox.value = null;
       return;
     }
-
-    // 2️⃣ 주크박스 상세 정보 가져오기 (곡 리스트 포함)
     const detailRes = await jukeboxApi.getJukeboxDetail(res.data.jid);
     jukebox.value = detailRes.data;
     currentSong.value = jukebox.value?.songs?.[0] || null;
-
-    console.log("🎧 선택된 주크박스 로드 완료:", jukebox.value);
-
     await nextTick();
     await loadYouTubeAPI();
     createPlayer();
-
-
-    if (jukebox.value?.songs?.length > 0) {
-      setTimeout(() => {
-        playAllSongs();
-      }, 500);
-    }
   } catch (err) {
     console.error("주크박스 정보를 불러오지 못했습니다:", err);
   }
 }
 
-// ✅ YouTube API 로드
+// ... (Jukebox player functions: loadYouTubeAPI, createPlayer, etc. remain the same)
 function loadYouTubeAPI() {
   return new Promise((resolve) => {
     if (window.YT && window.YT.Player) return resolve(window.YT);
     if (apiLoaded) return;
     apiLoaded = true;
-
     const tag = document.createElement("script");
     tag.src = "https://www.youtube.com/iframe_api";
     document.body.appendChild(tag);
-
     window.onYouTubeIframeAPIReady = () => resolve(window.YT);
   });
 }
 
-// ✅ Player 생성
 function createPlayer() {
   if (player) return;
   player = new YT.Player("sidebar-youtube-player", {
@@ -291,7 +260,6 @@ function createPlayer() {
   });
 }
 
-// ✅ 전체 재생
 function playAllSongs() {
   if (!jukebox.value?.songs?.length || !playerReady) return;
   isPlaying.value = true;
@@ -299,7 +267,6 @@ function playAllSongs() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
-// ✅ 다음 곡
 function nextSong() {
   const songs = jukebox.value.songs;
   const currentIndex = songs.findIndex(s => s.sid === currentSong.value.sid);
@@ -308,63 +275,60 @@ function nextSong() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
-// ✅ 정지
 function stopPlaying() {
   isPlaying.value = false;
   player.stopVideo();
 }
+// ---
 
-
-
-
-
-onMounted( async () => {
-  await loadProfile(account);
-  await loadMember(account);
-  await loadJukebox();
-
-  if (jukebox.value && jukebox.value.songs?.length > 0) {
-    setTimeout(() => {
-      playAllSongs();
-      console.log("미니홈 입장 시 자동 재생");
-    }, 1000);
+// ✅ onMounted: 로딩 상태를 명확하게 관리하도록 수정
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    await Promise.all([
+      loadProfile(account.value),
+      loadMember(account.value),
+      loadJukebox(account.value),
+    ]);
+  } catch (err) {
+    console.error("사이드바 데이터 로딩 중 에러 발생:", err);
+    error.value = "데이터를 불러오는 중 문제가 발생했습니다.";
+  } finally {
+    isLoading.value = false; // 모든 작업이 끝나면 로딩 상태 해제
   }
-
 });
 
-watch(
-  () => route.params.account,
-  (newAccount) => {
-    miniHomeUrl.value = `/myworld/${newAccount}`;
-    loadProfile(newAccount);
-    loadMember(newAccount);
-  }
-);
 
-// 주크박스 변경 감지
-watch(
-  () => route.params.account,
+watch(() => route.params.account,
   async (newAccount) => {
+    isLoading.value = true;
     miniHomeUrl.value = `/myworld/${newAccount}`;
-    account.value = newAccount; // ✅ ref 값 변경
-    await loadProfile(newAccount);
-    await loadMember(newAccount);
+    account.value = newAccount;
 
+    // 플레이어 정리
     if (player) {
       player.stopVideo();
       player.destroy();
       player = null;
       playerReady = false;
     }
-
     isPlaying.value = false;
     jukebox.value = null;
 
-    await loadJukebox();
+    try {
+      await Promise.all([
+        loadProfile(newAccount),
+        loadMember(newAccount),
+        loadJukebox(newAccount),
+      ]);
+    } catch (err) {
+       console.error("계정 변경 후 데이터 로딩 중 에러 발생:", err);
+       error.value = "데이터를 새로 불러오는 중 문제가 발생했습니다.";
+    } finally {
+      isLoading.value = false;
+    }
   }
 );
-
-
 </script>
 
 <style scoped>
@@ -374,19 +338,13 @@ watch(
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* 위아래로 충분한 여백을 줍니다. */
   padding: 3rem 1rem;
-  /* 프로필 카드의 최소 높이와 비슷하게 설정하여 레이아웃 깨짐 방지 */
   min-height: 250px;
-  /* 배경을 흰색으로 */
   background-color: #fff;
-  /* 프로필 카드와 동일한 둥근 모서리 */
   border-radius: 15px;
-  /* 은은한 그림자 효과 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* 스피너 애니메이션의 크기 조절 (선택 사항) */
 .spinner-border {
   width: 3rem;
   height: 3rem;
@@ -394,44 +352,27 @@ watch(
 
 /* 전체 사이드바 컨테이너 스타일 */
 .custom-sidebar {
-  /* 연한 회색 배경 */
   background-color: #f8f9fa;
   padding: 1rem;
-  /* 컨테이너 모서리 둥글게 */
   border-radius: 15px;
-  /* 은은한 그림자 효과 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  /* 부모 요소 너비의 100%를 차지하도록 설정 */
   width: 100%;
-  /* 너비가 400px를 초과하지 않도록 제한 */
   max-width: 400px;
-  /* 너무 얇아지지 않도록 최소 너비 설정 (선택 사항) */
-  /* min-width: 280px;   */
 }
 
 .profile-image-container {
-  /* flex 컨테이너의 자식 요소로서 공간을 차지하게 함 */
   display: flex;
-  /* 내부 아이템(이미지 또는 아이콘)을 가로 중앙 정렬 */
   justify-content: center;
-  /* 내부 아이템을 세로 중앙 정렬 */
   align-items: center;
-  /* 이미지와 닉네임 사이의 간격 */
   margin-bottom: 1rem;
 }
 
 .profile-image-square {
-  /* 원하는 크기로 조절 */
   width: 120px;
-  /* 너비와 높이를 동일하게 설정 */
   height: 120px;
   object-fit: cover;
-  /* 둥근 모서리 */
   border-radius: 15%;
-
-  /* 아이콘 스타일 */
   font-size: 120px;
-  /* 아이콘이 컨테이너 밖으로 나가지 않도록 줄 높이 조절 */
   line-height: 1;
 }
 
@@ -446,92 +387,36 @@ watch(
   padding: 0.75rem 1rem;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
-  /* 기본 텍스트 색상을 여기서 지정하지 않고, 개별 클래스에서 지정합니다. */
 }
 
 /* 1. 각 메뉴별 기본 텍스트/아이콘 색상 (새로운 블루 팔레트) */
-/* 홈 (진한 파랑) */
-.nav-link.nav-home {
-  color: #0052C6;
-}
-
-/* 일기장 (중간 파랑) */
-.nav-link.nav-diary {
-  color: #007ABF;
-}
-
-/* 방명록 (진한 시안) */
-.nav-link.nav-guestboard {
-  color: #00A2CC;
-}
-
-/* 주크박스 (진한 청록) */
-.nav-link.nav-jukebox {
-  color: #00BAAC;
-}
-
-/* 친구 (진한 민트) */
-.nav-link.nav-friend {
-  color: #00CCB1;
-}
-
-/* 프로필 (진한 청보라) */
-.nav-link.nav-profile {
-  color: #3600CC;
-}
-
+.nav-link.nav-home { color: #0052C6; }
+.nav-link.nav-diary { color: #007ABF; }
+.nav-link.nav-guestboard { color: #00A2CC; }
+.nav-link.nav-jukebox { color: #00BAAC; }
+.nav-link.nav-friend { color: #00CCB1; }
+.nav-link.nav-profile { color: #3600CC; }
 
 
 /* 2. 활성화된 링크의 공통 스타일 (글자색 흰색으로) */
 .nav-link.active {
   color: #ffffff !important;
-  /* 활성화 시 모든 텍스트/아이콘은 흰색 고정 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* 3. 각 메뉴별 활성화(active) 상태 배경색 (새로운 블루 팔레트) */
-.nav-link.nav-home.active {
-  background-color: #0065F8;
-  border-color: #0065F8;
-}
-
-/* 홈 (선명한 파랑) */
-.nav-link.nav-diary.active {
-  background-color: #009AEF;
-  border-color: #009AEF;
-}
-
-/* 일기장 (밝은 파랑) */
-.nav-link.nav-guestboard.active {
-  background-color: #00CAFF;
-  border-color: #00CAFF;
-}
-
-/* 주크박스 (청록) */
-.nav-link.nav-jukebox.active {
-  background-color: #00EAD9;
-  border-color: #00EAD9;
-}
-
-/* 친구 (민트) */
-.nav-link.nav-friend.active {
-  background-color: #00FFDE;
-  border-color: #00FFDE;
-}
-
-/* 프로필 (선명한 청보라) */
-.nav-link.nav-profile.active {
-  background-color: #4300FF;
-  border-color: #4300FF;
-}
-
+.nav-link.nav-home.active { background-color: #0065F8; border-color: #0065F8; }
+.nav-link.nav-diary.active { background-color: #009AEF; border-color: #009AEF; }
+.nav-link.nav-guestboard.active { background-color: #00CAFF; border-color: #00CAFF; }
+.nav-link.nav-jukebox.active { background-color: #00EAD9; border-color: #00EAD9; }
+.nav-link.nav-friend.active { background-color: #00FFDE; border-color: #00FFDE; }
+.nav-link.nav-profile.active { background-color: #4300FF; border-color: #4300FF; }
 
 
 /* 4. 마우스 호버(hover) 효과 통일 */
 .nav-link:hover:not(.active) {
   transform: translateY(-2px);
   background-color: #f8f9fa;
-  /* 마우스를 올렸을 때 연한 회색 배경으로 통일 */
 }
 
 /* --- 아이콘 공통 스타일 --- */
@@ -541,16 +426,12 @@ watch(
   width: 24px;
   text-align: center;
   transition: color 0.2s ease-in-out;
-  /* 아이콘 색상 변경도 부드럽게 */
 }
 
-/* 네비게이션 아이템(li) 간격 조절 */
 .nav-item {
   margin-bottom: 1rem;
-  /* 이 값을 늘려서 간격을 넓힙니다. 1.2rem 등으로 더 늘려도 좋습니다. */
 }
 
-/* 마지막 아이템에는 여백이 필요 없으므로 그대로 둡니다. */
 .nav-item:last-child {
   margin-bottom: 0;
 }
@@ -565,5 +446,9 @@ watch(
   border: 1px solid #e9ecef;
   border-radius: 10px;
   background-color: #fdfdfd;
+}
+
+.hidden-player {
+  display: none;
 }
 </style>
