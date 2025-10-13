@@ -1,7 +1,6 @@
 <template>
-  <router-view v-if="route.name" v-bind="currentRouteProps" @go-to-create="goToCreate" @go-back="goBack" 
-  @update:active-folder="updateActiveFolder" @update:folder-type="updateFolderType" @go-page="goToPage"
-  />
+  <router-view v-if="route.name" v-bind="currentRouteProps" @go-to-create="goToCreate" @go-back="goBack" @update:active-folder="updateActiveFolder" @update:folder-type="updateFolderType"
+    @go-page="goToPage" />
 </template>
 
 <script setup>

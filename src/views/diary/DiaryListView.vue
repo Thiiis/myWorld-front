@@ -25,16 +25,13 @@
     </div> -->
 
 
-    <!-- 🔹 검색/정렬 -->
-    <div class="filter-sort-box mb-3">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <!-- <span class="text-primary fw-bold small d-flex align-items-center"><i class="bi bi-search me-1"></i> 검색 & 정렬</span> -->
-        <div class="d-flex gap-2">
-          <!-- <button class="btn btn-outline-warning btn-sm" :class="{ active: multiSelect }" @click="multiSelect = !multiSelect"> ✓ 다중선택 </button> -->
-          <button v-if="myAccount && hostAccount && isMyHome" class="btn btn-primary btn-sm" @click="goToCreatePage"><i class="bi bi-pencil-square me-1"></i> 새 일기 작성</button>
-        </div>
-      </div>
+
+    <div class="text-end mb-3">
+      <button v-if="myAccount && hostAccount && isMyHome" class="btn btn-primary btn-sm" @click="goToCreatePage">
+        새 일기 작성
+      </button>
     </div>
+
 
     <!-- 검색창 + 정렬 -->
     <!-- <div class="d-flex align-items-center gap-2">
@@ -55,7 +52,7 @@
 
     <!-- 🔹 일기 카드 목록 -->
     <div class="diary-grid">
-      <div v-for="diary in filteredEntries" :key="diary.id" class="card diary-card p-3" @click="openModal(diary)">
+      <div v-for="diary in filteredEntries" :key="diary.id" class="card diary-card p-3" @click="goDirayDetail(diary)">
         <div class="img-box">
           <img v-if="diary.thumbnail" :src="diary.thumbnail" alt="일기 대표 이미지" class="img-fluid rounded" />
           <div v-else class="placeholder bg-light d-flex align-items-center justify-content-center"><i class="bi bi-image text-muted fs-2"></i></div>
@@ -81,8 +78,6 @@
         </div>
       </div>
     </div>
-    <!-- 🔹 모달 & 페이지네이션 -->
-    <DiaryModal />
     <DiaryPage :currentPage="currentPage" :totalPages="totalPages" :totalItems="totalItems" @go-page="goPage" />
   </div>
 </template>
@@ -90,8 +85,6 @@
 <script setup>
 import { computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
-import * as bootstrap from "bootstrap";
-import DiaryModal from "@/views/Diary/list_components/DiaryModal.vue";
 import DiaryPage from "@/views/Diary/list_components/DiaryPage.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
@@ -163,20 +156,12 @@ watch(
     }
   }
 );
-//모달 열기
-const openModal = async (diary) => {
-  try {
-    // 1️⃣ 상세 데이터 서버에서 가져오기
-    store.commit("diary/setSelectedEntry", diary);
-    await store.dispatch("diary/fetchDiary", diary.id);
-    // 2️⃣ Bootstrap Modal 열기
-    const modalEl = document.getElementById("diaryModal");
-    const modalInstance = new bootstrap.Modal(modalEl);
-    modalInstance.show();
-  } catch (e) {
-    console.error("❌ 모달 열기 실패:", e);
-  }
+
+// detail로 이동
+const goDirayDetail = async (diary) => {
+  router.push(`/myworld/${route.params.account}/diary/${diary.id}`);
 };
+
 </script>
 
 <style scoped>

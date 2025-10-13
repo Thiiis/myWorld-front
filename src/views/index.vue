@@ -9,7 +9,9 @@
 
         <!-- 오른쪽 컨텐츠 -->
         <div class="col-md-9">
-          <MyWorldHeader :page-name="$route.meta.theme" class="mb-4" />
+          <MyWorldHeader 
+          v-if="!$route.matched.some(r => r.meta?.hideHeader)"
+          :page-name="$route.meta.theme" class="mb-4" />
           <div class="card shadow-sm">
             <div class="card-body">
               <RouterView />

@@ -3,10 +3,7 @@
 
     <!-- 고정 영역 -->
     <div class="comment-header-sticky">
-      <!-- 헤더 -->
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <h6 class="m-0 fw-bold">댓글</h6>
-      </div>
+
 
       <!-- 작성 -->
       <div class="comment-editor border rounded-3 p-2 mb-2">

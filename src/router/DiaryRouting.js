@@ -1,10 +1,10 @@
 const routes = [
   {
-    path: 'diary', 
+    path: 'diary',
     component: () => import('@/views/Diary/DiaryHome.vue'),
     children: [
       {
-        path: '', 
+        path: '',
         name: 'DiaryList',
         component: () => import('@/views/Diary/DiaryListView.vue'),
         meta: { theme: 'diary' }
@@ -21,6 +21,13 @@ const routes = [
         name: "DiaryUpdate",
         component: () => import("@/views/Diary/DiaryUpdateView.vue"),
         meta: { theme: 'diary' },
+        props: true
+      },
+      {
+        path: ":id",
+        name: 'DiaryDetail',
+        component: () => import("@/views/Diary/DiaryDetail.vue"),
+        meta: { theme: "diary", hideHeader: true },
         props: true
       }
     ]
