@@ -73,15 +73,19 @@ import { useRoute } from 'vue-router';
 import defaultProfile from '@/assets/image/default-profile.png';
 import profileApi from '@/apis/profileApi';
 import memberApi from '@/apis/memberApi';
+import { useStore } from 'vuex';
 
 const backendUrl = 'http://192.168.4.42:8080';
 
 const route = useRoute();
+const store = useStore();
 const profile = ref(null);
 const memberInfo = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
 const isMyProfile = ref(false);
+
+const account = route.params.account;
 
 // 1. 프로필 정보를 불러오는 함수
 async function loadProfile(account) {

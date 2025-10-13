@@ -1,8 +1,7 @@
 <template>
   <div class="container my-4">
     <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>💬 방명록</h3>
+      <div class="d-flex justify-content-end align-items-center mb-3">
         <button v-if="!isWriting" class="btn btn-outline-primary" @click="isWriting = true">
           작성하기
         </button>

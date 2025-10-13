@@ -1,8 +1,7 @@
 <template>
   <div class="container my-4">
     <!-- 상단 -->
-    <div class="d-flex justify-content-between mb-3 align-items-center">
-      <h3>🎵 주크박스</h3>
+    <div class="d-flex justify-content-end mb-3 align-items-center">
       <div v-if="isMyPage">
         <router-link :to="`/myworld/${$route.params.account}/jukebox/mysongs`" class="btn btn-outline-primary me-2">
           나의 음악
@@ -17,8 +16,8 @@
     <div v-if="jukeboxes.length > 0" class="row">
       <div v-for="box in jukeboxes" :key="box.jid" class="col-md-4 mb-3">
         <div class="jukebox-card h-100 shadow-sm" :class="{ selected: selectedJukeboxId === box.jid }">
-          
-          <!-- ✅ 제목과 선택 버튼을 같은 줄에 배치 -->
+
+          <!-- 제목과 선택 버튼을 같은 줄에 배치 -->
           <div class="card-body d-flex justify-content-between align-items-start">
             <div>
               <h5 class="card-title mb-0 text-primary fw-bold" style="cursor: pointer;" @click="openDetail(box.jid)">
@@ -28,13 +27,8 @@
             </div>
 
             <!-- 선택 버튼 추가 -->
-            <button
-              v-if="isMyPage"
-              class="btn btn-sm"
-              :class="selectedJukeboxId === box.jid ? 'btn-success' : 'btn-outline-secondary'"
-              @click="selectJukebox(box.jid)"
-              style="white-space: nowrap; font-size: 0.75rem; height: 28px;"
-            >
+            <button v-if="isMyPage" class="btn btn-sm" :class="selectedJukeboxId === box.jid ? 'btn-success' : 'btn-outline-secondary'" @click="selectJukebox(box.jid)"
+              style="white-space: nowrap; font-size: 0.75rem; height: 28px;">
               {{ selectedJukeboxId === box.jid ? "🎧" : "선택" }}
             </button>
           </div>
@@ -278,7 +272,7 @@ function closeModal() {
   showModal.value = false;
   detail.value = {};
 
-  // ✅ 플레이어 완전히 제거 
+  // 플레이어 완전히 제거 
   if (player) {
     player.destroy();
     player = null;
@@ -385,14 +379,14 @@ onBeforeUnmount(() => {
   /* 기본 크기 */
 }
 
-/* 💫 hover 시 살짝 확대 & 그림자 강조 */
+/* hover 시 살짝 확대 & 그림자 강조 */
 .jukebox-card:hover {
   transform: scale(1.03);
   /* 3% 커짐 */
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
 }
 
-/* ✅ 선택된 카드 강조 스타일 */
+/* 선택된 카드 강조 스타일 */
 .selected {
   border: 2px solid #198754;
   /* Bootstrap success 색상 */

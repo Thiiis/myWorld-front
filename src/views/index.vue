@@ -1,6 +1,7 @@
 <template>
-  <div class="container-fluid py-4">
-      <div class="row">
+  <div class="container-fluid py-4" style="background-color: #f8f9fa;">
+    <div class="container">
+      <div class="row g-4">
         <!-- 왼쪽 사이드바 -->
         <div class="col-md-3">
           <MyWorldSideBar />
@@ -17,7 +18,9 @@
         </div>
       </div>
     </div>
+  </div>
 </template>
+
 
 <script setup>
 import MyWorldSideBar from '@/components/MyWorldSideBar.vue'
@@ -33,8 +36,4 @@ const currentPageTitle = computed(() => route.meta.title || 'MyWorld')
 </script>
 
 <style scoped>
-.container-fluid {
-  background-color: #f8f9fa;
-  min-height: 100vh;
-}
 </style>

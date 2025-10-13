@@ -218,10 +218,10 @@ async function addFriend(friendMid) {
   }
 }
 
-// ✅ 주크박스 불러오기
+// 주크박스 불러오기
 async function loadJukebox() {
   try {
-    // 1️⃣ 프로필에서 선택된 주크박스 정보 가져오기
+    // 프로필에서 선택된 주크박스 정보 가져오기
     const res = await profileApi.getSelectedJukebox(account.value);
     if (!res.data || !res.data.jid) {
       console.log("선택된 주크박스 없음");
@@ -229,12 +229,12 @@ async function loadJukebox() {
       return;
     }
 
-    // 2️⃣ 주크박스 상세 정보 가져오기 (곡 리스트 포함)
+    // 주크박스 상세 정보 가져오기 (곡 리스트 포함)
     const detailRes = await jukeboxApi.getJukeboxDetail(res.data.jid);
     jukebox.value = detailRes.data;
     currentSong.value = jukebox.value?.songs?.[0] || null;
 
-    console.log("🎧 선택된 주크박스 로드 완료:", jukebox.value);
+    console.log("선택된 주크박스 로드 완료:", jukebox.value);
 
     await nextTick();
     await loadYouTubeAPI();
@@ -251,7 +251,7 @@ async function loadJukebox() {
   }
 }
 
-// ✅ YouTube API 로드
+// YouTube API 로드
 function loadYouTubeAPI() {
   return new Promise((resolve) => {
     if (window.YT && window.YT.Player) return resolve(window.YT);
@@ -266,7 +266,7 @@ function loadYouTubeAPI() {
   });
 }
 
-// ✅ Player 생성
+// Player 생성
 function createPlayer() {
   if (player) return;
   player = new YT.Player("sidebar-youtube-player", {
@@ -282,7 +282,7 @@ function createPlayer() {
   });
 }
 
-// ✅ 전체 재생
+// 전체 재생
 function playAllSongs() {
   if (!jukebox.value?.songs?.length || !playerReady) return;
   isPlaying.value = true;
@@ -290,7 +290,7 @@ function playAllSongs() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
-// ✅ 다음 곡
+// 다음 곡
 function nextSong() {
   const songs = jukebox.value.songs;
   const currentIndex = songs.findIndex(s => s.sid === currentSong.value.sid);
@@ -299,12 +299,11 @@ function nextSong() {
   player.loadVideoById(currentSong.value.videoId);
 }
 
-// ✅ 정지
+// 정지
 function stopPlaying() {
   isPlaying.value = false;
   player.stopVideo();
 }
-
 
 
 
@@ -330,7 +329,7 @@ onMounted(async () => {
   }
 });
 
-
+// 다른 사람의 미니홈으로 갔을 때
 watch(
   () => route.params.account,
   async (newAccount) => {
@@ -352,18 +351,53 @@ watch(
     await loadMember(newAccount);
     await loadJukebox();
 
-    // ✅ 주크박스가 있고, 곡이 있을 때 자동재생 시도
+    // 주크박스가 있고, 곡이 있을 때 자동재생 시도
     if (jukebox.value && jukebox.value.songs?.length > 0) {
       const waitUntilReady = setInterval(() => {
         if (playerReady) {
           clearInterval(waitUntilReady);
           playAllSongs();
-          console.log("친구 홈 입장 시 자동 재생 ✅");
+          console.log("친구 홈 입장 시 자동 재생");
         }
       }, 300);
     }
   }
 );
+
+// 주크박스를 변경했을 때
+watch(
+  () => store.state.jukebox.selectedJukebox,
+  async (newVal, oldVal) => {
+    if (!isMyProfile.value) return;
+
+    // 🔹 로그로 확인
+    console.log("👀 Sidebar 감지됨:", oldVal, "→", newVal);
+
+    // 🔹 새로운 주크박스가 선택된 경우
+    if (newVal && newVal.jid) {
+      console.log("🎵 주크박스 변경 → 사이드바 갱신 시작");
+
+      // 🔹 store값 바로 반영 (DB 다시 안 불러와도 됨)
+      const detailRes = await jukeboxApi.getJukeboxDetail(newVal.jid);
+      jukebox.value = { ...detailRes.data }; // ✅ 새 객체로 반응성 트리거
+      currentSong.value = jukebox.value.songs?.[0] || null;
+
+      // 🔹 Vue DOM 업데이트 강제 반영
+      await nextTick();
+      console.log("✅ 사이드바 갱신 완료:", jukebox.value.title);
+    } 
+    else {
+      // 🔹 선택 해제 시 초기화
+      console.log("🧹 주크박스 해제됨");
+      jukebox.value = null;
+      currentSong.value = null;
+    }
+  },
+  { deep: true }
+);
+
+
+
 
 
 </script>

@@ -62,13 +62,13 @@ function profileUpdateImage(imageFile) {
 
 
 
-// ✅ 선택된 주크박스 저장 (회원의 프로필에 주크박스 ID 연결)
+// 선택된 주크박스 저장 (회원의 프로필에 주크박스 ID 연결)
 function updateSelectedJukebox(account, jid) {
   return api.post(`/profiles/${account}/jukebox`, { jid });
 }
 
 
-// ✅ 선택된 주크박스 조회
+// 선택된 주크박스 조회
 function getSelectedJukebox(account) {
   return api.get(`/profiles/${account}/jukebox`);
 }
