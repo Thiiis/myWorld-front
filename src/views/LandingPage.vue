@@ -16,9 +16,9 @@
           나만의 디지털 공간을 마이월드에서 만들어보세요
         </p>
         <div class="d-flex justify-content-center gap-3">
-          <RouterLink to="/signup" class="btn btn-primary btn-lg">
+          <button class="btn btn-primary btn-lg" @click="handleStartMinihome">
             ▶ 미니홈피 시작하기
-          </RouterLink>
+          </button>
           <RouterLink to="/themetest" class="btn btn-outline-primary btn-lg">
             💻 테마 테스트
           </RouterLink>
@@ -99,8 +99,11 @@
 <script setup>
 import memberApi from '@/apis/memberApi';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 const router = useRouter();
+const store = useStore();
+
 const features = [
   { icon: "bi bi-cloud", title: "하늘처럼 깔끔한", description: "깔끔하고 직관적인 UI로 편안한 경험 제공" },
   { icon: "bi bi-water", title: "강물처럼 자연스러운", description: "자연스러운 흐름의 소통과 인터랙션" },
@@ -133,6 +136,20 @@ const visitRandomMinihomep = async () => {
   } catch (error) {
     console.error('랜덤 방문 중 오류 발생:', error);
     alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+};
+
+// 로그인 여부 확인 후 이동
+const handleStartMinihome = () => {
+  const jwt = localStorage.getItem('jwt');
+  const account = store.state.account;
+
+  if (jwt && account) {
+    // 로그인 상태 → 내 미니홈으로 이동
+    router.push(`/myworld/${account}`);
+  } else {
+    // 비로그인 상태 → 회원가입 페이지로 이동
+    router.push('/signup');
   }
 };
 </script>
