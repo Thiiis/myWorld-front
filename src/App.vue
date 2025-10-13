@@ -6,10 +6,11 @@
     <!-- 하단 채팅창 -->
     <div class="chat-container">
       <ChatBox
-        v-for="room in openRooms"
+        v-for="(room, index) in openRooms"
         :key="room.id"
         :room-id="room.id"
         :friend="room.friend"
+        :index="index"
         @close="closeRoom(room.id)"
       />
     </div>
@@ -17,7 +18,7 @@
 </template>
 
 <script setup>
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView } from 'vue-router';
 import AppHeader from './components/AppHeader.vue';
 import { useStore } from 'vuex';
 import { computed } from 'vue';

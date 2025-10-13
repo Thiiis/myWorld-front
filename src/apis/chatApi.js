@@ -12,8 +12,13 @@ function getRooms() {
   return axiosApi.api.get(`/chat/rooms`);
 }
 
+function getUnreadCount(roomId) {
+  return axiosApi.api.get(`/chat/rooms/${roomId}/unread-count`);
+}
+
 export default {
   getMessages,
   createRoom,
-  getRooms
+  getRooms,
+  getUnreadCount
 };

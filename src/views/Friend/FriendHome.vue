@@ -34,6 +34,7 @@
         :class="{ active: $route.path === `/myworld/${account}/friends/chatList` }"
       >
         <i class="bi bi-chat"></i> 채팅 목록
+        <span v-show="totalUnread > 0" key="badge" class="unread-badge ms-1">{{ totalUnread }}</span>
       </RouterLink>
     </nav>
 
@@ -43,8 +44,9 @@
 
 <script setup>
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
+import chatApi from '@/apis/chatApi'
 
 const route = useRoute()
 const store = useStore()
@@ -58,6 +60,34 @@ const myAccount = computed(() => store.state.account)
 // 본인 페이지인지 확인
 const isMyPage = computed(() => account.value === myAccount.value)
 
+const totalUnread = ref(0);
+
+// 안 읽은 메시지 수 불러옴
+async function fetchTotalUnread() {
+  try {
+    const res = await chatApi.getRooms();
+    const rooms = res.data || [];
+    totalUnread.value = rooms.reduce((sum, r) => sum + (r.unreadCount || 0), 0);
+  } catch (e) {
+    console.error("총 안읽은 개수 조회 실패:", e);
+  }
+}
+
+onMounted(() => {
+  // 페이지 들어올 때 백엔드 기준으로 초기화
+  fetchTotalUnread();
+
+  // ChatRoomList.vue에서 업데이트 이벤트 수신
+  window.addEventListener("update-total-unread", async (e) => {
+    totalUnread.value = e.detail;
+    await nextTick();
+  });
+});
+
+onBeforeUnmount(() => {
+  // 이벤트 중복 방지
+  window.removeEventListener("update-total-unread", () => {});
+});
 </script>
 
 <style scoped>
