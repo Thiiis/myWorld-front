@@ -1,4 +1,4 @@
-import diaryApi from "@/apis/diarysApi";
+import diaryApi from "@/apis/diaryApi";
 
 export default {
   namespaced: true,
