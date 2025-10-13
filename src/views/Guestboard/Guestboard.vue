@@ -30,61 +30,47 @@
         <div
           v-for="board in guestboards"
           :key="board.gbid"
-          class="border rounded py-2 px-3 mb-2"
+          class="border rounded py-2 px-3 mb-2 d-flex justify-content-between align-items-start"
         >
-          <div class="d-flex justify-content-between align-items-start">
-            <!-- 왼쪽: 닉네임 + 내용 -->
-            <div class="flex-grow-1 me-3">
-              <span class="fw-bold text-primary me-2">{{ board.nickname || "친구" }}:</span>
-
-              <!-- 일반 모드 -->
-              <template v-if="editingId !== board.gbid">
-                <span>{{ board.content }}</span>
-              </template>
-
-              <!-- 수정 모드 -->
-              <template v-else>
-                <div class="edit-area mt-2 w-100">
-                  <textarea
-                    v-model="editContent"
-                    class="form-control mb-2 edit-textarea"
-                    rows="3"
-                    placeholder="수정할 내용을 입력하세요..."
-                  ></textarea>
-                  <div class="mt-2 edit-btns">
-                    <button class="btn btn-primary btn-write me-2" @click="submitEdit(board.gbid)">완료</button>
-                    <button class="btn btn-outline-secondary btn-write" @click="cancelEdit">취소</button>
-                  </div>
-                </div>
-              </template>
-            </div>
-
-            <!-- 오른쪽: 수정/삭제 버튼 -->
-            <div
-              v-if="board.gid == mid && editingId !== board.gbid"
-              class="d-flex align-items-start gap-2 mt-1"
-            >
-              <button class="btn btn-outline-secondary btn-sm action-btn" @click="startEdit(board)">
-                수정
-              </button>
-              <button class="btn btn-outline-danger btn-sm action-btn" @click="deleteBoard(board.gbid)">
-                삭제
-              </button>
+          <!-- 왼쪽: 닉네임 + 내용 -->
+          <div class="flex-grow-1 me-3 d-flex align-items-center" style="cursor:pointer" @click="goToHome(board.account)">
+            <img
+              :src="board.profileImg ? `${backendUrl}${board.profileImg}` : defaultProfile"
+              class="rounded-circle me-2"
+              style="width: 40px; height: 40px; object-fit: cover;"
+            />
+            <div>
+              <strong class="text-primary">🏠 {{ board.nickname || "친구" }}</strong>
+              <p class="text-muted small mb-0">{{ board.content }}</p>
             </div>
           </div>
-        </div>
 
-        <!-- 📜 더보기 버튼 -->
-        <div class="text-center mt-3" v-if="!loading && hasMore">
-          <button class="btn btn-outline-primary rounded-pill px-4" @click="loadMore">
-            이전 방명록 보기
-          </button>
-        </div>
+          <!-- 오른쪽: 수정/삭제 버튼 -->
+          <div
+            v-if="board.gid == mid && editingId !== board.gbid"
+            class="d-flex align-items-start gap-2 mt-1"
+          >
+            <button class="btn btn-outline-secondary btn-sm action-btn" @click="startEdit(board)">
+              수정
+            </button>
+            <button class="btn btn-outline-danger btn-sm action-btn" @click="deleteBoard(board.gbid)">
+              삭제
+            </button>
+          </div>
 
-        <!-- 로딩 표시 -->
-        <div v-if="loading" class="text-center text-muted mt-3">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2">불러오는 중...</p>
+          <!-- 수정 모드 -->
+          <div v-else-if="editingId === board.gbid" class="edit-area mt-2 w-100">
+            <textarea
+              v-model="editContent"
+              class="form-control mb-2 edit-textarea"
+              rows="3"
+              placeholder="수정할 내용을 입력하세요..."
+            ></textarea>
+            <div class="text-end mt-2 edit-btns">
+              <button class="btn btn-primary btn-write me-2" @click="submitEdit(board.gbid)">완료</button>
+              <button class="btn btn-outline-secondary btn-write" @click="cancelEdit">취소</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,26 +86,34 @@
 <script setup>
 import guestboardApi from "@/apis/guestboardApi";
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import store from "@/store";
+import defaultProfile from "@/assets/image/default-profile.png";
 
+const router = useRouter();
 const route = useRoute();
+const backendUrl = "http://192.168.4.42:8080";
 
 const isWriting = ref(false);
 const guestboards = ref([]);
 const newContent = ref("");
-
 const offset = ref(0);
 const limit = ref(10);
 const loading = ref(false);
-const hasMore = ref(true); // ✅ 추가: 더 불러올 데이터가 있는지 여부
 
-// 수정 모드용
 const editingId = ref(null);
 const editContent = ref("");
 
 const account = route.params.account;
 const mid = store.state.mid;
+
+function goToHome(targetAccount) {
+  if (!targetAccount) {
+    alert("계정 정보를 불러올 수 없습니다.");
+    return;
+  }
+  router.push(`/myworld/${targetAccount}`);
+}
 
 function cancelWrite() {
   isWriting.value = false;
@@ -133,34 +127,19 @@ async function submitBoard() {
     alert("방명록이 작성되었습니다");
     isWriting.value = false;
     newContent.value = "";
-
     offset.value = 0;
     guestboards.value = [];
-    hasMore.value = true;
     await fetchGuestboards();
   } catch (err) {
     console.error(err);
   }
 }
 
-// ✅ 방명록 불러오기
 async function fetchGuestboards() {
   try {
     loading.value = true;
     const res = await guestboardApi.getGuestBoard(account, offset.value, limit.value);
-    const data = res.data || [];
-
-    if (data.length < limit.value) {
-      hasMore.value = false; // 마지막 페이지
-    }
-
-    if (offset.value === 0) {
-      guestboards.value = data;
-    } else {
-      guestboards.value.push(...data);
-    }
-
-    offset.value += limit.value;
+    guestboards.value = res.data;
   } catch (e) {
     console.error(e);
     guestboards.value = [];
@@ -169,13 +148,6 @@ async function fetchGuestboards() {
   }
 }
 
-// ✅ 더보기 버튼 클릭
-async function loadMore() {
-  if (loading.value || !hasMore.value) return;
-  await fetchGuestboards();
-}
-
-// 수정 관련
 function startEdit(board) {
   editingId.value = board.gbid;
   editContent.value = board.content;
@@ -192,10 +164,6 @@ async function submitEdit(gbid) {
     alert("수정되었습니다");
     editingId.value = null;
     editContent.value = "";
-
-    offset.value = 0;
-    guestboards.value = [];
-    hasMore.value = true;
     await fetchGuestboards();
   } catch (e) {
     console.error(e);
@@ -207,10 +175,6 @@ async function deleteBoard(gbid) {
   try {
     await guestboardApi.deleteGuestBoard(gbid);
     alert("삭제되었습니다.");
-
-    offset.value = 0;
-    guestboards.value = [];
-    hasMore.value = true;
     await fetchGuestboards();
   } catch (e) {
     console.error(e);
@@ -218,17 +182,15 @@ async function deleteBoard(gbid) {
   }
 }
 
-onMounted(() => {
-  fetchGuestboards();
-});
+onMounted(fetchGuestboards);
 </script>
 
 <style scoped>
-.edit-area {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
+.friend-info strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
 .edit-textarea {
@@ -250,5 +212,10 @@ onMounted(() => {
   font-size: 0.9rem;
   padding: 6px 16px;
   border-radius: 8px;
+}
+
+.nickname-link:hover {
+  text-decoration: underline;
+  color: #0d6efd;
 }
 </style>
