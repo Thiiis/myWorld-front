@@ -51,8 +51,8 @@
                 <dd v-if="profile.birthdate">{{ profile.birthdate }}</dd>
               </dl>
               <dl class="dl-horizontal dunggeunmo-font">
-                <dt v-if="profile.birthdate">🏠 주소</dt>
-                <dd v-if="profile.birthdate">{{ profile.mainAddress }}</dd>
+                <dt v-if="profile.mainAddress">🏠 주소</dt>
+                <dd v-if="profile.mainAddress">{{ profile.mainAddress }}</dd>
               </dl>
               <br>
               <h4 class="dunggeunmo-font"><strong>👍 자기소개</strong></h4>

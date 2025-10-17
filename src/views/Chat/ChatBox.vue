@@ -287,7 +287,6 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  store.commit("chat/removeActiveRoom", props.roomId);
   if (client.value) client.value.deactivate();
 
   window.removeEventListener("chat-room-unread", () => {});
