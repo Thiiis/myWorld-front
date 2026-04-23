@@ -1,0 +1,36 @@
+:root {
+  --maintheme: #3B82F6;
+  --titlecolor: #3B82F6;
+  --dividercolor: #1E40AF;
+  --outerlayer: #3B82F6;
+  --contact: #1E3A8A;
+  --sky-blue: #87CEEB;
+  --river-blue: #4682B4;
+  --light-blue: #DBEAFE;
+  --pure-white: #FFFFFF;
+  --soft-gray: #F8FAFC;
+
+  --text: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --titlefont: 'DungGeunMo';
+  --link: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-size: 16px;
+
+  /* background / primary 등 Bootstrap 재정의용 */
+  --background: #ffffff;
+  --foreground: #111111;
+  --primary: #3B82F6;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f2f2;
+  --secondary-foreground: #111111;
+  --border: rgba(0,0,0,0.1);
+}
+
+.dark {
+  --background: #111111;
+  --foreground: #ffffff;
+  --primary: #87CEEB;
+  --primary-foreground: #111111;
+  --secondary: #333333;
+  --secondary-foreground: #ffffff;
+  --border: #444444;
+}

@@ -1,0 +1,158 @@
+<template>
+  <div>
+    
+    <!-- Hero Section -->
+    <section class="py-5 mt-5 text-center bg-light">
+      <div class="container">
+        <span class="badge bg-light text-primary border mb-3">
+          깔끔하고 모던한 공간
+        </span>
+        <h1 class="display-4 fw-bold mb-3">
+          하늘처럼 맑은<br />
+          <span class="text-primary">디지털 공간</span>
+        </h1>
+        <p class="lead text-muted mb-4">
+          시원한 하늘과 흐르는 강물처럼 깔끔하고 모던한<br />
+          나만의 디지털 공간을 마이월드에서 만들어보세요
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-primary btn-lg" @click="handleStartMinihome">
+            ▶ 미니홈피 시작하기
+          </button>
+          <RouterLink to="/themetest" class="btn btn-outline-primary btn-lg">
+            💻 테마 테스트
+          </RouterLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold">왜 마이월드인가요?</h2>
+          <p class="text-muted">깔끔하고 모던한 디지털 경험</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4" v-for="(feature, index) in features" :key="index">
+            <div class="card border-0 shadow-sm h-100 text-center">
+              <div class="card-body">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                  <i :class="feature.icon" style="font-size: 1.5rem;"></i>
+                </div>
+                <h5 class="card-title">{{ feature.title }}</h5>
+                <p class="card-text text-muted">{{ feature.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Function Items Section -->
+    <section class="py-5 bg-light">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="fw-bold">다양한 기능들</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+          <div class="col-md-2 col-6" v-for="(item, index) in functionItems" :key="index">
+            <div class="card border-0 shadow-sm text-center h-100">
+              <div class="card-body">
+                <div class="rounded bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 50px; height: 50px;">
+                  <i :class="item.icon" style="font-size: 1.2rem;"></i>
+                </div>
+                <h6 class="fw-bold">{{ item.label }}</h6>
+                <p class="text-muted small">{{ item.desc }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #3B82F6, #0EA5E9);">
+      <div class="container">
+        <h2 class="fw-bold mb-3">지금 바로 시작하세요!</h2>
+        <p class="mb-4">깔끔하고 모던한 나만의 미니홈피를 만들어보세요</p>
+        <button class="btn btn-light btn-lg text-primary fw-bold" @click="visitRandomMinihomep">
+          🎲 랜덤 미니홈피 방문하기 🎲
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4">
+      <div class="container">
+        <div class="mb-2">
+          <i class="bi bi-star-fill text-warning"></i>
+          <span class="fw-bold"> 마이월드</span>
+        </div>
+        <p class="mb-0 small">하늘처럼 맑고 깔끔한 모던 미니홈피 서비스</p>
+        <p class="mb-0 small">© 2025 마이월드 Made by Thiiis💙</p>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup>
+import memberApi from '@/apis/memberApi';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const router = useRouter();
+const store = useStore();
+
+const features = [
+  { icon: "bi bi-cloud", title: "하늘처럼 깔끔한", description: "깔끔하고 직관적인 UI로 편안한 경험 제공" },
+  { icon: "bi bi-water", title: "강물처럼 자연스러운", description: "자연스러운 흐름의 소통과 인터랙션" },
+  { icon: "bi bi-star", title: "모던한 감성", description: "세련된 디자인으로 개성 표현" }
+]
+
+const functionItems = [
+  { icon: "bi bi-person", label: "프로필", desc: "깔끔한 프로필 관리" },
+  { icon: "bi bi-journal-text", label: "일기", desc: "소중한 순간 기록" },
+  { icon: "bi bi-chat", label: "방명록", desc: "소통 공간" },
+  { icon: "bi bi-music-note-beamed", label: "주크박스", desc: "음악과 함께하는 공간" },
+  { icon: "bi bi-brush", label: "꾸미기", desc: "스타일링 기능" }
+]
+
+const visitRandomMinihomep = async () => {
+  try {
+    // 1. memberRandom 함수를 호출하고 await으로 결과를 기다립니다.
+    const response = await memberApi.memberRandom(); // () 호출 및 await 추가
+
+    // 2. 서버가 보내준 실제 데이터는 response.data 안에 있습니다.
+    // 백엔드에서 { "account": "some_user" } 형태로 보낸다고 가정합니다.
+    const randomAccount = response.data;
+
+    if (randomAccount) {
+      // 3. 해당 사용자의 미니홈피 페이지로 이동합니다.
+      router.push(`/myworld/${randomAccount}`);
+    } else {
+      alert('랜덤 사용자를 찾지 못했어요.');
+    }
+  } catch (error) {
+    console.error('랜덤 방문 중 오류 발생:', error);
+    alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+};
+
+// 로그인 여부 확인 후 이동
+const handleStartMinihome = () => {
+  const jwt = localStorage.getItem('jwt');
+  const account = store.state.account;
+
+  if (jwt && account) {
+    // 로그인 상태 → 내 미니홈으로 이동
+    router.push(`/myworld/${account}`);
+  } else {
+    // 비로그인 상태 → 회원가입 페이지로 이동
+    router.push('/signup');
+  }
+};
+</script>
+
+<style>
+</style>
