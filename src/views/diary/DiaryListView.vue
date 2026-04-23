@@ -85,7 +85,7 @@
 <script setup>
 import { computed, ref, onMounted, watch } from "vue";
 import { useStore } from "vuex";
-import DiaryPage from "@/views/Diary/list_components/DiaryPage.vue";
+import DiaryPage from "@/views/diary/list_components/DiaryPage.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 

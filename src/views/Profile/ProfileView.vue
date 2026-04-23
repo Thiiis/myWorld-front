@@ -74,8 +74,9 @@ import defaultProfile from '@/assets/image/default-profile.png';
 import profileApi from '@/apis/profileApi';
 import memberApi from '@/apis/memberApi';
 import { useStore } from 'vuex';
+import { API_BASE_URL } from '@/config/env';
 
-const backendUrl = 'http://192.168.4.42:8080';
+const backendUrl = API_BASE_URL;
 
 const route = useRoute();
 const store = useStore();

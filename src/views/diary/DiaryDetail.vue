@@ -114,7 +114,7 @@
 import { computed, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import CommentList from "@/views/Diary/list_components/CommentList.vue";
+import CommentList from "@/views/diary/list_components/CommentList.vue";
 
 const store = useStore();
 const route = useRoute();

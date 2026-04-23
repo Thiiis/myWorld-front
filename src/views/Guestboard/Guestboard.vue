@@ -89,10 +89,11 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import store from "@/store";
 import defaultProfile from "@/assets/image/default-profile.png";
+import { API_BASE_URL } from "@/config/env";
 
 const router = useRouter();
 const route = useRoute();
-const backendUrl = "http://192.168.4.42:8080";
+const backendUrl = API_BASE_URL;
 
 const isWriting = ref(false);
 const guestboards = ref([]);

@@ -57,6 +57,7 @@ import defaultProfile from "@/assets/image/default-profile.png";
 import { ref, onMounted, onBeforeUnmount, computed, nextTick, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { API_BASE_URL, WS_BASE_URL } from "@/config/env";
 
 const props = defineProps({
   roomId: { type: Number, required: true },
@@ -64,7 +65,7 @@ const props = defineProps({
   friend: { type: Object, required: false, default: null }
 });
 
-const backendUrl = "http://localhost:8080";
+const backendUrl = API_BASE_URL;
 const router = useRouter();
 const store = useStore();
 
@@ -129,7 +130,7 @@ async function loadHistory() {
 // --- STOMP 연결 ---
 function connect() {
   client.value = new Client({
-    brokerURL: `ws://localhost:8080/ws?jwt=${token.value}`,
+    brokerURL: `${WS_BASE_URL}/ws?jwt=${token.value}`,
   });
   client.value.onConnect = () => {
     // 메시지 수신

@@ -1,17 +1,13 @@
 // src/apis/axiosApi.js
 import axios from 'axios';
-
-// 하드코딩된 주소 대신, .env.development 객체에서 환경 변수를 불러옵니다.
-// const BASE_URL = process.env.VUE_APP_API_URL;
-const BASE_URL = "http://localhost:8080";
-// const BASE_URL = "http://192.168.4.20:8080";
+import { API_BASE_URL } from "@/config/env";
 
 
 // --- 인스턴스 생성 ---
 
 // 1. JSON 데이터 요청용 인스턴스
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -19,7 +15,7 @@ export const api = axios.create({
 
 // 2. 파일/폼 데이터 요청용 인스턴스 (주로 파일 업로드에 사용)
 export const fileApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'multipart/form-data',
   },

@@ -64,8 +64,9 @@ import store from "@/store";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import chatApi from "@/apis/chatApi";
+import { API_BASE_URL } from "@/config/env";
 
-const backendUrl = 'http://192.168.4.42:8080';
+const backendUrl = API_BASE_URL;
 
 const route = useRoute();
 const router = useRouter();

@@ -78,9 +78,9 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import profileApi from '@/apis/profileApi';
+import { API_BASE_URL } from '@/config/env';
 
-// 백엔드 서버 주소
-const backendUrl = 'http://192.168.4.42:8080';
+const backendUrl = API_BASE_URL;
 
 const router = useRouter();
 

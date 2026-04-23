@@ -138,8 +138,9 @@ import memberApi from '@/apis/memberApi';
 import store from '@/store';
 import friendApi from '@/apis/friendApi';
 import jukeboxApi from '@/apis/jukeboxApi';
+import { API_BASE_URL } from '@/config/env';
 
-const backendUrl = 'http://192.168.4.42:8080';
+const backendUrl = API_BASE_URL;
 const route = useRoute();
 const account = ref(route.params.account);
 const miniHomeUrl = ref(`/myworld/${route.params.account}`);

@@ -50,8 +50,9 @@ import defaultProfile from "@/assets/image/default-profile.png";
 import { useRouter } from "vue-router";
 import store from "@/store";
 import { Client } from "@stomp/stompjs";
+import { API_BASE_URL, WS_BASE_URL } from "@/config/env";
 
-const backendUrl = "http://192.168.4.42:8080"; // 백엔드 주소
+const backendUrl = API_BASE_URL;
 const rooms = ref([]);
 const router = useRouter();
 
@@ -62,7 +63,7 @@ const totalUnread = computed(() =>
 
 function connectForList() {
   client.value = new Client({
-    brokerURL: `ws://localhost:8080/ws?jwt=${store.state.jwt}`,
+    brokerURL: `${WS_BASE_URL}/ws?jwt=${store.state.jwt}`,
   });
 
   client.value.onConnect = () => {
